@@ -1,0 +1,17 @@
+{
+  "name": "佐伯イッテツ 推し活手帳",
+  "short_name": "イッテツ手帳",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050508",
+  "theme_color": "#050508",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
