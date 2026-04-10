@@ -97,7 +97,7 @@ if(!window._particles){
     p.style.top='-10px';
     p.style.width=(1+Math.random()*2)+'px';
     p.style.height=p.style.width;
-    p.style.opacity=String(0.15+Math.random()*0.25);
+    p.style.opacity=String(0.35+Math.random()*0.25);
     p.style.background=Math.random()>0.5?'#d96496':'#7b5ea7';
     p.style.animation='particleFall '+(8+Math.random()*12)+'s linear forwards';
     p.style.filter='blur('+(Math.random()>0.7?'1px':'0')+')'
@@ -205,7 +205,7 @@ app.appendChild(mnav);
 const tabs=h('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',gap:'6px',marginBottom:'6px'}},
   h('button',{className:'tab',onClick:()=>{S.year=now.getFullYear();S.month=now.getMonth();S.selDay=now.getDate();render()},style:{background:'#8C466425',borderColor:'#8C4664',color:'#d96496'}},'NOW'),
   h('button',{className:'tab',onClick:()=>{S.view='cal';render()},style:{background:S.view==='cal'?'#7b5ea730':'transparent',borderColor:S.view==='cal'?'#d96496':'#7b5ea740',color:S.view==='cal'?'#d96496':'#e0dce860'}},'📅 CALENDAR'),
-  h('button',{className:'tab',onClick:()=>{S.view='stats';render()},style:{background:S.view==='stats'?'#7b5ea730':'transparent',borderColor:S.view==='stats'?'#d96496':'#7b5ea740',color:S.view==='stats'?'#d96496':'#e0dce860'}},'📊 STATS'));
+  h('button',{className:'tab',onClick:()=>{S.view='stats';render()},style:{background:S.view==='stats'?'#7b5ea730':'transparent',borderColor:S.view==='stats'?'#d96496':'#7b5ea740',color:S.view==='stats'?'#d96496':'#e0dce860'}},'📑 STATS'));
 app.appendChild(tabs);
 
 if(st.tot>0&&S.view==='cal')app.appendChild(h('div',{style:{textAlign:'center',fontFamily:"'VT323',monospace",fontSize:'14px',color:'#55e84c60',marginBottom:'4px'}},`EVENTS: ${st.tot} ／ WATCHED: ${st.w}`));
@@ -324,7 +324,7 @@ if(S.view==='cal'){
         info.appendChild(titleRow);
         if(ev.time&&!ev.thumb)info.appendChild(h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'7px',color:'#55e84c80',marginTop:'2px'}},'⏰ '+ev.time));
         if(ev.collab)info.appendChild(h('div',{style:{fontFamily:"'VT323',monospace",fontSize:'14px',color:'#4ca8e880',marginTop:'1px'}},'🤝 '+ev.collab));
-        if(ev.price)info.appendChild(h('div',{style:{fontFamily:"'VT323',monospace",fontSize:'15px',color:'#e84c4c',marginTop:'1px'}},'💰 ¥'+Number(ev.price).toLocaleString()));
+        if(ev.price)info.appendChild(h('div',{style:{fontFamily:"'VT323',monospace",fontSize:'15px',color:'#e84c4c',marginTop:'1px'}},'💸 ¥'+Number(ev.price).toLocaleString()));
         if(ev.note)info.appendChild(h('div',{style:{fontFamily:"'Zen Maru Gothic',sans-serif",fontSize:'12px',color:'#e0dce860',marginTop:'2px'}},ev.note));
         row.appendChild(info);
         const btns=h('div',{style:{display:'flex',flexDirection:'column',gap:'3px',flexShrink:'0'}},
@@ -350,7 +350,7 @@ if(S.view==='stats'){
   const sw=h('div',{style:{marginTop:'8px',animation:'fadeIn .2s'}});
   // Report
   const rep=[];
-  rep.push(h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'8px',color:'#d96496',marginBottom:'10px',textShadow:'0 0 6px #d9649640'}},`📊 ${S.month+1}月 STREAM REPORT`));
+  rep.push(h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'8px',color:'#d96496',marginBottom:'10px',textShadow:'0 0 6px #d9649640'}},`📑 ${S.month+1}月 STREAM REPORT`));
   T.forEach(t=>{const c=st.c[t.id]||0;if(!c)return;const pct=st.tot>0?(c/st.tot*100):0;
     rep.push(h('div',{style:{marginBottom:'7px'}},
       h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:'2px'}},h('span',{style:{fontFamily:"'VT323',monospace",fontSize:'15px'}},t.e+' '+t.l),h('span',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'8px',color:t.c}},c)),
@@ -373,7 +373,7 @@ if(S.view==='stats'){
 
   if(st.sp>0){
     sw.appendChild(abox('#e84c4c40',[
-      h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'8px',color:'#e84c4c',marginBottom:'6px'}},'💰 MERCH SPENDING'),
+      h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'8px',color:'#e84c4c',marginBottom:'6px'}},'💸 MERCH SPENDING'),
       h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'16px',color:'#e84c4c',textShadow:'0 0 8px #e84c4c40'}},'¥'+st.sp.toLocaleString())
     ],{padding:'12px',marginBottom:'8px'}));
   }
@@ -393,7 +393,7 @@ if(S.view==='stats'){
 
 // Bottom
 app.appendChild(h('div',{style:{marginTop:'16px',height:'2px',background:'linear-gradient(90deg,transparent,#7b5ea7,#d96496,#7b5ea7,transparent)'}}));
-app.appendChild(h('div',{style:{textAlign:'center',fontFamily:"'Press Start 2P',monospace",fontSize:'6px',color:'#7b5ea7aa',marginTop:'6px',letterSpacing:'1px',paddingBottom:'56px'}},'20XX SAIKI ITTETSU. NAKAMA FOREVER.'));
+app.appendChild(h('div',{style:{textAlign:'center',fontFamily:"'Press Start 2P',monospace",fontSize:'6px',color:'#7b5ea7aa',marginTop:'6px',letterSpacing:'1px',paddingBottom:'5px'}},'20XX SAIKI ITTETSU. NAKAMA FOREVER.'));
 
 // Fixed bottom desktop pet cat - neon pixel style
 const CS={
@@ -585,7 +585,7 @@ if(ct.hg){
 // Collab
 if(ct.hc){
   const cd=h('div',{style:{marginBottom:'6px'}},h('div',{style:{fontFamily:"'VT323',monospace",fontSize:'13px',color:'#4ca8e880',marginBottom:'3px'}},'COLLAB'));
-  const ci=h('input',{value:S.fCollab,placeholder:'叢雲カゲツ / Oriens...',onInput:e=>S.fCollab=e.target.value});
+  const ci=h('input',{value:S.fCollab,placeholder:'＃放課後オリエンス...',onInput:e=>S.fCollab=e.target.value});
   ci.value=S.fCollab;cd.appendChild(ci);box.appendChild(cd);
 }
 
@@ -598,7 +598,7 @@ if(ct.ht){
 
 // Price
 if(ct.hp){
-  const pd=h('div',{style:{marginBottom:'6px'}},h('div',{style:{fontFamily:"'VT323',monospace",fontSize:'13px',color:'#e84c4c80',marginBottom:'3px'}},'💰 PRICE (¥)'));
+  const pd=h('div',{style:{marginBottom:'6px'}},h('div',{style:{fontFamily:"'VT323',monospace",fontSize:'13px',color:'#e84c4c80',marginBottom:'3px'}},'💸 PRICE (¥)'));
   const pr=h('div',{style:{display:'flex',alignItems:'center',gap:'6px'}},
     h('span',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'10px',color:'#e84c4c'}},'¥'));
   const pi=h('input',{type:'number',value:S.fPrice,placeholder:'3000',onInput:e=>S.fPrice=e.target.value,style:{flex:'1'}});
