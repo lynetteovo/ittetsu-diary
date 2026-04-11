@@ -42,7 +42,7 @@ body{background:#050508;font-family:'Silkscreen','DotGothic16',monospace;-webkit
 @keyframes borderGlow{0%,100%{border-color:#7b5ea740}50%{border-color:#d9649670}}
 @keyframes scanMove{0%{background-position:0 0}100%{background-position:0 4px}}
 
-.cell{cursor:pointer;position:relative;border:1px solid #7b5ea720;transition:all .12s;overflow:hidden;border-radius:2px;aspect-ratio:1/1}
+.cell{cursor:pointer;position:relative;border:1px solid #7b5ea735;transition:all .12s;overflow:hidden;border-radius:2px;aspect-ratio:1/1}
 .cell:active{transform:scale(.95)}
 .cell.sel{background:#7b5ea715;border:2px solid #d9649650;animation:borderGlow 2s ease-in-out infinite}
 .cell.today{background:#8C466410;border:2px solid #8C466440}
@@ -208,7 +208,7 @@ const tabs=h('div',{style:{display:'flex',alignItems:'center',justifyContent:'ce
   h('button',{className:'tab',onClick:()=>{S.view='stats';render()},style:{background:S.view==='stats'?'#7b5ea730':'transparent',borderColor:S.view==='stats'?'#d96496':'#7b5ea740',color:S.view==='stats'?'#d96496':'#e0dce860'}},'📑 STATS'));
 app.appendChild(tabs);
 
-if(st.tot>0&&S.view==='cal')app.appendChild(h('div',{style:{textAlign:'center',fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'11px',color:'#55e84c60',marginBottom:'4px'}},`EVENTS: ${st.tot} ／ WATCHED: ${st.w}`));
+if(st.tot>0&&S.view==='cal')app.appendChild(h('div',{style:{textAlign:'center',fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'11px',color:'#55e84c80',marginBottom:'4px'}},`EVENTS: ${st.tot} ／ WATCHED: ${st.w}`));
 
 // Calendar view
 if(S.view==='cal'){
@@ -220,8 +220,8 @@ if(S.view==='cal'){
 
   // Weekday headers
   const wdg=h('div',{style:{display:'grid',gridTemplateColumns:'repeat(7,1fr)'}},
-    ...WD.map((w,i)=>h('div',{style:{textAlign:'center',fontSize:'9px',fontFamily:"'Silkscreen','DotGothic16',monospace",padding:'3px 0',color:i===0?'#e84c4c80':i===6?'#4ca8e880':'#7b5ea760'}},w)));
-  app.appendChild(abox('#7b5ea730',[wdg],{padding:'0',marginBottom:'3px'}));
+    ...WD.map((w,i)=>h('div',{style:{textAlign:'center',fontSize:'9px',fontFamily:"'Silkscreen','DotGothic16',monospace",padding:'3px 0',color:i===0?'#e84c4ca0':i===6?'#4ca8e8a0':'#7b5ea788'}},w)));
+  app.appendChild(abox('#7b5ea745',[wdg],{padding:'0',marginBottom:'3px'}));
 
   // Grid
   const cells=[];
@@ -249,20 +249,20 @@ if(S.view==='cal'){
 
       const inner=h('div',{style:{position:'absolute',inset:'0',padding:'2px 3px',display:'flex',flexDirection:'column',zIndex:'1'}});
       const topRow=h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',lineHeight:'1'}},
-        h('span',{style:{fontSize:today?'10px':'9px',fontFamily:"'Silkscreen','DotGothic16',monospace",color:today?'#d96496':dow===0?'#e84c4c80':dow===6?'#4ca8e880':'#e0dce840',background:today?'#d9649625':'none',padding:today?'0 3px':'0',textShadow:today?'0 0 6px #d9649650':'none',letterSpacing:'1px'}},String(d).padStart(2,'0')),
-        dStk.length>0?h('span',{style:{fontSize:'7px',lineHeight:'1'}},dStk.join('')):null);
+        h('span',{style:{fontSize:today?'10px':'9px',fontFamily:"'Silkscreen','DotGothic16',monospace",color:today?'#d96496':dow===0?'#e84c4caa':dow===6?'#4ca8e8aa':'#e0dce870',background:today?'#d9649625':'none',padding:today?'0 3px':'0',textShadow:today?'0 0 6px #d9649650':'none',letterSpacing:'1px'}},String(d).padStart(2,'0')),
+        dStk.length>0?h('span',{style:{fontSize:'8px',lineHeight:'1'}},dStk.join('')):null);
       inner.appendChild(topRow);
 
       const tagArea=h('div',{style:{flex:'1',overflow:'hidden',marginTop:'1px',display:'flex',flexDirection:'column',gap:'1px'}});
       (S.filter?fEvs:evs).slice(0,2).forEach(ev=>{
         const t=ti(ev.type);const label=cLabel(ev);
-        tagArea.appendChild(h('div',{className:'tag',style:{color:t.c,opacity:ev.watched?'.5':'1',background:t.c+'12'}},
+        tagArea.appendChild(h('div',{className:'tag',style:{color:t.c,opacity:ev.watched?'.65':'1',background:t.c+'1a'}},
           h('span',{style:{fontSize:'8px',flexShrink:'0'}},t.e),h('span',{style:{overflow:'hidden',textOverflow:'ellipsis'}},label)));
       });
-      if(evs.length>2&&!S.filter)tagArea.appendChild(h('div',{style:{fontSize:'8px',color:'#7b5ea750',textAlign:'center'}},`+${evs.length-2}`));
+      if(evs.length>2&&!S.filter)tagArea.appendChild(h('div',{style:{fontSize:'8px',color:'#7b5ea770',textAlign:'center'}},`+${evs.length-2}`));
       inner.appendChild(tagArea);
 
-      if(unw&&!S.filter)inner.appendChild(h('div',{style:{position:'absolute',top:'2px',right:'2px',width:'4px',height:'4px',background:'#d96496',animation:'glowPulse 2s infinite'}}));
+      if(unw&&!S.filter)inner.appendChild(h('div',{style:{position:'absolute',top:'2px',right:'2px',width:'5px',height:'5px',background:'#d96496',animation:'glowPulse 2s infinite'}}));
       cell.appendChild(inner);
       return cell;
     }));
@@ -299,7 +299,7 @@ if(S.view==='cal'){
       const list=h('div',{style:{display:'flex',flexDirection:'column',gap:'4px'}});
       evs.forEach(ev=>{
         const t=ti(ev.type);
-        const item=h('div',{className:'evt-item',style:{borderLeftColor:t.c,background:t.c+'08'}});
+        const item=h('div',{className:'evt-item',style:{borderLeftColor:t.c,background:t.c+'10'}});
         if(ev.thumb){
           const tb=h('div',{style:{marginBottom:'8px',overflow:'hidden',position:'relative',paddingBottom:'40%',border:`1px solid ${t.c}30`,touchAction:'none'}});
           const tImg=h('img',{src:ev.thumb,style:{position:'absolute',inset:'0',width:'100%',height:'100%',objectFit:'cover',objectPosition:'center center'}});
@@ -319,7 +319,7 @@ if(S.view==='cal'){
         const info=h('div',{style:{flex:'1',minWidth:'0'}});
         const titleRow=h('div',{style:{display:'flex',alignItems:'center',gap:'4px',flexWrap:'wrap'}},
           h('span',{style:{fontSize:'13px'}},t.e),
-          h('span',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'12px',color:t.c,opacity:ev.watched?'.5':'1'}},ev.title));
+          h('span',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'12px',color:t.c,opacity:ev.watched?'.65':'1'}},ev.title));
         if(ev.gameTitle)titleRow.appendChild(h('span',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'10px',color:t.c+'99',background:t.c+'15',padding:'0 3px'}},'🎮'+ev.gameTitle));
         info.appendChild(titleRow);
         if(ev.time&&!ev.thumb)info.appendChild(h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'7px',color:'#55e84c80',marginTop:'2px'}},'⏰ '+ev.time));
