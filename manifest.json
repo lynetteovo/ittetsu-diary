@@ -1,6 +1,6 @@
 {
   "name": "佐伯イッテツ 推し活手帳",
-  "short_name": "イッテツ手帳",
+  "short_name": "佐伯推し手帳",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
