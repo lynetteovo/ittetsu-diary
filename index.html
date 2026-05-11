@@ -13,6 +13,24 @@
 <link rel="icon" type="image/png" sizes="180x180" href="icon.png">
 <link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyBvt72qiRztkWFxnWliAs7RL6Q3iCUoJW4",
+  authDomain:"ittetsu-diary.firebaseapp.com",
+  projectId:"ittetsu-diary",
+  storageBucket:"ittetsu-diary.firebasestorage.app",
+  messagingSenderId:"280262781061",
+  appId:"1:280262781061:web:ba9c0f3294de7e91e1e1ec"
+});
+const db=firebase.firestore();
+function getUserId(){
+  let id=localStorage.getItem('saiki-uid');
+  if(!id){id=crypto.randomUUID();localStorage.setItem('saiki-uid',id);document.cookie='saiki-uid='+id+';max-age=31536000;path=/';}
+  return id;
+}
+</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{overscroll-behavior:none;overflow-x:hidden}
@@ -143,9 +161,27 @@ function cLabel(ev){if(ev.type==='zatsudan')return'雑談';if((ev.type==='game_s
 let S={year:new Date().getFullYear(),month:new Date().getMonth(),events:{},stickers:{},selDay:null,view:'cal',filter:null,showStk:false,modal:false,editing:null,
 fT:'zatsudan',fTitle:'',fTime:'',fNote:'',fGame:'',fCollab:'',fWatch:false,fPrice:'',fThumb:''};
 
-function loadData(){try{const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));if(d){S.events=d.e||{};S.stickers=d.s||{};}}catch(e){}}
-function saveData(){try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}))}catch(e){}}
-loadData();
+function saveData(){
+  const raw={e:S.events,s:S.stickers};
+  try{localStorage.setItem('saiki-pwa-v1',JSON.stringify(raw));}catch(e){}
+  const uid=getUserId();
+  db.collection('diaries').doc(uid).set(raw,{merge:true}).catch(e=>console.error('sync err',e));
+}
+function loadData(cb){
+  // Load local cache first
+  try{const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));if(d){S.events=d.e||{};S.stickers=d.s||{};}}catch(e){}
+  // Then sync from cloud
+  const uid=getUserId();
+  db.collection('diaries').doc(uid).get().then(doc=>{
+    if(doc.exists){
+      const d=doc.data();
+      S.events=d.e||{};S.stickers=d.s||{};
+      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify(d));}catch(e){}
+    }
+    if(cb)cb();
+  }).catch(()=>{if(cb)cb();});
+}
+loadData(()=>{ render(); setTimeout(animateScore,200); });
 
 function flash(m){const el=document.getElementById('toast-el');el.textContent=m;el.classList.remove('hidden');el.style.animation='none';el.offsetHeight;el.style.animation='';setTimeout(()=>el.classList.add('hidden'),1500);}
 
