@@ -167,28 +167,64 @@ function cLabel(ev){if(ev.type==='zatsudan')return'雑談';if((ev.type==='game_s
 let S={year:new Date().getFullYear(),month:new Date().getMonth(),events:{},stickers:{},selDay:null,view:'cal',filter:null,showStk:false,modal:false,editing:null,
 fT:'zatsudan',fTitle:'',fTime:'',fNote:'',fGame:'',fCollab:'',fWatch:false,fPrice:'',fThumb:''};
 
+let saveTimer=null;
 function saveData(){
-  const raw={e:S.events,s:S.stickers};
-  try{localStorage.setItem('saiki-pwa-v1',JSON.stringify(raw));}catch(e){}
-  const uid=getUserId();
-  db.collection('diaries').doc(uid).set(raw,{merge:true}).catch(e=>console.error('sync err',e));
+  try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
+  // Debounced cloud save by month
+  if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(syncToCloud,1000);
 }
-function loadData(cb){
-  // Load local cache first
-  try{const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));if(d){S.events=d.e||{};S.stickers=d.s||{};}}catch(e){}
-  // Then sync from cloud
+
+function syncToCloud(){
   const uid=getUserId();
-  db.collection('diaries').doc(uid).get().then(doc=>{
-    if(doc.exists){
+  function weekKey(dateStr){
+    const d=new Date(dateStr);
+    const target=new Date(d.valueOf());
+    const dayNr=(d.getDay()+6)%7;
+    target.setDate(target.getDate()-dayNr+3);
+    const firstThursday=target.valueOf();
+    target.setMonth(0,1);
+    if(target.getDay()!==4){target.setMonth(0,1+((4-target.getDay())+7)%7);}
+    const wk=1+Math.ceil((firstThursday-target)/604800000);
+    return d.getFullYear()+'-W'+String(wk).padStart(2,'0');
+  }
+  const weeks={};
+  Object.keys(S.events).forEach(k=>{
+    const wk=weekKey(k);
+    if(!weeks[wk])weeks[wk]={e:{},s:{}};
+    weeks[wk].e[k]=S.events[k];
+  });
+  Object.keys(S.stickers).forEach(k=>{
+    const wk=weekKey(k);
+    if(!weeks[wk])weeks[wk]={e:{},s:{}};
+    weeks[wk].s[k]=S.stickers[k];
+  });
+  Object.keys(weeks).forEach(wk=>{
+    db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(weeks[wk]).catch(e=>{
+      if(e.code==='resource-exhausted'||(e.message&&e.message.includes('exceeds'))){
+        flash('⚠️ '+wk+' 容量超過');
+      }else{console.error('sync err',wk,e);}
+    });
+  });
+}
+
+function loadData(cb){
+  try{const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));if(d){S.events=d.e||{};S.stickers=d.s||{};}}catch(e){}
+  const uid=getUserId();
+ db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
+    const events={},stickers={};
+    snap.forEach(doc=>{
       const d=doc.data();
-      S.events=d.e||{};S.stickers=d.s||{};
-      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify(d));}catch(e){}
+      Object.assign(events,d.e||{});
+      Object.assign(stickers,d.s||{});
+    });
+    if(snap.size>0){
+      S.events=events;S.stickers=stickers;
+      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:events,s:stickers}));}catch(e){}
     }
     if(cb)cb();
-  }).catch(()=>{if(cb)cb();});
+  }).catch(e=>{console.error('load err',e);if(cb)cb();});
 }
-loadData(()=>{ render(); setTimeout(animateScore,200); });
-
 function flash(m){const el=document.getElementById('toast-el');el.textContent=m;el.classList.remove('hidden');el.style.animation='none';el.offsetHeight;el.style.animation='';setTimeout(()=>el.classList.add('hidden'),1500);}
 
 function devs(d){return S.events[dk(S.year,S.month,d)]||[];}
@@ -465,13 +501,14 @@ const dataBtns=h('div',{id:'dataBtns',style:{display:'none',gap:'6px',justifyCon
     inp.click();
   },style:{fontSize:'9px',padding:'4px 8px'}},'📂 復元'),
   h('button',{className:'btn',onClick:()=>{
-    try{
-      const local=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
-      if(!local){flash('⚠️ ローカルデータなし');return;}
-      const uid=getUserId();
-      db.collection('diaries').doc(uid).set(local,{merge:false}).then(()=>flash('☁️ 同期完了')).catch(e=>flash('⚠️ '+e.message));
-    }catch(e){flash('⚠️ '+e.message);}
-  },style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期'));
+  try{
+    const local=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
+    if(!local){flash('⚠️ ローカルデータなし');return;}
+    S.events=local.e||{};S.stickers=local.s||{};
+    syncToCloud();
+    flash('☁️ 同期完了');
+  }catch(e){flash('⚠️ '+e.message);}
+},style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期'));
 app.appendChild(dataBtns);
   
 // Fixed bottom desktop pet cat - neon pixel style
