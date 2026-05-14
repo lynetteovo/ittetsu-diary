@@ -584,9 +584,7 @@ const dataBtns=h('div',{id:'dataBtns',style:{display:'none',gap:'6px',justifyCon
   },style:{fontSize:'9px',padding:'4px 8px'}},'📂 復元'),
   h('button',{className:'btn',onClick:()=>{
   try{
-    const local=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
-    if(!local){flash('⚠️ ローカルデータなし');return;}
-    S.events=local.e||{};S.stickers=local.s||{};
+    if(!S.events||Object.keys(S.events).length===0){flash('⚠️ データなし');return;}
     syncToCloud();
     flash('☁️ 同期完了');
   }catch(e){flash('⚠️ '+e.message);}
