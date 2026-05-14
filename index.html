@@ -80,7 +80,7 @@ body{background:#050508;font-family:'Silkscreen','DotGothic16',monospace;-webkit
 .btn{cursor:pointer;border:2px solid #7b5ea7;background:rgba(0,0,0,.8);color:#e0dce8;font-family:'Silkscreen','DotGothic16',monospace;font-size:12px;padding:3px 8px;transition:all .1s;display:inline-flex;align-items:center;justify-content:center;gap:4px;border-radius:0}
 .btn:active{transform:translate(2px,2px);box-shadow:none}
 .tag{display:inline-flex;align-items:center;gap:1px;padding:0 3px;font-size:8px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font-family:'Silkscreen','DotGothic16',monospace}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:center;justify-content:center;animation:fadeIn .15s}
 .chip{cursor:pointer;padding:3px 6px;border:1px solid transparent;font-family:'Silkscreen','DotGothic16',monospace;font-size:11px;transition:all .12s;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;border-radius:0}
 input,textarea{font-family:'Silkscreen','DotGothic16',monospace;font-size:14px;background:rgba(0,0,0,.6);border:1px solid #7b5ea740;color:#e0dce8;padding:6px 10px;outline:none;transition:border-color .2s;border-radius:0;width:100%;box-sizing:border-box}
 input:focus,textarea:focus{border-color:#d9649680;box-shadow:0 0 6px #d9649630}
@@ -309,7 +309,7 @@ function allTimeStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>a.forEa
 
 function gTitles(){const s=new Set();Object.values(S.events).forEach(a=>a.forEach(e=>{if(e.type==='game_series'&&e.gameTitle)s.add(e.gameTitle)}));return[...s].sort();}
 
-function h(tag,props,...ch){const el=document.createElement(tag);if(props)Object.entries(props).forEach(([k,v])=>{if(k==='style'&&typeof v==='object')Object.assign(el.style,v);else if(k.startsWith('on'))el.addEventListener(k.slice(2).toLowerCase(),v);else if(k==='className')el.className=v;else if(k==='innerHTML')el.innerHTML=v;else el.setAttribute(k,v);});ch.flat(9).forEach(c=>{if(c==null)return;if(typeof c==='string'||typeof c==='number')el.appendChild(document.createTextNode(c));else el.appendChild(c);});return el;}
+function h(tag,props,...ch){const el=document.createElement(tag);if(props)Object.entries(props).forEach(([k,v])=>{if(v===undefined||v===null)return;if(k==='style'&&typeof v==='object')Object.assign(el.style,v);else if(k.startsWith('on'))el.addEventListener(k.slice(2).toLowerCase(),v);else if(k==='className')el.className=v;else if(k==='innerHTML')el.innerHTML=v;else if(k==='value'||k==='checked'||k==='disabled'||k==='selected')el[k]=v;else el.setAttribute(k,v);});ch.flat(9).forEach(c=>{if(c==null)return;if(typeof c==='string'||typeof c==='number')el.appendChild(document.createTextNode(c));else el.appendChild(c);});return el;}
 
 function corners(color){return[
 h('div',{className:'corner-tl',style:{borderColor:color}}),
@@ -898,7 +898,7 @@ function closeModal(){
 function showDeleteConfirm(evId,evTitle){
   const overlay=document.createElement('div');
   overlay.className='modal-bg';
-  overlay.style.zIndex='150';
+  overlay.style.zIndex='1100';
   const box=document.createElement('div');
   Object.assign(box.style,{
     background:'#0a0a12',border:'2px solid #e84c4c',width:'85%',maxWidth:'320px',
