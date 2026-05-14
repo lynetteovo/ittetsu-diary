@@ -16,15 +16,18 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyBvt72qiRztkWFxnWliAs7RL6Q3iCUoJW4",
-  authDomain:"ittetsu-diary.firebaseapp.com",
-  projectId:"ittetsu-diary",
-  storageBucket:"ittetsu-diary.firebasestorage.app",
-  messagingSenderId:"280262781061",
-  appId:"1:280262781061:web:ba9c0f3294de7e91e1e1ec"
-});
-const db=firebase.firestore();
+try{
+  firebase.initializeApp({
+    apiKey:"AIzaSyBvt72qiRztkWFxnWliAs7RL6Q3iCUoJW4",
+    authDomain:"ittetsu-diary.firebaseapp.com",
+    projectId:"ittetsu-diary",
+    storageBucket:"ittetsu-diary.firebasestorage.app",
+    messagingSenderId:"280262781061",
+    appId:"1:280262781061:web:ba9c0f3294de7e91e1e1ec"
+  });
+  window.db=firebase.firestore();
+}catch(e){window.db=null;}
+var db=window.db;
 function goNow(){
   S.year=new Date().getFullYear();
   S.month=new Date().getMonth();
@@ -32,8 +35,12 @@ function goNow(){
   render();
 }
 function getUserId(){
-  let id=localStorage.getItem('saiki-uid');
-  if(!id){id=crypto.randomUUID();localStorage.setItem('saiki-uid',id);document.cookie='saiki-uid='+id+';max-age=31536000;path=/';}
+  let id=null;
+  try{id=localStorage.getItem('saiki-uid');}catch(e){}
+  if(!id){
+    try{id=crypto.randomUUID();}catch(e){id='u'+Date.now()+Math.random().toString(36).slice(2);}
+    try{localStorage.setItem('saiki-uid',id);document.cookie='saiki-uid='+id+';max-age=31536000;path=/';}catch(e){}
+  }
   return id;
 }
 </script>
@@ -168,61 +175,130 @@ let S={year:new Date().getFullYear(),month:new Date().getMonth(),events:{},stick
 fT:'zatsudan',fTitle:'',fTime:'',fNote:'',fGame:'',fCollab:'',fWatch:false,fPrice:'',fThumb:''};
 
 let saveTimer=null;
+function dayKey2WeekKey(dateStr){
+  const d=new Date(dateStr+'T00:00:00');
+  const target=new Date(d.valueOf());
+  const dayNr=(d.getDay()+6)%7;
+  target.setDate(target.getDate()-dayNr+3);
+  const firstThursday=target.valueOf();
+  target.setMonth(0,1);
+  if(target.getDay()!==4){target.setMonth(0,1+((4-target.getDay())+7)%7);}
+  const wk=1+Math.ceil((firstThursday-target)/604800000);
+  return d.getFullYear()+'-W'+String(wk).padStart(2,'0');
+}
+
 function saveData(){
+  // localStorage save (best-effort, ignore quota errors)
   try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-  // Debounced cloud save by month
+  // Debounced cloud save by week
   if(saveTimer)clearTimeout(saveTimer);
-  saveTimer=setTimeout(syncToCloud,1000);
+  saveTimer=setTimeout(syncToCloud,1500);
 }
 
 function syncToCloud(){
+  if(!window.db)return;
   const uid=getUserId();
-  function weekKey(dateStr){
-    const d=new Date(dateStr);
-    const target=new Date(d.valueOf());
-    const dayNr=(d.getDay()+6)%7;
-    target.setDate(target.getDate()-dayNr+3);
-    const firstThursday=target.valueOf();
-    target.setMonth(0,1);
-    if(target.getDay()!==4){target.setMonth(0,1+((4-target.getDay())+7)%7);}
-    const wk=1+Math.ceil((firstThursday-target)/604800000);
-    return d.getFullYear()+'-W'+String(wk).padStart(2,'0');
-  }
+  // Group by ISO week
   const weeks={};
   Object.keys(S.events).forEach(k=>{
-    const wk=weekKey(k);
+    if(!S.events[k]||S.events[k].length===0)return;
+    const wk=dayKey2WeekKey(k);
     if(!weeks[wk])weeks[wk]={e:{},s:{}};
     weeks[wk].e[k]=S.events[k];
   });
   Object.keys(S.stickers).forEach(k=>{
-    const wk=weekKey(k);
+    const wk=dayKey2WeekKey(k);
     if(!weeks[wk])weeks[wk]={e:{},s:{}};
     weeks[wk].s[k]=S.stickers[k];
   });
+  // Pre-check size, split if needed
   Object.keys(weeks).forEach(wk=>{
-    db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(weeks[wk]).catch(e=>{
-      if(e.code==='resource-exhausted'||(e.message&&e.message.includes('exceeds'))){
-        flash('⚠️ '+wk+' 容量超過');
-      }else{console.error('sync err',wk,e);}
-    });
+    const wkData=weeks[wk];
+    const size=JSON.stringify(wkData).length;
+    if(size>900000){
+      // Too big: store events without thumbs in main doc, thumbs separately
+      const lite={s:wkData.s,e:{}};
+      const thumbs={};
+      let hasThumb=false;
+      Object.keys(wkData.e).forEach(dk=>{
+        lite.e[dk]=wkData.e[dk].map(ev=>{
+          if(ev.thumb){
+            hasThumb=true;
+            thumbs[ev.id]=ev.thumb;
+            const {thumb,...rest}=ev;
+            return rest;
+          }
+          return ev;
+        });
+      });
+      db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(lite).catch(e=>{
+        console.error('week sync err',wk,e);
+        flash('⚠️ '+wk+' '+(e.message||'').slice(0,40));
+      });
+      if(hasThumb){
+        // Save thumbs as separate docs (one per event)
+        Object.keys(thumbs).forEach(eid=>{
+          db.collection('diaries').doc(uid).collection('thumbs').doc(eid).set({t:thumbs[eid]}).catch(e=>console.error('thumb err',eid,e));
+        });
+      }
+    }else{
+      db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(wkData).catch(e=>{
+        console.error('week sync err',wk,e);
+        flash('⚠️ '+wk+' '+(e.message||'').slice(0,40));
+      });
+    }
   });
 }
 
 function loadData(cb){
-  try{const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));if(d){S.events=d.e||{};S.stickers=d.s||{};}}catch(e){}
+  // Always load local cache first
+  let hasLocal=false;
+  try{
+    const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
+    if(d&&d.e&&Object.keys(d.e).length>0){
+      S.events=d.e||{};S.stickers=d.s||{};
+      hasLocal=true;
+    }
+  }catch(e){}
+  // Then try cloud
+  if(!window.db){if(cb)cb();return;}
   const uid=getUserId();
- db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
+  db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
+    if(snap.size===0){
+      // Cloud empty: keep local data, do NOT overwrite
+      if(cb)cb();
+      return;
+    }
     const events={},stickers={};
     snap.forEach(doc=>{
       const d=doc.data();
       Object.assign(events,d.e||{});
       Object.assign(stickers,d.s||{});
     });
-    if(snap.size>0){
-      S.events=events;S.stickers=stickers;
-      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:events,s:stickers}));}catch(e){}
-    }
-    if(cb)cb();
+    // Load thumbs separately and attach
+    db.collection('diaries').doc(uid).collection('thumbs').get().then(tsnap=>{
+      const thumbs={};
+      tsnap.forEach(doc=>{thumbs[doc.id]=doc.data().t;});
+      Object.keys(events).forEach(dk=>{
+        events[dk]=events[dk].map(ev=>{
+          if(thumbs[ev.id])return {...ev,thumb:thumbs[ev.id]};
+          return ev;
+        });
+      });
+      // Merge: cloud wins for keys it has, local data for keys cloud doesn't have
+      const merged=hasLocal?{...S.events}:{};
+      Object.assign(merged,events);
+      S.events=merged;
+      const mergedS=hasLocal?{...S.stickers}:{};
+      Object.assign(mergedS,stickers);
+      S.stickers=mergedS;
+      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
+      if(cb)cb();
+    }).catch(()=>{
+      const merged=hasLocal?{...S.events,...events}:events;
+      S.events=merged;
+      if(cb)cb();
+    });
   }).catch(e=>{console.error('load err',e);if(cb)cb();});
 }
 function flash(m){const el=document.getElementById('toast-el');el.textContent=m;el.classList.remove('hidden');el.style.animation='none';el.offsetHeight;el.style.animation='';setTimeout(()=>el.classList.add('hidden'),1500);}
@@ -733,7 +809,30 @@ if(S.fThumb){
   const fi=h('input',{type:'file',accept:'image/*',style:{display:'none'},onChange:e=>{
     const file=e.target.files?.[0];if(!file)return;
     const img2=new Image();const reader=new FileReader();
-    reader.onload=()=>{img2.onload=()=>{const canvas=document.createElement('canvas');const MAX=400;let w=img2.width,ht=img2.height;if(w>MAX){ht=ht*(MAX/w);w=MAX;}if(ht>MAX){w=w*(MAX/ht);ht=MAX;}canvas.width=w;canvas.height=ht;canvas.getContext('2d').drawImage(img2,0,0,w,ht);S.fThumb=canvas.toDataURL('image/jpeg',.7);render();};img2.src=reader.result;};
+    reader.onload=()=>{img2.onload=()=>{
+      const TARGET=200*1024;
+      let maxDim=480,quality=0.75;
+      function tryCompress(){
+        const canvas=document.createElement('canvas');
+        let w=img2.width,ht=img2.height;
+        if(w>maxDim){ht=ht*(maxDim/w);w=maxDim;}
+        if(ht>maxDim){w=w*(maxDim/ht);ht=maxDim;}
+        canvas.width=w;canvas.height=ht;
+        const ctx=canvas.getContext('2d');
+        ctx.fillStyle='#000';ctx.fillRect(0,0,w,ht);
+        ctx.drawImage(img2,0,0,w,ht);
+        const dataUrl=canvas.toDataURL('image/jpeg',quality);
+        const size=Math.floor(dataUrl.length*0.75);
+        if(size>TARGET){
+          if(quality>0.4){quality-=0.1;tryCompress();}
+          else if(maxDim>240){maxDim-=60;quality=0.7;tryCompress();}
+          else{S.fThumb=dataUrl;render();}
+        }else{
+          S.fThumb=dataUrl;render();
+        }
+      }
+      tryCompress();
+    };img2.src=reader.result;};
     reader.readAsDataURL(file);
   }});
   lab.appendChild(fi);thd.appendChild(lab);
