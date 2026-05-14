@@ -584,7 +584,24 @@ const dataBtns=h('div',{id:'dataBtns',style:{display:'none',gap:'6px',justifyCon
     syncToCloud();
     flash('☁️ 同期完了');
   }catch(e){flash('⚠️ '+e.message);}
-},style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期'));
+},style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期'),
+  h('button',{className:'btn',onClick:()=>{
+    let localCount=0,cloudCount=0;
+    try{
+      const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
+      if(d&&d.e)Object.values(d.e).forEach(a=>localCount+=a.length);
+    }catch(e){}
+    Object.values(S.events).forEach(a=>cloudCount+=a.length);
+    if(!window.db){alert('📊 状態\n\nローカル: '+localCount+'件\n表示中: '+cloudCount+'件\nクラウド: 接続なし');return;}
+    const uid=getUserId();
+    db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
+      let cc=0;
+      snap.forEach(doc=>{const d=doc.data();if(d.e)Object.values(d.e).forEach(a=>cc+=a.length);});
+      alert('📊 状態\n\nローカル: '+localCount+'件\n表示中: '+cloudCount+'件\nクラウド: '+cc+'件（'+snap.size+'週分）\nUID: '+uid.slice(0,8));
+    }).catch(e=>{
+      alert('📊 状態\n\nローカル: '+localCount+'件\n表示中: '+cloudCount+'件\nクラウドエラー: '+e.code+'\n\n'+e.message);
+    });
+  },style:{fontSize:'9px',padding:'4px 8px'}},'📊 状態'));
 app.appendChild(dataBtns);
   
 // Fixed bottom desktop pet cat - neon pixel style
@@ -973,10 +990,10 @@ function animateStats(){
   }
 }
 
-render();
-
-// Trigger score animation on first load
-setTimeout(animateScore,200);
+loadData(()=>{
+  render();
+  setTimeout(animateScore,200);
+});
 
 // Floating particles
 if(!window._particles){
