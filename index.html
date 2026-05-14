@@ -555,8 +555,6 @@ if(S.view==='cal'){
           const tb=h('div',{style:{marginBottom:'8px',overflow:'hidden',position:'relative',paddingBottom:'40%',border:`1px solid ${t.c}30`,touchAction:'none'}});
           const tImg=h('img',{src:ev.thumb,style:{position:'absolute',inset:'0',width:'100%',height:'100%',objectFit:'cover',objectPosition:'center center'}});
           let _dy=0,_sy=0,_op=ev._objY||50;
-          tImg.addEventListener('touchstart',function(te){te.preventDefault();_sy=te.touches[0].clientY;_op=ev._objY||50;},{passive:false});
-          tImg.addEventListener('touchmove',function(te){te.preventDefault();_dy=te.touches[0].clientY-_sy;const ny=Math.max(0,Math.min(100,_op-_dy*0.3));tImg.style.objectPosition='center '+ny+'%';ev._objY=ny;},{passive:false});
           tb.appendChild(tImg);
           tb.appendChild(h('div',{style:{position:'absolute',inset:'0',background:`linear-gradient(0deg,${t.c}25,transparent 50%)`}}));
           if(ev.time)tb.appendChild(h('div',{style:{position:'absolute',bottom:'3px',right:'4px',fontSize:'10px',fontFamily:"'Press Start 2P',monospace",color:'#55e84c',background:'rgba(0,0,0,.7)',padding:'1px 5px',border:'1px solid #55e84c40'}},'⏰'+ev.time));
