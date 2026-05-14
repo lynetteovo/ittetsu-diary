@@ -239,14 +239,7 @@ app.appendChild(mnav);
 
 // Tabs
 const tabs=h('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',gap:'6px',marginBottom:'6px'}},
-  h('button',{className:'tab',onClick:e=>{
-  if(e.detail===1){
-    setTimeout(()=>{if(e.detail===1)goNow();},250);
-  }else if(e.detail===2){
-    const el=document.getElementById('dataBtns');
-    if(el)el.style.display=el.style.display==='none'?'flex':'none';
-  }
-},style:{background:'#8C466425',borderColor:'#8C4664',color:'#d96496'}},'NOW'),
+  h('button',{className:'tab',onClick:function(e){if(e.detail===2){const el=document.getElementById('dataBtns');if(el)el.style.display=el.style.display==='none'?'flex':'none';}else{setTimeout(function(){if(e.detail===1)goNow();},250);}},style:{background:'#8C466425',borderColor:'#8C4664',color:'#d96496'}},'NOW'),
   h('button',{className:'tab',onClick:()=>{S.view='cal';render()},style:{background:S.view==='cal'?'#7b5ea730':'transparent',borderColor:S.view==='cal'?'#d96496':'#7b5ea740',color:S.view==='cal'?'#d96496':'#e0dce860'}},'📅 CALENDAR'),
   h('button',{className:'tab',onClick:()=>{S.view='stats';render()},style:{background:S.view==='stats'?'#7b5ea730':'transparent',borderColor:S.view==='stats'?'#d96496':'#7b5ea740',color:S.view==='stats'?'#d96496':'#e0dce860'}},'📑 STATS'));
 app.appendChild(tabs);
