@@ -190,6 +190,7 @@ function dayKey2WeekKey(dateStr){
 let cloudStatus='idle'; // 'idle' | 'syncing' | 'synced' | 'error' | 'offline'
 let pendingSync=false;
 let syncRunning=false;
+let dirtyWeeks=new Set(); // weeks that need to be pushed
 
 function setCloudStatus(s,extra){
   cloudStatus=s;
@@ -209,10 +210,21 @@ function setCloudStatus(s,extra){
   el.style.textShadow='0 0 6px '+v.c+'80';
 }
 
-function saveData(){
-  // localStorage as cache (best-effort, may fail silently)
+function markDirty(dayKey){
+  if(!dayKey)return;
+  dirtyWeeks.add(dayKey2WeekKey(dayKey));
+}
+
+function saveData(dayKey){
+  // localStorage cache (best-effort)
   try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-  // Always sync to cloud immediately (no debounce - cloud is source of truth)
+  // Mark dirty week (or all weeks if we don't know which)
+  if(dayKey){
+    markDirty(dayKey);
+  }else{
+    // Unknown which day changed: mark all weeks that have data as dirty
+    Object.keys(S.events).forEach(k=>dirtyWeeks.add(dayKey2WeekKey(k)));
+  }
   if(saveTimer)clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{
     if(syncRunning){pendingSync=true;return;}
@@ -220,27 +232,40 @@ function saveData(){
   },300);
 }
 
-function syncToCloud(){
+function syncToCloud(forceAll){
   if(!window.db){setCloudStatus('offline');return;}
   if(syncRunning){pendingSync=true;return;}
+  // Decide which weeks to push
+  let weeksToSync;
+  if(forceAll||dirtyWeeks.size===0){
+    weeksToSync=new Set();
+    Object.keys(S.events).forEach(k=>{
+      if(S.events[k]&&S.events[k].length>0)weeksToSync.add(dayKey2WeekKey(k));
+    });
+    Object.keys(S.stickers).forEach(k=>weeksToSync.add(dayKey2WeekKey(k)));
+  }else{
+    weeksToSync=new Set(dirtyWeeks);
+  }
+  if(weeksToSync.size===0){setCloudStatus('synced');return;}
   syncRunning=true;
-  setCloudStatus('syncing');
+  setCloudStatus('syncing',weeksToSync.size+'wk');
   const uid=getUserId();
   const weeks={};
+  weeksToSync.forEach(wk=>{weeks[wk]={e:{},s:{}};});
   Object.keys(S.events).forEach(k=>{
     if(!S.events[k]||S.events[k].length===0)return;
     const wk=dayKey2WeekKey(k);
-    if(!weeks[wk])weeks[wk]={e:{},s:{}};
-    weeks[wk].e[k]=S.events[k];
+    if(weeks[wk])weeks[wk].e[k]=S.events[k];
   });
   Object.keys(S.stickers).forEach(k=>{
     const wk=dayKey2WeekKey(k);
-    if(!weeks[wk])weeks[wk]={e:{},s:{}};
-    weeks[wk].s[k]=S.stickers[k];
+    if(weeks[wk])weeks[wk].s[k]=S.stickers[k];
   });
   const writes=[];
+  const syncedWeeks=[];
   Object.keys(weeks).forEach(wk=>{
     const wkData=weeks[wk];
+    syncedWeeks.push(wk);
     const size=JSON.stringify(wkData).length;
     if(size>900000){
       const lite={s:wkData.s,e:{}};
@@ -261,6 +286,7 @@ function syncToCloud(){
   });
   Promise.all(writes).then(()=>{
     syncRunning=false;
+    syncedWeeks.forEach(wk=>dirtyWeeks.delete(wk));
     setCloudStatus('synced');
     if(pendingSync){pendingSync=false;syncToCloud();}
   }).catch(e=>{
@@ -295,7 +321,11 @@ function loadData(cb){
     setCloudStatus('error','timeout');
     if(!hasLocal&&cb)cb();
   },15000);
-  db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
+  // Fetch weeks and thumbs in parallel
+  Promise.all([
+    db.collection('diaries').doc(uid).collection('weeks').get(),
+    db.collection('diaries').doc(uid).collection('thumbs').get()
+  ]).then(([snap,tsnap])=>{
     clearTimeout(fetchTimeout);
     if(snap.size===0){
       setCloudStatus('synced');
@@ -308,50 +338,43 @@ function loadData(cb){
       Object.assign(cloudEvents,d.e||{});
       Object.assign(cloudStickers,d.s||{});
     });
-    db.collection('diaries').doc(uid).collection('thumbs').get().then(tsnap=>{
-      const thumbs={};
-      tsnap.forEach(doc=>{thumbs[doc.id]=doc.data().t;});
-      Object.keys(cloudEvents).forEach(dk=>{
-        cloudEvents[dk]=cloudEvents[dk].map(ev=>{
-          if(thumbs[ev.id]&&!ev.thumb)return {...ev,thumb:thumbs[ev.id]};
-          return ev;
-        });
+    const thumbs={};
+    tsnap.forEach(doc=>{thumbs[doc.id]=doc.data().t;});
+    Object.keys(cloudEvents).forEach(dk=>{
+      cloudEvents[dk]=cloudEvents[dk].map(ev=>{
+        if(thumbs[ev.id]&&!ev.thumb)return {...ev,thumb:thumbs[ev.id]};
+        return ev;
       });
-      // Merge: union of local + cloud
-      let changed=false;
-      Object.keys(cloudEvents).forEach(dk=>{
-        const localList=S.events[dk]||[];
-        const cloudList=cloudEvents[dk];
-        const merged={};
-        localList.forEach(ev=>{merged[ev.id]=ev;});
-        cloudList.forEach(ev=>{
-          if(!merged[ev.id])merged[ev.id]=ev;
-          else if(ev.thumb&&!merged[ev.id].thumb)merged[ev.id]=ev;
-        });
-        const newList=Object.values(merged);
-        if(JSON.stringify(newList)!==JSON.stringify(localList)){
-          S.events[dk]=newList;
-          changed=true;
-        }
-      });
-      Object.keys(cloudStickers).forEach(dk=>{
-        if(!S.stickers[dk]||S.stickers[dk].length<cloudStickers[dk].length){
-          S.stickers[dk]=cloudStickers[dk];changed=true;
-        }
-      });
-      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-      setCloudStatus('synced');
-      if(!hasLocal&&cb)cb();
-      else if(changed)render();
-    }).catch(e=>{
-      clearTimeout(fetchTimeout);
-      console.error('thumbs load err',e);
-      setCloudStatus('error',e.code||'');
-      if(!hasLocal&&cb)cb();
     });
+    // Merge: union of local + cloud
+    let changed=false;
+    Object.keys(cloudEvents).forEach(dk=>{
+      const localList=S.events[dk]||[];
+      const cloudList=cloudEvents[dk];
+      const merged={};
+      localList.forEach(ev=>{merged[ev.id]=ev;});
+      cloudList.forEach(ev=>{
+        if(!merged[ev.id])merged[ev.id]=ev;
+        else if(ev.thumb&&!merged[ev.id].thumb)merged[ev.id]=ev;
+      });
+      const newList=Object.values(merged);
+      if(JSON.stringify(newList)!==JSON.stringify(localList)){
+        S.events[dk]=newList;
+        changed=true;
+      }
+    });
+    Object.keys(cloudStickers).forEach(dk=>{
+      if(!S.stickers[dk]||S.stickers[dk].length<cloudStickers[dk].length){
+        S.stickers[dk]=cloudStickers[dk];changed=true;
+      }
+    });
+    try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
+    setCloudStatus('synced');
+    if(!hasLocal&&cb)cb();
+    else if(changed)render();
   }).catch(e=>{
     clearTimeout(fetchTimeout);
-    console.error('weeks load err',e);
+    console.error('cloud load err',e);
     setCloudStatus('error',e.code||'');
     if(!hasLocal&&cb)cb();
   });
@@ -495,7 +518,7 @@ if(S.view==='cal'){
     // Sticker picker
     if(S.showStk){
       const sg=h('div',{style:{background:'rgba(0,0,0,.4)',border:'1px solid #7b5ea730',padding:'8px',marginBottom:'6px',display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'6px',animation:'popIn .12s'}},
-        ...STK.map(s=>{const act=(S.stickers[dk(S.year,S.month,S.selDay)]||[]).includes(s);return h('div',{className:'stk',onClick:()=>{const k=dk(S.year,S.month,S.selDay);const c=S.stickers[k]||[];if(c.includes(s))S.stickers[k]=c.filter(x=>x!==s);else if(c.length<3)S.stickers[k]=[...c,s];S.showStk=false;saveData();render()},style:{background:act?'rgba(123,94,167,.2)':'transparent',opacity:act?'1':'.5'}},s);}),
+        ...STK.map(s=>{const act=(S.stickers[dk(S.year,S.month,S.selDay)]||[]).includes(s);return h('div',{className:'stk',onClick:()=>{const k=dk(S.year,S.month,S.selDay);const c=S.stickers[k]||[];if(c.includes(s))S.stickers[k]=c.filter(x=>x!==s);else if(c.length<3)S.stickers[k]=[...c,s];S.showStk=false;saveData(k);render()},style:{background:act?'rgba(123,94,167,.2)':'transparent',opacity:act?'1':'.5'}},s);}),
         h('div',{style:{gridColumn:'1/-1',fontSize:'9px',opacity:'.25',textAlign:'center',fontFamily:"'Silkscreen','DotGothic16',monospace"}},'MAX: 3'));
       detailContent.push(sg);
     }
@@ -523,7 +546,7 @@ if(S.view==='cal'){
         }
         const row=h('div',{style:{display:'flex',alignItems:'center',gap:'7px'}});
         if(t.ht){
-          const wc=h('div',{className:'wcheck',onClick:e=>{e.stopPropagation();const k=dk(S.year,S.month,S.selDay);S.events[k]=S.events[k].map(x=>x.id===ev.id?{...x,watched:!x.watched}:x);saveData();render()},style:{borderColor:t.c,background:ev.watched?t.c:'transparent',color:ev.watched?'#050508':'transparent'}});
+          const wc=h('div',{className:'wcheck',onClick:e=>{e.stopPropagation();const k=dk(S.year,S.month,S.selDay);S.events[k]=S.events[k].map(x=>x.id===ev.id?{...x,watched:!x.watched}:x);saveData(k);render()},style:{borderColor:t.c,background:ev.watched?t.c:'transparent',color:ev.watched?'#050508':'transparent'}});
           wc.textContent=ev.watched?'✓':'';row.appendChild(wc);
         }
         const info=h('div',{style:{flex:'1',minWidth:'0'}});
@@ -935,7 +958,7 @@ box.appendChild(h('div',{style:{display:'flex',gap:'6px'}},
     const data={type:S.fT,title,time:curT.ht?S.fTime:'',note:S.fNote.trim(),gameTitle:S.fGame.trim(),collab:S.fCollab.trim(),watched:watchVal,price:S.fPrice.trim(),thumb:S.fThumb};
     if(S.editing){S.events[key]=(S.events[key]||[]).map(ev=>ev.id===S.editing.id?{...ev,...data}:ev);flash('UPDATED ✏️');}
     else{data.id=Date.now().toString(36);S.events[key]=[...(S.events[key]||[]),data];flash('EVENT ADDED ⚔️');}
-    saveData();closeModal();
+    saveData(key);closeModal();
   },style:{flex:'1',padding:'8px 0',fontSize:'14px',fontFamily:"'Silkscreen','DotGothic16',monospace",borderColor:'#d96496',color:'#d96496'}},(S.editing?'UPDATE':'ADD'))));
 
 overlay.appendChild(box);
@@ -973,7 +996,7 @@ function showDeleteConfirm(evId,evTitle){
   box.querySelector('#delOk').addEventListener('click',()=>{
     const k=dk(S.year,S.month,S.selDay);
     S.events[k]=(S.events[k]||[]).filter(x=>x.id!==evId);
-    saveData();overlay.remove();flash('DELETED 🗑️');render();
+    saveData(k);overlay.remove();flash('DELETED 🗑️');render();
   });
 }
 
