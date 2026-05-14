@@ -246,7 +246,7 @@ const tabs=h('div',{style:{display:'flex',alignItems:'center',justifyContent:'ce
     const el=document.getElementById('dataBtns');
     if(el)el.style.display=el.style.display==='none'?'flex':'none';
   }
-},},style:{background:'#8C466425',borderColor:'#8C4664',color:'#d96496'}},'NOW'),
+},style:{background:'#8C466425',borderColor:'#8C4664',color:'#d96496'}},'NOW'),
   h('button',{className:'tab',onClick:()=>{S.view='cal';render()},style:{background:S.view==='cal'?'#7b5ea730':'transparent',borderColor:S.view==='cal'?'#d96496':'#7b5ea740',color:S.view==='cal'?'#d96496':'#e0dce860'}},'📅 CALENDAR'),
   h('button',{className:'tab',onClick:()=>{S.view='stats';render()},style:{background:S.view==='stats'?'#7b5ea730':'transparent',borderColor:S.view==='stats'?'#d96496':'#7b5ea740',color:S.view==='stats'?'#d96496':'#e0dce860'}},'📑 STATS'));
 app.appendChild(tabs);
