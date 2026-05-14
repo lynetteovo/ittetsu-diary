@@ -187,18 +187,45 @@ function dayKey2WeekKey(dateStr){
   return d.getFullYear()+'-W'+String(wk).padStart(2,'0');
 }
 
+let cloudStatus='idle'; // 'idle' | 'syncing' | 'synced' | 'error' | 'offline'
+let pendingSync=false;
+let syncRunning=false;
+
+function setCloudStatus(s,extra){
+  cloudStatus=s;
+  const el=document.getElementById('cloudStatus');
+  if(!el)return;
+  const map={
+    idle:{c:'#7b5ea750',t:'○'},
+    syncing:{c:'#e8c94c',t:'◐'},
+    synced:{c:'#55e84c',t:'●'},
+    error:{c:'#e84c4c',t:'✕'},
+    offline:{c:'#7b5ea760',t:'⌀'},
+    loading:{c:'#4ca8e8',t:'◑'},
+  };
+  const v=map[s]||map.idle;
+  el.textContent=v.t+(extra?' '+extra:'');
+  el.style.color=v.c;
+  el.style.textShadow='0 0 6px '+v.c+'80';
+}
+
 function saveData(){
-  // localStorage save (best-effort, ignore quota errors)
+  // localStorage as cache (best-effort, may fail silently)
   try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-  // Debounced cloud save by week
+  // Always sync to cloud immediately (no debounce - cloud is source of truth)
   if(saveTimer)clearTimeout(saveTimer);
-  saveTimer=setTimeout(syncToCloud,1500);
+  saveTimer=setTimeout(()=>{
+    if(syncRunning){pendingSync=true;return;}
+    syncToCloud();
+  },300);
 }
 
 function syncToCloud(){
-  if(!window.db)return;
+  if(!window.db){setCloudStatus('offline');return;}
+  if(syncRunning){pendingSync=true;return;}
+  syncRunning=true;
+  setCloudStatus('syncing');
   const uid=getUserId();
-  // Group by ISO week
   const weeks={};
   Object.keys(S.events).forEach(k=>{
     if(!S.events[k]||S.events[k].length===0)return;
@@ -211,57 +238,70 @@ function syncToCloud(){
     if(!weeks[wk])weeks[wk]={e:{},s:{}};
     weeks[wk].s[k]=S.stickers[k];
   });
-  // Pre-check size, split if needed
+  const writes=[];
   Object.keys(weeks).forEach(wk=>{
     const wkData=weeks[wk];
     const size=JSON.stringify(wkData).length;
     if(size>900000){
-      // Too big: store events without thumbs in main doc, thumbs separately
       const lite={s:wkData.s,e:{}};
       const thumbs={};
-      let hasThumb=false;
       Object.keys(wkData.e).forEach(dk=>{
         lite.e[dk]=wkData.e[dk].map(ev=>{
-          if(ev.thumb){
-            hasThumb=true;
-            thumbs[ev.id]=ev.thumb;
-            const {thumb,...rest}=ev;
-            return rest;
-          }
+          if(ev.thumb){thumbs[ev.id]=ev.thumb;const {thumb,...rest}=ev;return rest;}
           return ev;
         });
       });
-      db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(lite).catch(e=>{
-        console.error('week sync err',wk,e);
-        flash('⚠️ '+wk+' '+(e.message||'').slice(0,40));
+      writes.push(db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(lite));
+      Object.keys(thumbs).forEach(eid=>{
+        writes.push(db.collection('diaries').doc(uid).collection('thumbs').doc(eid).set({t:thumbs[eid]}));
       });
-      if(hasThumb){
-        // Save thumbs as separate docs (one per event)
-        Object.keys(thumbs).forEach(eid=>{
-          db.collection('diaries').doc(uid).collection('thumbs').doc(eid).set({t:thumbs[eid]}).catch(e=>console.error('thumb err',eid,e));
-        });
-      }
     }else{
-      db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(wkData).catch(e=>{
-        console.error('week sync err',wk,e);
-        flash('⚠️ '+wk+' '+(e.message||'').slice(0,40));
-      });
+      writes.push(db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(wkData));
     }
+  });
+  Promise.all(writes).then(()=>{
+    syncRunning=false;
+    setCloudStatus('synced');
+    if(pendingSync){pendingSync=false;syncToCloud();}
+  }).catch(e=>{
+    syncRunning=false;
+    setCloudStatus('error',e.code||'');
+    console.error('sync err',e);
   });
 }
 
 function loadData(cb){
-  // 1. Load local immediately and render
+  // Try local cache first (fast initial render)
+  let hasLocal=false;
   try{
     const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
-    if(d&&d.e){S.events=d.e||{};S.stickers=d.s||{};}
+    if(d&&d.e&&Object.keys(d.e).length>0){
+      S.events=d.e||{};S.stickers=d.s||{};
+      hasLocal=true;
+    }
   }catch(e){}
-  if(cb)cb(); // Render immediately with local data
-  // 2. Sync from cloud in background, MERGE not replace
-  if(!window.db)return;
+  // Cloud unavailable: just use local
+  if(!window.db){
+    setCloudStatus('offline');
+    if(cb)cb();
+    return;
+  }
+  // Render local first (if any) so user sees something fast
+  if(hasLocal&&cb)cb();
+  // Fetch cloud and merge/replace
+  setCloudStatus('loading');
   const uid=getUserId();
+  const fetchTimeout=setTimeout(()=>{
+    setCloudStatus('error','timeout');
+    if(!hasLocal&&cb)cb();
+  },15000);
   db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
-    if(snap.size===0)return;
+    clearTimeout(fetchTimeout);
+    if(snap.size===0){
+      setCloudStatus('synced');
+      if(!hasLocal&&cb)cb();
+      return;
+    }
     const cloudEvents={},cloudStickers={};
     snap.forEach(doc=>{
       const d=doc.data();
@@ -277,12 +317,11 @@ function loadData(cb){
           return ev;
         });
       });
-      // Merge: union of local + cloud, prefer the one with more entries per day
+      // Merge: union of local + cloud
       let changed=false;
       Object.keys(cloudEvents).forEach(dk=>{
         const localList=S.events[dk]||[];
         const cloudList=cloudEvents[dk];
-        // Build map by event id, prefer entries with thumb
         const merged={};
         localList.forEach(ev=>{merged[ev.id]=ev;});
         cloudList.forEach(ev=>{
@@ -300,12 +339,22 @@ function loadData(cb){
           S.stickers[dk]=cloudStickers[dk];changed=true;
         }
       });
-      if(changed){
-        try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-        render();
-      }
-    }).catch(e=>console.error('thumbs load err',e));
-  }).catch(e=>console.error('weeks load err',e));
+      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
+      setCloudStatus('synced');
+      if(!hasLocal&&cb)cb();
+      else if(changed)render();
+    }).catch(e=>{
+      clearTimeout(fetchTimeout);
+      console.error('thumbs load err',e);
+      setCloudStatus('error',e.code||'');
+      if(!hasLocal&&cb)cb();
+    });
+  }).catch(e=>{
+    clearTimeout(fetchTimeout);
+    console.error('weeks load err',e);
+    setCloudStatus('error',e.code||'');
+    if(!hasLocal&&cb)cb();
+  });
 }
 function flash(m){const el=document.getElementById('toast-el');el.textContent=m;el.classList.remove('hidden');el.style.animation='none';el.offsetHeight;el.style.animation='';setTimeout(()=>el.classList.add('hidden'),1500);}
 
@@ -337,7 +386,8 @@ const now=new Date();const st=stats();const allStats=allTimeStats();const dim=dI
 const isToday=d=>d===now.getDate()&&S.month===now.getMonth()&&S.year===now.getFullYear();
 
 // Score bar
-app.appendChild(h('div',{style:{display:'flex',justifyContent:'space-between',padding:'6px 12px',fontFamily:"'Press Start 2P',monospace",fontSize:'7px',color:'#55e84c',letterSpacing:'0px',textShadow:'0 0 6px #55e84c80',animation:'scoreFlash 3s ease-in-out infinite'}},h('span',{id:'scoreVal','data-target':String(allStats.tot)},`SCORE ${String(allStats.tot).padStart(8,'0')}`),h('span',{id:'hiVal','data-target':String(allStats.w)},`HI-SCORE ${String(allStats.w).padStart(8,'0')}`)));
+app.appendChild(h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 12px',fontFamily:"'Press Start 2P',monospace",fontSize:'7px',color:'#55e84c',letterSpacing:'0px',textShadow:'0 0 6px #55e84c80',animation:'scoreFlash 3s ease-in-out infinite'}},h('span',{id:'scoreVal','data-target':String(allStats.tot)},`SCORE ${String(allStats.tot).padStart(8,'0')}`),h('span',{id:'cloudStatus',style:{fontSize:'10px',padding:'0 6px',cursor:'pointer'},title:'クラウド状態'},'○'),h('span',{id:'hiVal','data-target':String(allStats.w)},`HI-SCORE ${String(allStats.w).padStart(8,'0')}`)));
+setTimeout(()=>setCloudStatus(cloudStatus),0);
 
 // Header
 const hdr=abox('#7b5ea7',[
