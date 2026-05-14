@@ -251,55 +251,61 @@ function syncToCloud(){
 }
 
 function loadData(cb){
-  // Always load local cache first
-  let hasLocal=false;
+  // 1. Load local immediately and render
   try{
     const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
-    if(d&&d.e&&Object.keys(d.e).length>0){
-      S.events=d.e||{};S.stickers=d.s||{};
-      hasLocal=true;
-    }
+    if(d&&d.e){S.events=d.e||{};S.stickers=d.s||{};}
   }catch(e){}
-  // Then try cloud
-  if(!window.db){if(cb)cb();return;}
+  if(cb)cb(); // Render immediately with local data
+  // 2. Sync from cloud in background, MERGE not replace
+  if(!window.db)return;
   const uid=getUserId();
   db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
-    if(snap.size===0){
-      // Cloud empty: keep local data, do NOT overwrite
-      if(cb)cb();
-      return;
-    }
-    const events={},stickers={};
+    if(snap.size===0)return;
+    const cloudEvents={},cloudStickers={};
     snap.forEach(doc=>{
       const d=doc.data();
-      Object.assign(events,d.e||{});
-      Object.assign(stickers,d.s||{});
+      Object.assign(cloudEvents,d.e||{});
+      Object.assign(cloudStickers,d.s||{});
     });
-    // Load thumbs separately and attach
     db.collection('diaries').doc(uid).collection('thumbs').get().then(tsnap=>{
       const thumbs={};
       tsnap.forEach(doc=>{thumbs[doc.id]=doc.data().t;});
-      Object.keys(events).forEach(dk=>{
-        events[dk]=events[dk].map(ev=>{
-          if(thumbs[ev.id])return {...ev,thumb:thumbs[ev.id]};
+      Object.keys(cloudEvents).forEach(dk=>{
+        cloudEvents[dk]=cloudEvents[dk].map(ev=>{
+          if(thumbs[ev.id]&&!ev.thumb)return {...ev,thumb:thumbs[ev.id]};
           return ev;
         });
       });
-      // Merge: cloud wins for keys it has, local data for keys cloud doesn't have
-      const merged=hasLocal?{...S.events}:{};
-      Object.assign(merged,events);
-      S.events=merged;
-      const mergedS=hasLocal?{...S.stickers}:{};
-      Object.assign(mergedS,stickers);
-      S.stickers=mergedS;
-      try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-      if(cb)cb();
-    }).catch(()=>{
-      const merged=hasLocal?{...S.events,...events}:events;
-      S.events=merged;
-      if(cb)cb();
-    });
-  }).catch(e=>{console.error('load err',e);if(cb)cb();});
+      // Merge: union of local + cloud, prefer the one with more entries per day
+      let changed=false;
+      Object.keys(cloudEvents).forEach(dk=>{
+        const localList=S.events[dk]||[];
+        const cloudList=cloudEvents[dk];
+        // Build map by event id, prefer entries with thumb
+        const merged={};
+        localList.forEach(ev=>{merged[ev.id]=ev;});
+        cloudList.forEach(ev=>{
+          if(!merged[ev.id])merged[ev.id]=ev;
+          else if(ev.thumb&&!merged[ev.id].thumb)merged[ev.id]=ev;
+        });
+        const newList=Object.values(merged);
+        if(JSON.stringify(newList)!==JSON.stringify(localList)){
+          S.events[dk]=newList;
+          changed=true;
+        }
+      });
+      Object.keys(cloudStickers).forEach(dk=>{
+        if(!S.stickers[dk]||S.stickers[dk].length<cloudStickers[dk].length){
+          S.stickers[dk]=cloudStickers[dk];changed=true;
+        }
+      });
+      if(changed){
+        try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
+        render();
+      }
+    }).catch(e=>console.error('thumbs load err',e));
+  }).catch(e=>console.error('weeks load err',e));
 }
 function flash(m){const el=document.getElementById('toast-el');el.textContent=m;el.classList.remove('hidden');el.style.animation='none';el.offsetHeight;el.style.animation='';setTimeout(()=>el.classList.add('hidden'),1500);}
 
