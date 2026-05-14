@@ -25,6 +25,12 @@ firebase.initializeApp({
   appId:"1:280262781061:web:ba9c0f3294de7e91e1e1ec"
 });
 const db=firebase.firestore();
+function goNow(){
+  S.year=new Date().getFullYear();
+  S.month=new Date().getMonth();
+  S.selDay=new Date().getDate();
+  render();
+}
 function getUserId(){
   let id=localStorage.getItem('saiki-uid');
   if(!id){id=crypto.randomUUID();localStorage.setItem('saiki-uid',id);document.cookie='saiki-uid='+id+';max-age=31536000;path=/';}
