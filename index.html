@@ -239,7 +239,14 @@ app.appendChild(mnav);
 
 // Tabs
 const tabs=h('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',gap:'6px',marginBottom:'6px'}},
-  h('button',{className:'tab',onClick:()=>{S.year=now.getFullYear();S.month=now.getMonth();S.selDay=now.getDate();render()},style:{background:'#8C466425',borderColor:'#8C4664',color:'#d96496'}},'NOW'),
+  h('button',{className:'tab',onClick:e=>{
+  if(e.detail===1){
+    setTimeout(()=>{if(e.detail===1)goNow();},250);
+  }else if(e.detail===2){
+    const el=document.getElementById('dataBtns');
+    if(el)el.style.display=el.style.display==='none'?'flex':'none';
+  }
+},},style:{background:'#8C466425',borderColor:'#8C4664',color:'#d96496'}},'NOW'),
   h('button',{className:'tab',onClick:()=>{S.view='cal';render()},style:{background:S.view==='cal'?'#7b5ea730':'transparent',borderColor:S.view==='cal'?'#d96496':'#7b5ea740',color:S.view==='cal'?'#d96496':'#e0dce860'}},'📅 CALENDAR'),
   h('button',{className:'tab',onClick:()=>{S.view='stats';render()},style:{background:S.view==='stats'?'#7b5ea730':'transparent',borderColor:S.view==='stats'?'#d96496':'#7b5ea740',color:S.view==='stats'?'#d96496':'#e0dce860'}},'📑 STATS'));
 app.appendChild(tabs);
@@ -431,7 +438,7 @@ if(S.view==='stats'){
 // Bottom
 app.appendChild(h('div',{style:{marginTop:'16px',height:'2px',background:'linear-gradient(90deg,transparent,#7b5ea7,#d96496,#7b5ea7,transparent)'}}));
 app.appendChild(h('div',{style:{textAlign:'center',fontFamily:"'Press Start 2P',monospace",fontSize:'6px',color:'#7b5ea7aa',marginTop:'6px',letterSpacing:'1px',paddingBottom:'5px'}},'20XX SAIKI ITTETSU. NAKAMA FOREVER'));
-app.appendChild(h('div',{style:{display:'flex',gap:'6px',justifyContent:'center',marginTop:'8px'}},
+const dataBtns=h('div',{id:'dataBtns',style:{display:'none',gap:'6px',justifyContent:'center',marginTop:'8px',flexWrap:'wrap'}},
   h('button',{className:'btn',onClick:()=>{
     const raw=JSON.stringify({e:S.events,s:S.stickers},null,2);
     const blob=new Blob([raw],{type:'application/json'});
@@ -442,13 +449,31 @@ app.appendChild(h('div',{style:{display:'flex',gap:'6px',justifyContent:'center'
     flash('💾 バックアップ完了');
   },style:{fontSize:'9px',padding:'4px 8px'}},'💾 バックアップ'),
   h('button',{className:'btn',onClick:()=>{
+    const inp=document.createElement('input');
+    inp.type='file';inp.accept='application/json,.json';
+    inp.onchange=ev=>{
+      const f=ev.target.files[0];if(!f)return;
+      const r=new FileReader();
+      r.onload=()=>{
+        try{
+          const d=JSON.parse(r.result);
+          if(d.e){S.events=d.e;S.stickers=d.s||{};saveData();flash('✅ 復元完了');render();}
+          else{flash('⚠️ データ形式エラー');}
+        }catch(e){flash('⚠️ '+e.message);}
+      };
+      r.readAsText(f);
+    };
+    inp.click();
+  },style:{fontSize:'9px',padding:'4px 8px'}},'📂 復元'),
+  h('button',{className:'btn',onClick:()=>{
     try{
       const local=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
       if(!local){flash('⚠️ ローカルデータなし');return;}
       const uid=getUserId();
       db.collection('diaries').doc(uid).set(local,{merge:false}).then(()=>flash('☁️ 同期完了')).catch(e=>flash('⚠️ '+e.message));
     }catch(e){flash('⚠️ '+e.message);}
-  },style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期')));
+  },style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期'));
+app.appendChild(dataBtns);
   
 // Fixed bottom desktop pet cat - neon pixel style
 const CS={
