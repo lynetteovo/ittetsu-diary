@@ -5,7 +5,7 @@
 import {readFileSync, writeFileSync, existsSync} from 'node:fs';
 import {pathToFileURL} from 'node:url';
 
-const KEY = process.env.YT_API_KEY;
+const KEY = (process.env.YT_API_KEY || '').trim();
 const CHANNELS = [
   {handle: '@SaikiIttetsu'},
   {handle: '@Oriens_HERO', collab: 'Oriens'},   // ユニットチャンネル（全部コラボ扱い）
@@ -25,7 +25,10 @@ async function api(path, params) {
     if (r.ok) return r.json();
     const t = await r.text();
     if (i < 2 && r.status >= 500) { await new Promise(res => setTimeout(res, 2000 * (i + 1))); continue; }
-    throw new Error(`${path} ${r.status} ${t.slice(0, 300)}`);
+    // キーの中身は出さず、形だけ（正しいキーは AIza で始まる39文字）
+    const shape = /API key not valid/.test(t)
+      ? ` [key: ${KEY.length}文字, AIza始まり=${KEY.startsWith('AIza')}, 英数字と-_以外=${/[^A-Za-z0-9_-]/.test(KEY)}]` : '';
+    throw new Error(`${path} ${r.status}${shape} ${t.slice(0, 300)}`);
   }
 }
 
