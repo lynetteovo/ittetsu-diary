@@ -8,4 +8,401 @@ X-WR-TIMEZONE:Asia/Tokyo
 X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
+BEGIN:VEVENT
+UID:XjG-jX3EHwA@ittetsu-diary
+DTSTAMP:20261027T112958Z
+DTSTART:20261027T112958Z
+DTEND:20261027T181128Z
+SUMMARY:🕹️ 【ほぼ初見part06】意気揚々？いや、いっき
+ 揚々！！
+URL:https://www.youtube.com/watch?v=XjG-jX3EHwA
+DESCRIPTION:https://www.youtube.com/watch?v=XjG-jX3EHwA
+END:VEVENT
+BEGIN:VEVENT
+UID:q-_14wrt41U@ittetsu-diary
+DTSTAMP:20261025T062950Z
+DTSTART:20261025T062950Z
+DTEND:20261025T113811Z
+SUMMARY:🕹️ 【ほぼ初見part05】ヌケニンを抱きしめたら
+ どうなる？
+URL:https://www.youtube.com/watch?v=q-_14wrt41U
+DESCRIPTION:https://www.youtube.com/watch?v=q-_14wrt41U
+END:VEVENT
+BEGIN:VEVENT
+UID:BvVG6ynULzE@ittetsu-diary
+DTSTAMP:20261022T105916Z
+DTSTART:20261022T105916Z
+DTEND:20261022T155025Z
+SUMMARY:🕹️ 【ほぼ初見part04】バイバイテッカニン
+URL:https://www.youtube.com/watch?v=BvVG6ynULzE
+DESCRIPTION:https://www.youtube.com/watch?v=BvVG6ynULzE
+END:VEVENT
+BEGIN:VEVENT
+UID:oevExn_gLRM@ittetsu-diary
+DTSTAMP:20261021T132809Z
+DTSTART:20261021T132809Z
+DTEND:20261021T200505Z
+SUMMARY:🕹️ 【ほぼ初見part03】君のことをいつも思うよ
+ …ココンキョウ(ドーミラー)
+URL:https://www.youtube.com/watch?v=oevExn_gLRM
+DESCRIPTION:https://www.youtube.com/watch?v=oevExn_gLRM
+END:VEVENT
+BEGIN:VEVENT
+UID:rfynX0azvvE@ittetsu-diary
+DTSTAMP:20261020T082904Z
+DTSTART:20261020T082904Z
+DTEND:20261020T172316Z
+SUMMARY:🕹️ 【ほぼ初見part02】伝説は地下を掘ったら出
+ てくる
+URL:https://www.youtube.com/watch?v=rfynX0azvvE
+DESCRIPTION:https://www.youtube.com/watch?v=rfynX0azvvE
+END:VEVENT
+BEGIN:VEVENT
+UID:Oh3ZwqxeGYI@ittetsu-diary
+DTSTAMP:20261019T102946Z
+DTSTART:20261019T102946Z
+DTEND:20261019T151711Z
+SUMMARY:🕹️ 【ほぼ初見part01】真珠じゃなくてパール
+URL:https://www.youtube.com/watch?v=Oh3ZwqxeGYI
+DESCRIPTION:https://www.youtube.com/watch?v=Oh3ZwqxeGYI
+END:VEVENT
+BEGIN:VEVENT
+UID:PwXA_eM06no@ittetsu-diary
+DTSTAMP:20261013T134408Z
+DTSTART:20261013T134408Z
+DTEND:20261013T162920Z
+SUMMARY:🕹️ 【STREET FIGHTER 6 】おまえはアルジュン？
+URL:https://www.youtube.com/watch?v=PwXA_eM06no
+DESCRIPTION:🎮 ストリートファイター6\nhttps://www.youtube.com/w
+ atch?v=PwXA_eM06no
+END:VEVENT
+BEGIN:VEVENT
+UID:aRxV4oIE8OM@ittetsu-diary
+DTSTAMP:20261012T161206Z
+DTSTART:20261012T161206Z
+DTEND:20261012T175701Z
+SUMMARY:💬 感想をしみじみ言う会
+URL:https://www.youtube.com/watch?v=aRxV4oIE8OM
+DESCRIPTION:https://www.youtube.com/watch?v=aRxV4oIE8OM
+END:VEVENT
+BEGIN:VEVENT
+UID:IBXtxc9Jdr4@ittetsu-diary
+DTSTAMP:20261011T131444Z
+DTSTART:20261011T131444Z
+DTEND:20261011T145938Z
+SUMMARY:🎮 【タンポポは耐える。】ダンデライオンのラ
+ イオンの部分を見せる
+URL:https://www.youtube.com/watch?v=IBXtxc9Jdr4
+DESCRIPTION:🎮 タンポポは耐える。\nhttps://www.youtube.com/watch
+ ?v=IBXtxc9Jdr4
+END:VEVENT
+BEGIN:VEVENT
+UID:LsVCt5ycLy0@ittetsu-diary
+DTSTAMP:20261010T142853Z
+DTSTART:20261010T142853Z
+DTEND:20261010T144950Z
+SUMMARY:💬 マジで深夜にタバコを吸うだけ
+URL:https://www.youtube.com/watch?v=LsVCt5ycLy0
+DESCRIPTION:https://www.youtube.com/watch?v=LsVCt5ycLy0
+END:VEVENT
+BEGIN:VEVENT
+UID:ay9bt4V5Vzo@ittetsu-diary
+DTSTAMP:20261007T175818Z
+DTSTART:20261007T175818Z
+DTEND:20261007T203152Z
+SUMMARY:💬 深夜にタバコを吸うだけ
+URL:https://www.youtube.com/watch?v=ay9bt4V5Vzo
+DESCRIPTION:https://www.youtube.com/watch?v=ay9bt4V5Vzo
+END:VEVENT
+BEGIN:VEVENT
+UID:zTOp6ffRvco@ittetsu-diary
+DTSTAMP:20261006T110000Z
+DTSTART:20261006T110000Z
+DTEND:20261006T120908Z
+SUMMARY:🤝 同期に好きなゲームをオススメしたい！ / 宇
+ 佐美リト
+URL:https://www.youtube.com/watch?v=zTOp6ffRvco
+DESCRIPTION:https://www.youtube.com/watch?v=zTOp6ffRvco
+END:VEVENT
+BEGIN:VEVENT
+UID:r-ShqYx-Zmc@ittetsu-diary
+DTSTAMP:20261004T110042Z
+DTSTART:20261004T110042Z
+DTEND:20261004T143024Z
+SUMMARY:🕹️ 【アバタール・チューナー PART08】本編再始
+ 動だ…な！ ※ネタバレ注意
+URL:https://www.youtube.com/watch?v=r-ShqYx-Zmc
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=r-ShqYx-Zmc
+END:VEVENT
+BEGIN:VEVENT
+UID:kR3E4vilWWM@ittetsu-diary
+DTSTAMP:20261003T125917Z
+DTSTART:20261003T125917Z
+DTEND:20261003T173350Z
+SUMMARY:🕹️ 【STREET FIGHTER 6 】れんしゅう
+URL:https://www.youtube.com/watch?v=kR3E4vilWWM
+DESCRIPTION:🎮 ストリートファイター6\nhttps://www.youtube.com/w
+ atch?v=kR3E4vilWWM
+END:VEVENT
+BEGIN:VEVENT
+UID:3Gtd1W33CBM@ittetsu-diary
+DTSTAMP:20261003T100011Z
+DTSTART:20261003T100011Z
+DTEND:20261003T125030Z
+SUMMARY:🎮 【Dressmaker】帽子屋超えて仕立て屋
+URL:https://www.youtube.com/watch?v=3Gtd1W33CBM
+DESCRIPTION:🎮 Dressmaker\nhttps://www.youtube.com/watch?v=3Gtd1W33CBM
+END:VEVENT
+BEGIN:VEVENT
+UID:AXNU80gPCzw@ittetsu-diary
+DTSTAMP:20261001T112857Z
+DTSTART:20261001T112857Z
+DTEND:20261001T132314Z
+SUMMARY:🎮 【手積み麻雀】趣がいいんだよね趣が趣が
+URL:https://www.youtube.com/watch?v=AXNU80gPCzw
+DESCRIPTION:🎮 手積み麻雀\nhttps://www.youtube.com/watch?v=AXNU80gPC
+ zw
+END:VEVENT
+BEGIN:VEVENT
+UID:w2GZFOcxlZA@ittetsu-diary
+DTSTAMP:20260930T132635Z
+DTSTART:20260930T132635Z
+DTEND:20260930T190130Z
+SUMMARY:🕹️ 【STREET FIGHTER 6 】GO！
+URL:https://www.youtube.com/watch?v=w2GZFOcxlZA
+DESCRIPTION:🎮 ストリートファイター6\nhttps://www.youtube.com/w
+ atch?v=w2GZFOcxlZA
+END:VEVENT
+BEGIN:VEVENT
+UID:g4N922up14o@ittetsu-diary
+DTSTAMP:20260929T003140Z
+DTSTART:20260929T003140Z
+DTEND:20260929T013804Z
+SUMMARY:🕹️ 【STREET FIGHTER 6 】アケコン復帰！
+URL:https://www.youtube.com/watch?v=g4N922up14o
+DESCRIPTION:🎮 ストリートファイター6\nhttps://www.youtube.com/w
+ atch?v=g4N922up14o
+END:VEVENT
+BEGIN:VEVENT
+UID:bFEUpGSK_jg@ittetsu-diary
+DTSTAMP:20260927T201410Z
+DTSTART:20260927T201410Z
+DTEND:20260927T204059Z
+SUMMARY:🕹️ 【アバタール・チューナー PART07・後編】大
+ 人をムキにさせるとこうなる ※ネタバレ注意
+URL:https://www.youtube.com/watch?v=bFEUpGSK_jg
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=bFEUpGSK_jg
+END:VEVENT
+BEGIN:VEVENT
+UID:kZ6gpo22_hE@ittetsu-diary
+DTSTAMP:20260927T081433Z
+DTSTART:20260927T081433Z
+DTEND:20260927T162343Z
+SUMMARY:🕹️ 【アバタール・チューナー PART07】再起イッ
+ テツ ※ネタバレ注意
+URL:https://www.youtube.com/watch?v=kZ6gpo22_hE
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=kZ6gpo22_hE
+END:VEVENT
+BEGIN:VEVENT
+UID:zaR32Fze6Z0@ittetsu-diary
+DTSTAMP:20260925T105954Z
+DTSTART:20260925T105954Z
+DTEND:20260925T120504Z
+SUMMARY:💬 時代はチルしながら知育
+URL:https://www.youtube.com/watch?v=zaR32Fze6Z0
+DESCRIPTION:https://www.youtube.com/watch?v=zaR32Fze6Z0
+END:VEVENT
+BEGIN:VEVENT
+UID:iT2XRN1Jbno@ittetsu-diary
+DTSTAMP:20260924T102902Z
+DTSTART:20260924T102902Z
+DTEND:20260924T151847Z
+SUMMARY:🕹️ 【アバタール・チューナー PART06】ただいま
+ ！！ジャンクヤード！※ネタバレ注意
+URL:https://www.youtube.com/watch?v=iT2XRN1Jbno
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=iT2XRN1Jbno
+END:VEVENT
+BEGIN:VEVENT
+UID:36fY1RUbZOM@ittetsu-diary
+DTSTAMP:20260922T152929Z
+DTSTART:20260922T152929Z
+DTEND:20260922T174017Z
+SUMMARY:💬 ねむねむ獅子
+URL:https://www.youtube.com/watch?v=36fY1RUbZOM
+DESCRIPTION:https://www.youtube.com/watch?v=36fY1RUbZOM
+END:VEVENT
+BEGIN:VEVENT
+UID:mqKFosn1DxE@ittetsu-diary
+DTSTAMP:20260920T141445Z
+DTSTART:20260920T141445Z
+DTEND:20260920T192036Z
+SUMMARY:🎮 【Hell Wait】指とお別れ…？ククク…！なるか
+ …！そんなこと…!!
+URL:https://www.youtube.com/watch?v=mqKFosn1DxE
+DESCRIPTION:🎮 Hell Wait\nhttps://www.youtube.com/watch?v=mqKFosn1DxE
+END:VEVENT
+BEGIN:VEVENT
+UID:LHemgxUj-ec@ittetsu-diary
+DTSTAMP:20260919T085930Z
+DTSTART:20260919T085930Z
+DTEND:20260919T124558Z
+SUMMARY:🎮 【生存マイクラ】無性に生き残りたい
+URL:https://www.youtube.com/watch?v=LHemgxUj-ec
+DESCRIPTION:🎮 生存マイクラ\nhttps://www.youtube.com/watch?v=LHemgx
+ Uj-ec
+END:VEVENT
+BEGIN:VEVENT
+UID:46CSCrQiGnM@ittetsu-diary
+DTSTAMP:20260918T105924Z
+DTSTART:20260918T105924Z
+DTEND:20260918T122438Z
+SUMMARY:💬 叛逆ってる？
+URL:https://www.youtube.com/watch?v=46CSCrQiGnM
+DESCRIPTION:https://www.youtube.com/watch?v=46CSCrQiGnM
+END:VEVENT
+BEGIN:VEVENT
+UID:9kVCi0RNEOM@ittetsu-diary
+DTSTAMP:20260917T214447Z
+DTSTART:20260917T214447Z
+DTEND:20260917T225348Z
+SUMMARY:💬 マギってる？
+URL:https://www.youtube.com/watch?v=9kVCi0RNEOM
+DESCRIPTION:https://www.youtube.com/watch?v=9kVCi0RNEOM
+END:VEVENT
+BEGIN:VEVENT
+UID:fY7H5DiNXEI@ittetsu-diary
+DTSTAMP:20260917T142937Z
+DTSTART:20260917T142937Z
+DTEND:20260917T162549Z
+SUMMARY:💬 ワルプってる？
+URL:https://www.youtube.com/watch?v=fY7H5DiNXEI
+DESCRIPTION:https://www.youtube.com/watch?v=fY7H5DiNXEI
+END:VEVENT
+BEGIN:VEVENT
+UID:0Rt2o9H1rsA@ittetsu-diary
+DTSTAMP:20260916T121443Z
+DTSTART:20260916T121443Z
+DTEND:20260916T133059Z
+SUMMARY:🎮 【妹に運転を教える】お姉ちゃんだよ
+URL:https://www.youtube.com/watch?v=0Rt2o9H1rsA
+DESCRIPTION:🎮 妹に運転を教える\nhttps://www.youtube.com/watch?v=
+ 0Rt2o9H1rsA
+END:VEVENT
+BEGIN:VEVENT
+UID:5ltcaiUJVLk@ittetsu-diary
+DTSTAMP:20260915T132903Z
+DTSTART:20260915T132903Z
+DTEND:20260915T190450Z
+SUMMARY:🕹️ 【アバタール・チューナー PART05】アバチュ
+ をやった後の飯はうまい※ネタバレ注意
+URL:https://www.youtube.com/watch?v=5ltcaiUJVLk
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=5ltcaiUJVLk
+END:VEVENT
+BEGIN:VEVENT
+UID:EQhGNZOXUm0@ittetsu-diary
+DTSTAMP:20260913T144419Z
+DTSTART:20260913T144419Z
+DTEND:20260913T164138Z
+SUMMARY:🕹️ 【学園アイドルマスター】生きとし生ける
+ 人は皆…※ネタバレ注意
+URL:https://www.youtube.com/watch?v=EQhGNZOXUm0
+DESCRIPTION:🎮 学園アイドルマスター\nhttps://www.youtube.com/wa
+ tch?v=EQhGNZOXUm0
+END:VEVENT
+BEGIN:VEVENT
+UID:jhC-UZSAbmo@ittetsu-diary
+DTSTAMP:20260911T201341Z
+DTSTART:20260911T201341Z
+DTEND:20260911T211556Z
+SUMMARY:💬 漁師だったら寝坊
+URL:https://www.youtube.com/watch?v=jhC-UZSAbmo
+DESCRIPTION:https://www.youtube.com/watch?v=jhC-UZSAbmo
+END:VEVENT
+BEGIN:VEVENT
+UID:BpsCxyzHcAU@ittetsu-diary
+DTSTAMP:20260911T101521Z
+DTSTART:20260911T101521Z
+DTEND:20260911T123255Z
+SUMMARY:🎮 【Don't Let It Starve】愛情込めて化け物に弁当を
+ 作る
+URL:https://www.youtube.com/watch?v=BpsCxyzHcAU
+DESCRIPTION:🎮 Don't Let It Starve\nhttps://www.youtube.com/watch?v=BpsCx
+ yzHcAU
+END:VEVENT
+BEGIN:VEVENT
+UID:Gis_bCsTG8g@ittetsu-diary
+DTSTAMP:20260910T105933Z
+DTSTART:20260910T105933Z
+DTEND:20260910T173041Z
+SUMMARY:🕹️ 【アバタール・チューナー PART04】やさっし
+ くミートボールを転がし入れろ！※ネタバレ注意
+URL:https://www.youtube.com/watch?v=Gis_bCsTG8g
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=Gis_bCsTG8g
+END:VEVENT
+BEGIN:VEVENT
+UID:aJKqNn2Oji4@ittetsu-diary
+DTSTAMP:20260909T120006Z
+DTSTART:20260909T120006Z
+DTEND:20260909T121448Z
+SUMMARY:🤝 【#放課後オリエンス 】ろくろ初体験！：後編
+  / Oriens
+URL:https://www.youtube.com/watch?v=aJKqNn2Oji4
+DESCRIPTION:https://www.youtube.com/watch?v=aJKqNn2Oji4
+END:VEVENT
+BEGIN:VEVENT
+UID:HcHLw0wfwk4@ittetsu-diary
+DTSTAMP:20260907T104509Z
+DTSTART:20260907T104509Z
+DTEND:20260907T143336Z
+SUMMARY:🎮 【Scritchy Scratchy】十円持って挑むは宝くじ
+URL:https://www.youtube.com/watch?v=HcHLw0wfwk4
+DESCRIPTION:🎮 Scritchy Scratchy\nhttps://www.youtube.com/watch?v=HcHLw0w
+ fwk4
+END:VEVENT
+BEGIN:VEVENT
+UID:WIltRWndMMs@ittetsu-diary
+DTSTAMP:20260905T162647Z
+DTSTART:20260905T162647Z
+DTEND:20260905T185354Z
+SUMMARY:💬 2世紀ぶりに酒を飲む
+URL:https://www.youtube.com/watch?v=WIltRWndMMs
+DESCRIPTION:https://www.youtube.com/watch?v=WIltRWndMMs
+END:VEVENT
+BEGIN:VEVENT
+UID:FxQssPOlbpU@ittetsu-diary
+DTSTAMP:20260904T103011Z
+DTSTART:20260904T103011Z
+DTEND:20260904T163230Z
+SUMMARY:🕹️ 【アバタール・チューナー PART03】悪魔を喰
+ い散らかしたいんだよぉーーーー※ネタバレ注意
+URL:https://www.youtube.com/watch?v=FxQssPOlbpU
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=FxQssPOlbpU
+END:VEVENT
+BEGIN:VEVENT
+UID:yDkeInXv7e4@ittetsu-diary
+DTSTAMP:20260903T123955Z
+DTSTART:20260903T123955Z
+DTEND:20260903T134950Z
+SUMMARY:💬 【飲食雑談】俺だって食いたい
+URL:https://www.youtube.com/watch?v=yDkeInXv7e4
+DESCRIPTION:https://www.youtube.com/watch?v=yDkeInXv7e4
+END:VEVENT
+BEGIN:VEVENT
+UID:9r1oCCivvbQ@ittetsu-diary
+DTSTAMP:20260902T105817Z
+DTSTART:20260902T105817Z
+DTEND:20260902T142051Z
+SUMMARY:🕹️ 【アバタール・チューナー PART02】夏の喰い
+ 散らかし祭り※ネタバレ注意
+URL:https://www.youtube.com/watch?v=9r1oCCivvbQ
+DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
+ ttps://www.youtube.com/watch?v=9r1oCCivvbQ
+END:VEVENT
 END:VCALENDAR
