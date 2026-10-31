@@ -2,6 +2,7 @@ name: 配信データ更新
 on:
   schedule:
     - cron: '*/20 * * * *'
+    - cron: '7 */2 * * *'   # 他チャンネルのコラボ検索（2時間おき）
   workflow_dispatch:
 permissions:
   contents: write
@@ -20,6 +21,7 @@ jobs:
       - run: node scripts/streams.mjs
         env:
           YT_API_KEY: ${{ secrets.YT_API_KEY }}
+          SEARCH: ${{ github.event_name != 'schedule' || github.event.schedule == '7 */2 * * *' }}
       - name: commit
         run: |
           git add streams.json streams.ics

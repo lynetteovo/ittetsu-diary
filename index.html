@@ -152,7 +152,8 @@ const T=[
 {id:"event",l:"イベント",e:"🐈‍⬛",c:"#4ce8d0",ht:1,hg:0,hc:0,hp:0},
 {id:"merch",l:"グッズ/ボイス",e:"🛍️",c:"#e84c4c",ht:0,hg:0,hc:0,hp:1},
 {id:"anniversary",l:"記念日",e:"🎂",c:"#d96496",ht:0,hg:0,hc:0,hp:0},
-{id:"memo",l:"メモ",e:"🔖",c:"#a78bfa",ht:0,hg:0,hc:0,hp:0}
+{id:"memo",l:"メモ",e:"🔖",c:"#a78bfa",ht:0,hg:0,hc:0,hp:0},
+{id:"yasumi",l:"休み",e:"💤",c:"#8a8aa8",ht:0,hg:0,hc:0,hp:0}
 ];
 const WD=["日","月","火","水","木","金","土"];
 const STK=["⚔️","💜","🥲","✨","🧸","❤️‍🩹","🥳","😇","💎","🐈‍⬛","🍧","🌟"];
@@ -743,8 +744,20 @@ function transferCode(){
 function flash(m){const el=document.getElementById('toast-el');el.textContent=m;el.classList.remove('hidden');el.style.animation='none';el.offsetHeight;el.style.animation='';setTimeout(()=>el.classList.add('hidden'),1500);}
 
 function devs(d){return (S.events[dk(S.year,S.month,d)]||[]).slice().sort((a,b)=>(a.time||'').localeCompare(b.time||''));}
-function stats(){const c={};T.forEach(t=>c[t.id]=0);let tot=0,w=0,sp=0;const dim=dIn(S.year,S.month);for(let d=1;d<=dim;d++)devs(d).forEach(ev=>{c[ev.type]++;tot++;if(ev.watched)w++;if(ev.price){const n=parseFloat(ev.price);if(!isNaN(n))sp+=n;}});return{c,tot,w,sp};}
-function allTimeStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>a.forEach(ev=>{tot++;if(ev.watched)w++;}));return{tot,w};}
+// 休みは予定数・視聴数に入れない（レポートに日数だけ出す）
+function stats(){const c={};T.forEach(t=>c[t.id]=0);let tot=0,w=0,sp=0;const dim=dIn(S.year,S.month);for(let d=1;d<=dim;d++)devs(d).forEach(ev=>{c[ev.type]=(c[ev.type]||0)+1;if(ev.type==='yasumi')return;tot++;if(ev.watched)w++;if(ev.price){const n=parseFloat(ev.price);if(!isNaN(n))sp+=n;}});return{c,tot,w,sp};}
+function allTimeStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>a.forEach(ev=>{if(ev.type==='yasumi')return;tot++;if(ev.watched)w++;}));return{tot,w};}
+// 💤：その日の休みを一発で付け外し（日付ごとに同じIDなので端末間でもぶつからない）
+function toggleYasumi(day){
+  const k=dk(S.year,S.month,day),id='yasumi-'+k;
+  if((S.events[k]||[]).some(e=>e.id===id)){killEvent(k,id);flash('💤 OFF');}
+  else{
+    delete S.dead[id];
+    (S.events[k]=S.events[k]||[]).push({id,type:'yasumi',title:'休み',time:'',note:'',gameTitle:'',collab:'',watched:true,price:'',thumb:'',u:Date.now()});
+    flash('💤 休み');
+  }
+  saveData(k);render();
+}
 
 function gTitles(){const s=new Set();Object.values(S.events).forEach(a=>a.forEach(e=>{if(e.type==='game_series'&&e.gameTitle)s.add(e.gameTitle)}));return[...s].sort();}
 
@@ -829,7 +842,7 @@ if(S.view==='cal'){
       const evs=devs(d);const fEvs=S.filter?evs.filter(e=>e.type===S.filter):evs;
       const dStk=S.stickers[dk(S.year,S.month,d)]||[];
       const today=isToday(d);const dow=(fd+d-1)%7;const sel=S.selDay===d;
-      const unw=evs.some(e=>!e.watched&&e.type!=='memo'&&e.type!=='merch'&&e.type!=='anniversary');
+      const unw=evs.some(e=>!e.watched&&e.type!=='memo'&&e.type!=='merch'&&e.type!=='anniversary'&&e.type!=='yasumi');
       const thumbEv=evs.find(e=>e.thumb);
 
       const cell=h('div',{className:`cell${sel?' sel':''}${today&&!sel?' today':''}`,onClick:()=>{S.selDay=sel?null:d;S.showStk=false;render();}});
@@ -872,6 +885,7 @@ if(S.view==='cal'){
         h('span',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'16px',color:'#d96496',textShadow:'0 0 8px #d9649660'}},String(S.selDay).padStart(2,'0')),
         h('span',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'13px',color:'#7b5ea780',marginLeft:'6px'}},WD[(fd+S.selDay-1)%7]+'曜日')),
       h('div',{style:{display:'flex',gap:'4px'}},
+        h('button',{className:'btn',onClick:()=>toggleYasumi(S.selDay),style:{width:'28px',height:'28px',fontSize:'14px',background:evs.some(e=>e.type==='yasumi')?'#8a8aa840':'rgba(0,0,0,.8)'}},'💤'),
         h('button',{className:'btn',onClick:()=>{S.showStk=!S.showStk;render()},style:{width:'28px',height:'28px',fontSize:'14px'}},'🌟'),
         h('button',{className:'btn',onClick:()=>{S.modal=true;S.editing=null;S.fT='zatsudan';S.fTitle='';S.fTime='';S.fNote='';S.fGame='';S.fCollab='';S.fWatch=false;S.fPrice='';S.fThumb='';render()},style:{height:'28px',fontSize:'12px',borderColor:'#d96496'}},h('span',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace"}},'＋ADD'))));
     detailContent.push(dh);
@@ -944,7 +958,7 @@ if(S.view==='stats'){
   // Report
   const rep=[];
   rep.push(h('div',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'9px',color:'#d96496',marginBottom:'10px',textShadow:'0 0 6px #d9649640',fontFamily:"'Silkscreen','DotGothic16',monospace"}},`📑 ${S.month+1}月 STREAM REPORT`));
-  T.forEach(t=>{const c=st.c[t.id]||0;if(!c)return;const pct=st.tot>0?(c/st.tot*100):0;
+  T.forEach(t=>{const c=st.c[t.id]||0;if(!c)return;const pct=t.id==='yasumi'?c/dIn(S.year,S.month)*100:st.tot>0?(c/st.tot*100):0;
     rep.push(h('div',{style:{marginBottom:'7px'}},
       h('div',{style:{display:'flex',justifyContent:'space-between',marginBottom:'2px'}},h('span',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'12px'}},t.e+' '+t.l),h('span',{style:{fontFamily:"'Press Start 2P',monospace",fontSize:'8px',color:t.c},'data-num-target':String(c)},c)),
       h('div',{style:{height:'6px',background:'#7b5ea715',overflow:'hidden'}},h('div',{style:{height:'100%',background:t.c,width:'0%'},'data-stat-target':String(pct)}))));
@@ -1213,8 +1227,8 @@ T.forEach(t=>{tgr.appendChild(h('div',{className:'chip',onClick:()=>{S.fT=t.id;r
 tg.appendChild(tgr);box.appendChild(tg);
 
 // Title
-const ti2=h('div',{style:{marginBottom:'6px'}},h('div',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'11px',color:'#7b5ea760',marginBottom:'3px'}},'TITLE '+(S.fT==='zatsudan'?'(OPT)':'*')));
-const inp=h('input',{value:S.fTitle,placeholder:S.fT==='zatsudan'?'空欄→「雑談」と表示':'タイトル...',onInput:e=>S.fTitle=e.target.value});
+const ti2=h('div',{style:{marginBottom:'6px'}},h('div',{style:{fontFamily:"'Silkscreen','DotGothic16',monospace",fontSize:'11px',color:'#7b5ea760',marginBottom:'3px'}},'TITLE '+(S.fT==='zatsudan'||S.fT==='yasumi'?'(OPT)':'*')));
+const inp=h('input',{value:S.fTitle,placeholder:S.fT==='zatsudan'?'空欄→「雑談」と表示':S.fT==='yasumi'?'空欄→「休み」':'タイトル...',onInput:e=>S.fTitle=e.target.value});
 inp.value=S.fTitle;ti2.appendChild(inp);box.appendChild(ti2);
 
 // Game
@@ -1308,8 +1322,8 @@ if(ct.ht){
 box.appendChild(h('div',{style:{display:'flex',gap:'6px'}},
   h('button',{className:'btn',onClick:()=>{closeModal()},style:{flex:'1',padding:'8px 0',fontSize:'14px',fontFamily:"'Silkscreen','DotGothic16',monospace"}},'CANCEL'),
   h('button',{className:'btn',onClick:()=>{
-    if(!S.fTitle.trim()&&S.fT!=='zatsudan')return;
-    const title=S.fT==='zatsudan'?(S.fTitle.trim()||'雑談'):S.fTitle.trim();
+    if(!S.fTitle.trim()&&S.fT!=='zatsudan'&&S.fT!=='yasumi')return;
+    const title=S.fT==='zatsudan'?(S.fTitle.trim()||'雑談'):S.fT==='yasumi'?(S.fTitle.trim()||'休み'):S.fTitle.trim();
     const key=dk(S.year,S.month,S.selDay);
     const curT=ti(S.fT);
     const watchVal=curT.ht?S.fWatch:true;

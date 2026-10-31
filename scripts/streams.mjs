@@ -12,6 +12,10 @@ const CHANNELS = [
 ];
 const KEEP_DAYS = 90;   // streams.json に残す過去分
 const ICS_DAYS = 60;    // カレンダーに載せる過去分
+// 他チャンネルのコラボ：検索（1回100ユニット）は2時間おき（環境変数 SEARCH=true の回だけ）
+const SEARCH_Q = '佐伯イッテツ|SaikiIttetsu';
+const SEARCH_DAYS = 30;
+const CLIPISH = /切り抜き|切抜き|切り取り|clip|手描き|MAD|熟肉|生肉|字幕|翻訳|翻译|中文|まとめ/i;
 const API = 'https://www.googleapis.com/youtube/v3/';
 const DIR = new URL('..', import.meta.url);
 const JSON_FILE = new URL('streams.json', DIR);
@@ -32,11 +36,21 @@ async function api(path, params) {
   }
 }
 
-async function videos(ids, ch) {
+const known = {};   // チャンネルID → 本人／ユニットの設定
+let selfId = '';
+// 「宇佐美リト / Usami Rito【にじさんじ】」→「宇佐美リト」
+function hostName(t) {
+  const s = String(t || '').replace(/【[^】]*】|\[[^\]]*\]|（[^）]*）|\([^)]*\)/g, '').trim();
+  const parts = s.split(/\s*[\/／|｜]\s*/).filter(Boolean);
+  return parts.find(p => /[^\x00-\x7f]/.test(p)) || parts[0] || String(t || '');
+}
+const ctxOf = v => known[v.snippet.channelId] || {collab: hostName(v.snippet.channelTitle), ext: true};
+
+async function videos(ids) {
   const out = [];
   for (let i = 0; i < ids.length; i += 50) {
     const v = await api('videos', {part: 'snippet,liveStreamingDetails,contentDetails', id: ids.slice(i, i + 50).join(','), maxResults: 50});
-    out.push(...(v.items || []).map(x => ({...x, _ch: ch})));
+    out.push(...(v.items || []).map(x => ({...x, _ch: ctxOf(x)})));
   }
   return out;
 }
@@ -45,8 +59,26 @@ async function channelVideos(ch) {
   const c = await api('channels', {part: 'contentDetails', forHandle: ch.handle});
   const item = c.items && c.items[0];
   if (!item) throw new Error('channel not found: ' + ch.handle);
+  known[item.id] = ch;
+  if (!ch.collab) selfId = item.id;
   const pl = await api('playlistItems', {part: 'contentDetails', playlistId: item.contentDetails.relatedPlaylists.uploads, maxResults: 50});
-  return videos((pl.items || []).map(x => x.contentDetails.videoId), ch);
+  return videos((pl.items || []).map(x => x.contentDetails.videoId));
+}
+
+// 他チャンネルの配信・動画のうち、概要欄に本人チャンネル（@SaikiIttetsu かチャンネルID）があるもの
+const linksSaiki = d => /@SaikiIttetsu(?![A-Za-z0-9_])/i.test(d || '') || (!!selfId && (d || '').includes(selfId));
+async function searchCollabs() {
+  const after = new Date(Date.now() - SEARCH_DAYS * 864e5).toISOString();
+  const ids = new Set();
+  for (const eventType of ['upcoming', 'completed', '']) {
+    const p = {part: 'id', type: 'video', q: SEARCH_Q, maxResults: 50, order: 'date', publishedAfter: after};
+    if (eventType) p.eventType = eventType;
+    const r = await api('search', p);
+    for (const x of r.items || []) if (x.id && x.id.videoId) ids.add(x.id.videoId);
+  }
+  const vs = (await videos([...ids])).filter(v => v._ch.ext && linksSaiki(v.snippet.description) && !CLIPISH.test(v.snippet.title + ' ' + v.snippet.channelTitle));
+  console.log(`検索 ${ids.size} 件 → 概要欄に本人チャンネルあり ${vs.length} 件`);
+  return vs;
 }
 
 function seconds(iso) {
@@ -142,16 +174,28 @@ function classify(title, ch, desc = '') {
 
 function toItem(v) {
   const ls = v.liveStreamingDetails;
-  if (!ls) return null;   // 配信・プレミアのみ（通常の動画・ショートは除く）
+  const ext = !!v._ch.ext;
+  const dur = seconds(v.contentDetails && v.contentDetails.duration);
+  // 他チャンネルはコラボ扱い・相手は投稿チャンネル
+  const cls = () => {
+    const c = classify(v.snippet.title, ext ? {} : v._ch, v.snippet.description);
+    if (ext) { c.type = 'collab'; c.collab = v._ch.collab; }
+    return {...c, ch: v._ch.collab || '', ...(ext ? {ext: 1} : {})};
+  };
+  if (!ls) {
+    // 本人チャンネルは配信・プレミアのみ。他チャンネルは通常の動画も（ショートは除く）
+    if (!ext || dur <= 180) return null;
+    const start = v.snippet.publishedAt;
+    return {id: v.id, start, end: new Date(Date.parse(start) + dur * 1000).toISOString(), status: 'none', ...cls()};
+  }
   const start = ls.actualStartTime || ls.scheduledStartTime;
   if (!start) return null;
   const status = v.snippet.liveBroadcastContent;   // upcoming / live / none
   // フリーチャット枠（何か月も先の予定）は除く
   if (status === 'upcoming' && (Date.parse(start) > Date.now() + 45 * 864e5 || /フリーチャット|free\s*chat/i.test(v.snippet.title))) return null;
   let end = ls.actualEndTime || '';
-  const dur = seconds(v.contentDetails && v.contentDetails.duration);
   if (!end && status === 'none' && dur) end = new Date(Date.parse(start) + dur * 1000).toISOString();
-  return {id: v.id, start, end, status, ...classify(v.snippet.title, v._ch, v.snippet.description), ch: v._ch.collab || ''};
+  return {id: v.id, start, end, status, ...cls()};
 }
 
 // ---- iCalendar ----
@@ -205,12 +249,12 @@ async function main() {
   for (const ch of CHANNELS) {
     for (const v of await channelVideos(ch)) { const it = toItem(v); if (it) got.set(it.id, it); }
   }
-  // 前回「予定／配信中」だったのに今回の一覧に無い → 個別に確認（無ければ枠が消された）
-  const recheck = (prev.items || []).filter(it => it.status !== 'none' && !got.has(it.id));
-  for (const ch of CHANNELS) {
-    const ids = recheck.filter(it => (it.ch || '') === (ch.collab || '')).map(it => it.id);
-    if (ids.length) for (const v of await videos(ids, ch)) { const it = toItem(v); if (it) got.set(it.id, it); }
+  if (process.env.SEARCH === 'true') {
+    for (const v of await searchCollabs()) { const it = toItem(v); if (it && !got.has(it.id)) got.set(it.id, it); }
   }
+  // 前回「予定／配信中」だったのに今回の一覧に無い → 個別に確認（無ければ枠が消された）
+  const recheck = (prev.items || []).filter(it => it.status !== 'none' && !got.has(it.id)).map(it => it.id);
+  if (recheck.length) for (const v of await videos(recheck)) { const it = toItem(v); if (it) got.set(it.id, it); }
   const keepFrom = Date.now() - KEEP_DAYS * 864e5;
   for (const it of prev.items || []) {
     if (!got.has(it.id) && it.status === 'none' && Date.parse(it.start) >= keepFrom) got.set(it.id, it);
@@ -233,7 +277,7 @@ async function main() {
   console.log(`${items.length} 件（upcoming ${items.filter(i => i.status === 'upcoming').length}）`, a || b ? '更新あり' : '変更なし');
 }
 
-export {classify, toItem, ics, seconds, main};
+export {classify, toItem, ics, seconds, main, hostName};
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch(e => { console.error(e); process.exit(1); });
 }
