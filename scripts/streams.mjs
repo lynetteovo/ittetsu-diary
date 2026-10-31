@@ -15,7 +15,8 @@ const ICS_DAYS = 60;    // カレンダーに載せる過去分
 // 他チャンネルのコラボ：検索（1回100ユニット）は2時間おき（環境変数 SEARCH=true の回だけ）
 const SEARCH_Q = '佐伯イッテツ|SaikiIttetsu';
 const SEARCH_DAYS = 30;
-const CLIPISH = /切り抜き|切抜き|切り取り|clip|手描き|MAD|熟肉|生肉|字幕|翻訳|翻译|中文|まとめ/i;
+const CLIPISH = /切り抜き|切抜き|切り取り|clip|手描き|MAD|熟肉|生肉|字幕|翻訳|翻译|中文|まとめ|文字起こし/i;
+const OFFICIAL = /nijisanji\.jp|anycolor\.co\.jp/i;   // 事務所の定型リンク（ファンの切り抜き・文字起こしには無い）
 const API = 'https://www.googleapis.com/youtube/v3/';
 const DIR = new URL('..', import.meta.url);
 const JSON_FILE = new URL('streams.json', DIR);
@@ -66,7 +67,10 @@ async function channelVideos(ch) {
 }
 
 // 他チャンネルの配信・動画のうち、概要欄に本人チャンネル（@SaikiIttetsu かチャンネルID）があるもの
+// 通常の動画（配信・プレミアでない）は、ファンの切り抜き等を除くため事務所の定型リンクも必要
 const linksSaiki = d => /@SaikiIttetsu(?![A-Za-z0-9_])/i.test(d || '') || (!!selfId && (d || '').includes(selfId));
+const isCollab = v => !!v._ch.ext && linksSaiki(v.snippet.description) && !CLIPISH.test(v.snippet.title + ' ' + v.snippet.channelTitle) &&
+  (!!v.liveStreamingDetails || OFFICIAL.test(v.snippet.description || ''));
 async function searchCollabs() {
   const after = new Date(Date.now() - SEARCH_DAYS * 864e5).toISOString();
   const ids = new Set();
@@ -76,7 +80,7 @@ async function searchCollabs() {
     const r = await api('search', p);
     for (const x of r.items || []) if (x.id && x.id.videoId) ids.add(x.id.videoId);
   }
-  const vs = (await videos([...ids])).filter(v => v._ch.ext && linksSaiki(v.snippet.description) && !CLIPISH.test(v.snippet.title + ' ' + v.snippet.channelTitle));
+  const vs = (await videos([...ids])).filter(isCollab);
   console.log(`検索 ${ids.size} 件 → 概要欄に本人チャンネルあり ${vs.length} 件`);
   return vs;
 }
@@ -249,15 +253,26 @@ async function main() {
   for (const ch of CHANNELS) {
     for (const v of await channelVideos(ch)) { const it = toItem(v); if (it) got.set(it.id, it); }
   }
+  const drop = new Set();
   if (process.env.SEARCH === 'true') {
     for (const v of await searchCollabs()) { const it = toItem(v); if (it && !got.has(it.id)) got.set(it.id, it); }
+    // 以前入れた他チャンネル分も今の条件で確認し直す（消された・条件に合わなくなったものは外す）
+    const old = (prev.items || []).filter(it => it.ext && !got.has(it.id)).map(it => it.id);
+    old.forEach(id => drop.add(id));
+    if (old.length) for (const v of await videos(old)) {
+      if (!isCollab(v)) continue;
+      drop.delete(v.id);
+      const it = toItem(v);
+      if (it) got.set(it.id, it);
+    }
+    if (drop.size) console.log('他チャンネル分を外す:', [...drop].join(' '));
   }
   // 前回「予定／配信中」だったのに今回の一覧に無い → 個別に確認（無ければ枠が消された）
-  const recheck = (prev.items || []).filter(it => it.status !== 'none' && !got.has(it.id)).map(it => it.id);
+  const recheck = (prev.items || []).filter(it => it.status !== 'none' && !got.has(it.id) && !drop.has(it.id)).map(it => it.id);
   if (recheck.length) for (const v of await videos(recheck)) { const it = toItem(v); if (it) got.set(it.id, it); }
   const keepFrom = Date.now() - KEEP_DAYS * 864e5;
   for (const it of prev.items || []) {
-    if (!got.has(it.id) && it.status === 'none' && Date.parse(it.start) >= keepFrom) got.set(it.id, it);
+    if (!got.has(it.id) && !drop.has(it.id) && it.status === 'none' && Date.parse(it.start) >= keepFrom) got.set(it.id, it);
   }
   // 同じシリーズの中でゲーム名が分かった回があれば、分からない回にも付ける
   const bySk = {};

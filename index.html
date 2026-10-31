@@ -267,11 +267,12 @@ function markAllDirty(){
   Object.keys(S.stickers).forEach(markDirty);
   Object.values(S.dead).forEach(t=>markDirty(t.k));
 }
-function killEvent(dk,id){
+// auto=true：配信データから消えたので外す（自分で消したのと違い、戻ってきたらまた追加される）
+function killEvent(dk,id,auto){
   const list=S.events[dk]||[];
   const ev=list.find(x=>x.id===id);
   S.events[dk]=list.filter(x=>x.id!==id);
-  S.dead[id]={u:Date.now(),k:dk,yt:(ev&&ev.yt)||''};
+  S.dead[id]={u:Date.now(),k:dk,yt:(!auto&&ev&&ev.yt)||''};
 }
 let pushTimer=null;
 function saveData(dayKey){
@@ -665,7 +666,7 @@ function applyFeed(f){
       }
     }
     if(linked){
-      if(auto&&pristine(auto.ev)){killEvent(auto.dk,auto.ev.id);touch(auto.dk);}
+      if(auto&&pristine(auto.ev)){killEvent(auto.dk,auto.ev.id,true);touch(auto.dk);}
       return;
     }
     if(!auto&&deadYt.has(it.id))return;
@@ -687,11 +688,13 @@ function applyFeed(f){
     (S.events[day]=S.events[day]||[]).push({id:'yt-'+it.id,yt:it.id,...want,note:'',watched:false,price:'',u:now});
     touch(day);
   });
-  // 待機所が消えた（予定取り消し）：未来の自動追加分を消す
+  // 配信データから消えた（待機所の取り消し・対象外になった他チャンネル分）：手を付けていない自動追加分を外す
+  // データが持っている期間（最古の日以降）だけ。それより前は期間切れで消えただけなので残す
+  const oldest=items.reduce((m,it)=>{const d=new Date(it.start);return isNaN(d)?m:(m&&m<dkOf(d)?m:dkOf(d));},'');
   Object.keys(S.events).forEach(k=>(S.events[k]||[]).slice().forEach(ev=>{
     if(!ev.yt||ev.id!=='yt-'+ev.yt||!pristine(ev)||ids.has(ev.yt))return;
-    if(new Date(k+'T'+(ev.time||'00:00')).getTime()<now)return;
-    killEvent(k,ev.id);touch(k);
+    if(k<oldest)return;
+    killEvent(k,ev.id,true);touch(k);
   }));
   return changed;
 }
