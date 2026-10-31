@@ -252,10 +252,7 @@ async function openLocal(){
     const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
     if(d&&d.e){S.events=d.e||{};S.stickers=d.s||{};}
   }catch(e){}
-  if(IDB.db){
-    writeLocal();
-    try{localStorage.removeItem('saiki-pwa-v1');}catch(e){}
-  }
+  if(IDB.db)writeLocal();
 }
 
 // ===== 変更の記録 =====
@@ -358,10 +355,10 @@ async function fsChangedWeeks(uid,since){
   return (j||[]).filter(r=>r.document).map(r=>r.document);
 }
 async function fsBatchGet(names){
-  const j=await fsRetry(()=>fsFetch(FS_DOCS+':batchGet',{documents:names},40000));
+  const j=await fsRetry(()=>fsFetch(FS_DOCS+':batchGet',{documents:names},120000));
   return (j||[]).filter(r=>r.found).map(r=>r.found);
 }
-const fsCommit=writes=>fsFetch(FS_DOCS+':commit',{writes},60000);
+const fsCommit=writes=>fsFetch(FS_DOCS+':commit',{writes},120000);
 const lastSeg=n=>n.slice(n.lastIndexOf('/')+1);
 function hashStr(s){let h=0x811c9dc5;for(let i=0;i<s.length;i+=7){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36)+s.length.toString(36);}
 const isData=t=>typeof t==='string'&&t.startsWith('data:');
@@ -425,8 +422,22 @@ function applyDocs(docs){
 // ===== 取得 =====
 async function pull(full){
   const uid=getUserId();
-  const docs=full?await fsList('diaries/'+uid+'/weeks'):await fsChangedWeeks(uid,M.lastPull||'1970-01-01T00:00:00Z');
-  let changed=applyDocs(docs);
+  let docs,changed=false;
+  if(full){
+    // 週の名前だけ先に（軽い）→ 新しい週から3週ずつ取得。届いた分からすぐ表示・保存
+    const names=(await fsList('diaries/'+uid+'/weeks',['v'])).map(d=>d.name).sort().reverse();
+    docs=[];
+    for(let i=0;i<names.length;i+=3){
+      const pg=await fsBatchGet(names.slice(i,i+3));
+      docs=docs.concat(pg);
+      if(applyDocs(pg)){changed=true;softRender();}
+      persistLocal();
+      setCloudStatus('loading',Math.min(i+3,names.length)+'/'+names.length+'wk');
+    }
+  }else{
+    docs=await fsChangedWeeks(uid,M.lastPull||'1970-01-01T00:00:00Z');
+    changed=applyDocs(docs);
+  }
   const need=new Set();
   if(full){
     // クラウドに無い週（この端末だけのデータ）は送る
@@ -448,16 +459,19 @@ async function pull(full){
 async function fetchThumbs(uid,ids){
   let changed=false;
   const idx=eventIndex();
-  for(let i=0;i<ids.length;i+=8){
-    const found=await fsBatchGet(ids.slice(i,i+8).map(id=>docName('diaries',uid,'thumbs',id)));
+  ids.sort((a,b)=>String(idx.get(b)).localeCompare(String(idx.get(a))));   // 新しい日から
+  for(let i=0;i<ids.length;i+=4){
+    const found=await fsBatchGet(ids.slice(i,i+4).map(id=>docName('diaries',uid,'thumbs',id)));
+    let got=false;
     found.forEach(doc=>{
       const id=lastSeg(doc.name),f=fsObj(doc.fields),dk=idx.get(id);
       if(!f.t||dk===undefined)return;
       const ev=S.events[dk].find(v=>v.id===id);
       if(!ev||isData(ev.thumb))return;
       ev.thumb=f.t;ev.th=f.h||ev.th||hashStr(f.t);M.thumbsUp[id]=f.h||'';
-      changed=true;
+      got=changed=true;
     });
+    if(got){softRender();persistLocal();}
   }
   return changed;
 }
@@ -505,12 +519,12 @@ async function push(){
         currentDocument:M.wkTime[wk]?{updateTime:M.wkTime[wk]}:{exists:false}}});
     });
     // サムネを先に（週ドキュメントが参照するので）
-    for(const c of chunks(thumbW,3e6,12)){
+    for(const c of chunks(thumbW,1e6,6)){
       await fsRetry(()=>fsCommit(c));
       c.forEach(w=>{const id=lastSeg(w.update.name);M.thumbsUp[id]=thumbH[id];});
     }
     let conflict=null;
-    for(const c of chunks(weekW,3e6,100)){
+    for(const c of chunks(weekW,1e6,100)){
       try{
         const r=await fsRetry(()=>fsCommit(c.map(x=>x.w)));
         (r.writeResults||[]).forEach((wr,i)=>{
@@ -1016,10 +1030,9 @@ const dataBtns=h('div',{id:'dataBtns',style:{display:'none',gap:'6px',justifyCon
     Object.values(S.events).forEach(a=>shown+=a.length);
     const uid=getUserId();
     const head='📊 状態\n\n表示中: '+shown+'件\n未送信: '+Object.keys(M.dirty).length+'週\nUID: '+uid.slice(0,8);
-    fsList('diaries/'+uid+'/weeks').then(docs=>{
-      let cc=0;
-      docs.forEach(doc=>{const e=fsObj(doc.fields).e||{};Object.values(e).forEach(a=>cc+=(a||[]).length);});
-      alert(head+'\nクラウド: '+cc+'件（'+docs.length+'週分）');
+    // 中身は取らず週の数だけ（サムネ込みで重いので）
+    fsList('diaries/'+uid+'/weeks',['v']).then(docs=>{
+      alert(head+'\nクラウド: '+docs.length+'週分');
     }).catch(e=>alert(head+'\nクラウドエラー: '+e.code+'\n\n'+e.message));
   },style:{fontSize:'9px',padding:'4px 8px'}},'📊 状態'),
   h('a',{className:'btn',href:'webcal://'+location.host+location.pathname.replace(/[^/]*$/,'')+'streams.ics',style:{fontSize:'9px',padding:'4px 8px',textDecoration:'none'}},'📅 iOSカレンダー'),
