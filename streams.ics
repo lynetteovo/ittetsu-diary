@@ -9,6 +9,37 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
+UID:kzE2qry4uTM@ittetsu-diary
+DTSTAMP:20261030T101053Z
+DTSTART:20261030T101053Z
+DTEND:20261030T102053Z
+SUMMARY:🤝 佐伯イッテツが抱えるアレが垣間見えるシー
+ ン【＋∞】 / Leba
+URL:https://www.youtube.com/watch?v=kzE2qry4uTM
+DESCRIPTION:https://www.youtube.com/watch?v=kzE2qry4uTM
+END:VEVENT
+BEGIN:VEVENT
+UID:J03QP5PsOiA@ittetsu-diary
+DTSTAMP:20261030T090008Z
+DTSTART:20261030T090008Z
+DTEND:20261030T093905Z
+SUMMARY:🤝 【 文字起こし 】ヒーロー座談 vol.4～ヒーロー
+ 達のリアルなオフの姿～【星導ショウ/伊波ライ/緋八マ
+ ナ/佐伯イッテツ】 / めちゃつAメイン
+URL:https://www.youtube.com/watch?v=J03QP5PsOiA
+DESCRIPTION:https://www.youtube.com/watch?v=J03QP5PsOiA
+END:VEVENT
+BEGIN:VEVENT
+UID:Tym4kGjb4so@ittetsu-diary
+DTSTAMP:20261027T150010Z
+DTSTART:20261027T150010Z
+DTEND:20261027T153446Z
+SUMMARY:🤝 【覚めたしぐさで】にじさんじのB級バラエテ
+ ィ（仮）＃ 122【熱く見ろ】 / にじさんじ
+URL:https://www.youtube.com/watch?v=Tym4kGjb4so
+DESCRIPTION:https://www.youtube.com/watch?v=Tym4kGjb4so
+END:VEVENT
+BEGIN:VEVENT
 UID:XjG-jX3EHwA@ittetsu-diary
 DTSTAMP:20261027T112958Z
 DTSTART:20261027T112958Z
@@ -27,6 +58,16 @@ SUMMARY:🕹️ 【ほぼ初見part05】ヌケニンを抱きしめたら
  どうなる？
 URL:https://www.youtube.com/watch?v=q-_14wrt41U
 DESCRIPTION:https://www.youtube.com/watch?v=q-_14wrt41U
+END:VEVENT
+BEGIN:VEVENT
+UID:Bq6tZZUGeHM@ittetsu-diary
+DTSTAMP:20261023T095906Z
+DTSTART:20261023T095906Z
+DTEND:20261023T111913Z
+SUMMARY:🤝 【キーボードパズル】配信者なら余裕！？バ
+ ラバラになったキーボードを元に戻せ！ / 長尾 景
+URL:https://www.youtube.com/watch?v=Bq6tZZUGeHM
+DESCRIPTION:https://www.youtube.com/watch?v=Bq6tZZUGeHM
 END:VEVENT
 BEGIN:VEVENT
 UID:BvVG6ynULzE@ittetsu-diary
@@ -48,6 +89,16 @@ URL:https://www.youtube.com/watch?v=oevExn_gLRM
 DESCRIPTION:https://www.youtube.com/watch?v=oevExn_gLRM
 END:VEVENT
 BEGIN:VEVENT
+UID:W8sZhn0WXyA@ittetsu-diary
+DTSTAMP:20261021T110237Z
+DTSTART:20261021T110237Z
+DTEND:20261021T125536Z
+SUMMARY:🤝 【朗読会】『檸檬』を読んだことがない男た
+ ち。 / 四季凪アキラ
+URL:https://www.youtube.com/watch?v=W8sZhn0WXyA
+DESCRIPTION:https://www.youtube.com/watch?v=W8sZhn0WXyA
+END:VEVENT
+BEGIN:VEVENT
 UID:rfynX0azvvE@ittetsu-diary
 DTSTAMP:20261020T082904Z
 DTSTART:20261020T082904Z
@@ -65,6 +116,16 @@ DTEND:20261019T151711Z
 SUMMARY:🕹️ 【ほぼ初見part01】真珠じゃなくてパール
 URL:https://www.youtube.com/watch?v=Oh3ZwqxeGYI
 DESCRIPTION:https://www.youtube.com/watch?v=Oh3ZwqxeGYI
+END:VEVENT
+BEGIN:VEVENT
+UID:Vumh1WZLh2Y@ittetsu-diary
+DTSTAMP:20261018T030122Z
+DTSTART:20261018T030122Z
+DTEND:20261018T040928Z
+SUMMARY:🤝 【ゲストさんに聞いた10の質問】第43回 ゲスト
+ さんに聞いた10の質問 佐伯イッテツ様 / 桜凛月
+URL:https://www.youtube.com/watch?v=Vumh1WZLh2Y
+DESCRIPTION:https://www.youtube.com/watch?v=Vumh1WZLh2Y
 END:VEVENT
 BEGIN:VEVENT
 UID:PwXA_eM06no@ittetsu-diary
