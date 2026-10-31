@@ -1,0 +1,31 @@
+name: 配信データ更新
+on:
+  schedule:
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: streams
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/streams.mjs
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
+      - name: commit
+        run: |
+          git add streams.json streams.ics
+          git diff --cached --quiet && exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'streams: update'
+          git pull --rebase
+          git push

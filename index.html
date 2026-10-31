@@ -12,35 +12,28 @@
 <link rel="apple-touch-icon" sizes="180x180" href="icon.png">
 <link rel="icon" type="image/png" sizes="180x180" href="icon.png">
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- 非ブロッキング読み込み：フォントが遅くても画面はすぐ出る -->
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet" crossorigin media="print" onload="this.media='all'">
 <script>
-try{
-  firebase.initializeApp({
-    apiKey:"AIzaSyBvt72qiRztkWFxnWliAs7RL6Q3iCUoJW4",
-    authDomain:"ittetsu-diary.firebaseapp.com",
-    projectId:"ittetsu-diary",
-    storageBucket:"ittetsu-diary.firebasestorage.app",
-    messagingSenderId:"280262781061",
-    appId:"1:280262781061:web:ba9c0f3294de7e91e1e1ec"
-  });
-  window.db=firebase.firestore();
-}catch(e){window.db=null;}
-var db=window.db;
 function goNow(){
   S.year=new Date().getFullYear();
   S.month=new Date().getMonth();
   S.selDay=new Date().getDate();
   render();
 }
+function setUserId(id){
+  try{localStorage.setItem('saiki-uid',id);}catch(e){}
+  try{document.cookie='saiki-uid='+id+';max-age=31536000;path=/';}catch(e){}
+}
 function getUserId(){
   let id=null;
   try{id=localStorage.getItem('saiki-uid');}catch(e){}
+  if(!id){const m=document.cookie.match(/(?:^|;\s*)saiki-uid=([^;]+)/);if(m)id=m[1];}
   if(!id){
     try{id=crypto.randomUUID();}catch(e){id='u'+Date.now()+Math.random().toString(36).slice(2);}
-    try{localStorage.setItem('saiki-uid',id);document.cookie='saiki-uid='+id+';max-age=31536000;path=/';}catch(e){}
   }
+  setUserId(id);
   return id;
 }
 </script>
@@ -171,11 +164,18 @@ const dk=(y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0
 function cLabel(ev){if(ev.type==='zatsudan')return'雑談';if((ev.type==='game_single'||ev.type==='game_series')&&ev.gameTitle)return ev.gameTitle;return ev.title;}
 
 // State
-let S={year:new Date().getFullYear(),month:new Date().getMonth(),events:{},stickers:{},selDay:null,view:'cal',filter:null,showStk:false,modal:false,editing:null,
+let S={year:new Date().getFullYear(),month:new Date().getMonth(),events:{},stickers:{},su:{},dead:{},selDay:null,view:'cal',filter:null,showStk:false,modal:false,editing:null,
 fT:'zatsudan',fTitle:'',fTime:'',fNote:'',fGame:'',fCollab:'',fWatch:false,fPrice:'',fThumb:''};
+// S.su: 日付→ステッカー更新時刻 / S.dead: 削除済みID→{u,k(日付),yt}
+// M: 同期メタ（端末ローカル）
+let M={lastPull:'',fullAt:0,wkTime:{},thumbsUp:{},dirty:{},ytSince:''};
 
-let saveTimer=null;
+const _wkCache={};
 function dayKey2WeekKey(dateStr){
+  if(_wkCache[dateStr])return _wkCache[dateStr];
+  return _wkCache[dateStr]=_weekKey(dateStr);
+}
+function _weekKey(dateStr){
   const d=new Date(dateStr+'T00:00:00');
   const target=new Date(d.valueOf());
   const dayNr=(d.getDay()+6)%7;
@@ -188,9 +188,6 @@ function dayKey2WeekKey(dateStr){
 }
 
 let cloudStatus='idle'; // 'idle' | 'syncing' | 'synced' | 'error' | 'offline'
-let pendingSync=false;
-let syncRunning=false;
-let dirtyWeeks=new Set(); // weeks that need to be pushed
 
 function setCloudStatus(s,extra){
   cloudStatus=s;
@@ -210,178 +207,528 @@ function setCloudStatus(s,extra){
   el.style.textShadow='0 0 6px '+v.c+'80';
 }
 
-function markDirty(dayKey){
-  if(!dayKey)return;
-  dirtyWeeks.add(dayKey2WeekKey(dayKey));
-}
-
-function saveData(dayKey){
-  // localStorage cache (best-effort)
-  try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-  // Mark dirty week (or all weeks if we don't know which)
-  if(dayKey){
-    markDirty(dayKey);
+// ===== ローカル保存（IndexedDB。localStorageの5MB上限でサムネが入らない問題を回避） =====
+const IDB={db:null,
+  open(){return new Promise((res,rej)=>{
+    let r;try{r=indexedDB.open('ittetsu-diary',1);}catch(e){return rej(e);}
+    const t=setTimeout(()=>rej(new Error('idb timeout')),3000);
+    r.onupgradeneeded=()=>r.result.createObjectStore('kv');
+    r.onsuccess=()=>{clearTimeout(t);IDB.db=r.result;res(r.result);};
+    r.onerror=()=>{clearTimeout(t);rej(r.error);};
+  });},
+  get(k){return new Promise((res,rej)=>{const q=IDB.db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);});},
+  put(k,v){return new Promise((res,rej)=>{const tx=IDB.db.transaction('kv','readwrite');tx.objectStore('kv').put(v,k);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+};
+let persistTimer=null;
+function writeLocal(){
+  if(persistTimer){clearTimeout(persistTimer);persistTimer=null;}
+  if(IDB.db){
+    IDB.put('state',{e:S.events,s:S.stickers,su:S.su,x:S.dead,m:M}).catch(e=>console.warn('idb put',e));
   }else{
-    // Unknown which day changed: mark all weeks that have data as dirty
-    Object.keys(S.events).forEach(k=>dirtyWeeks.add(dayKey2WeekKey(k)));
+    try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
   }
-  if(saveTimer)clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
-    if(syncRunning){pendingSync=true;return;}
-    syncToCloud();
-  },300);
 }
-
-function syncToCloud(forceAll){
-  if(!window.db){setCloudStatus('offline');return;}
-  if(syncRunning){pendingSync=true;return;}
-  // Decide which weeks to push
-  let weeksToSync;
-  if(forceAll||dirtyWeeks.size===0){
-    weeksToSync=new Set();
-    Object.keys(S.events).forEach(k=>{
-      if(S.events[k]&&S.events[k].length>0)weeksToSync.add(dayKey2WeekKey(k));
-    });
-    Object.keys(S.stickers).forEach(k=>weeksToSync.add(dayKey2WeekKey(k)));
-  }else{
-    weeksToSync=new Set(dirtyWeeks);
-  }
-  if(weeksToSync.size===0){setCloudStatus('synced');return;}
-  syncRunning=true;
-  setCloudStatus('syncing',weeksToSync.size+'wk');
-  const uid=getUserId();
-  const weeks={};
-  weeksToSync.forEach(wk=>{weeks[wk]={e:{},s:{}};});
-  Object.keys(S.events).forEach(k=>{
-    if(!S.events[k]||S.events[k].length===0)return;
-    const wk=dayKey2WeekKey(k);
-    if(weeks[wk])weeks[wk].e[k]=S.events[k];
-  });
-  Object.keys(S.stickers).forEach(k=>{
-    const wk=dayKey2WeekKey(k);
-    if(weeks[wk])weeks[wk].s[k]=S.stickers[k];
-  });
-  const writes=[];
-  const syncedWeeks=[];
-  Object.keys(weeks).forEach(wk=>{
-    const wkData=weeks[wk];
-    syncedWeeks.push(wk);
-    const size=JSON.stringify(wkData).length;
-    if(size>900000){
-      const lite={s:wkData.s,e:{}};
-      const thumbs={};
-      Object.keys(wkData.e).forEach(dk=>{
-        lite.e[dk]=wkData.e[dk].map(ev=>{
-          if(ev.thumb){thumbs[ev.id]=ev.thumb;const {thumb,...rest}=ev;return rest;}
-          return ev;
-        });
-      });
-      writes.push(db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(lite));
-      Object.keys(thumbs).forEach(eid=>{
-        writes.push(db.collection('diaries').doc(uid).collection('thumbs').doc(eid).set({t:thumbs[eid]}));
-      });
-    }else{
-      writes.push(db.collection('diaries').doc(uid).collection('weeks').doc(wk).set(wkData));
-    }
-  });
-  Promise.all(writes).then(()=>{
-    syncRunning=false;
-    syncedWeeks.forEach(wk=>dirtyWeeks.delete(wk));
-    setCloudStatus('synced');
-    if(pendingSync){pendingSync=false;syncToCloud();}
-  }).catch(e=>{
-    syncRunning=false;
-    setCloudStatus('error',e.code||'');
-    console.error('sync err',e);
-  });
+function persistLocal(){
+  if(persistTimer)clearTimeout(persistTimer);
+  persistTimer=setTimeout(writeLocal,250);
 }
-
-function loadData(cb){
-  // Try local cache first (fast initial render)
-  let hasLocal=false;
+async function openLocal(){
+  let st=null;
   try{
-    const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
-    if(d&&d.e&&Object.keys(d.e).length>0){
-      S.events=d.e||{};S.stickers=d.s||{};
-      hasLocal=true;
-    }
-  }catch(e){}
-  // Cloud unavailable: just use local
-  if(!window.db){
-    setCloudStatus('offline');
-    if(cb)cb();
+    await IDB.open();
+    st=await IDB.get('state');
+    const iu=await IDB.get('uid');
+    let lu=null;try{lu=localStorage.getItem('saiki-uid');}catch(e){}
+    if(iu&&!lu)setUserId(iu);
+    IDB.put('uid',getUserId()).catch(()=>{});
+  }catch(e){IDB.db=null;console.warn('idb',e);}
+  if(st&&st.e){
+    S.events=st.e;S.stickers=st.s||{};S.su=st.su||{};S.dead=st.x||{};
+    M=Object.assign(M,st.m||{});
     return;
   }
-  // Render local first (if any) so user sees something fast
-  if(hasLocal&&cb)cb();
-  // Fetch cloud and merge/replace
-  setCloudStatus('loading');
+  // 旧版のlocalStorageキャッシュから移行
+  try{
+    const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
+    if(d&&d.e){S.events=d.e||{};S.stickers=d.s||{};}
+  }catch(e){}
+  if(IDB.db){
+    writeLocal();
+    try{localStorage.removeItem('saiki-pwa-v1');}catch(e){}
+  }
+}
+
+// ===== 変更の記録 =====
+function markDirty(dayKey){
+  if(!dayKey)return;
+  const wk=dayKey2WeekKey(dayKey);
+  M.dirty[wk]=(M.dirty[wk]||0)+1;
+}
+function markAllDirty(){
+  Object.keys(S.events).forEach(k=>{if(S.events[k]&&S.events[k].length)markDirty(k);});
+  Object.keys(S.stickers).forEach(markDirty);
+  Object.values(S.dead).forEach(t=>markDirty(t.k));
+}
+function killEvent(dk,id){
+  const list=S.events[dk]||[];
+  const ev=list.find(x=>x.id===id);
+  S.events[dk]=list.filter(x=>x.id!==id);
+  S.dead[id]={u:Date.now(),k:dk,yt:(ev&&ev.yt)||''};
+}
+let pushTimer=null;
+function saveData(dayKey){
+  if(dayKey)markDirty(dayKey);else markAllDirty();
+  persistLocal();
+  if(pushTimer)clearTimeout(pushTimer);
+  pushTimer=setTimeout(()=>{pushTimer=null;syncNow({pull:false});},600);
+}
+
+// ===== Firestore REST（SDK 340KB を読み込まない・WebChannel を使わない） =====
+const FS_KEY='AIzaSyBvt72qiRztkWFxnWliAs7RL6Q3iCUoJW4';
+const FS_DOCS='projects/ittetsu-diary/databases/(default)/documents';
+const FS_URL='https://firestore.googleapis.com/v1/';
+const FULL_EVERY=3*864e5;
+function fsEnc(v){
+  if(v===null||v===undefined)return{nullValue:null};
+  if(typeof v==='boolean')return{booleanValue:v};
+  if(typeof v==='number')return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
+  if(typeof v==='string')return{stringValue:v};
+  if(Array.isArray(v))return{arrayValue:{values:v.map(fsEnc)}};
+  return{mapValue:{fields:fsFields(v)}};
+}
+function fsFields(o){const f={};Object.keys(o).forEach(k=>{if(o[k]!==undefined)f[k]=fsEnc(o[k]);});return f;}
+function fsDec(x){
+  if(!x)return null;
+  if('stringValue' in x)return x.stringValue;
+  if('integerValue' in x)return Number(x.integerValue);
+  if('doubleValue' in x)return x.doubleValue;
+  if('booleanValue' in x)return x.booleanValue;
+  if('timestampValue' in x)return x.timestampValue;
+  if('arrayValue' in x)return (x.arrayValue.values||[]).map(fsDec);
+  if('mapValue' in x)return fsObj(x.mapValue.fields);
+  return null;
+}
+function fsObj(f){const o={};Object.keys(f||{}).forEach(k=>{o[k]=fsDec(f[k]);});return o;}
+const docName=(...p)=>FS_DOCS+'/'+p.join('/');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function fsFetch(path,body,timeoutMs){
+  const ctl=new AbortController();
+  const t=setTimeout(()=>ctl.abort(),timeoutMs||20000);
+  try{
+    const opt={signal:ctl.signal};
+    // text/plain = CORS「単純リクエスト」→ プリフライトの往復が要らない
+    if(body!==undefined){opt.method='POST';opt.headers={'Content-Type':'text/plain'};opt.body=JSON.stringify(body);}
+    const r=await fetch(FS_URL+path+(path.includes('?')?'&':'?')+'key='+FS_KEY,opt);
+    const txt=await r.text();
+    let j=null;try{j=txt?JSON.parse(txt):null;}catch(e){}
+    if(!r.ok){
+      const er=new Error((j&&j.error&&j.error.message)||('HTTP '+r.status));
+      er.code=(j&&j.error&&j.error.status)||String(r.status);er.http=r.status;throw er;
+    }
+    return j;
+  }catch(e){
+    if(e.name==='AbortError'){const er=new Error('timeout');er.code='timeout';throw er;}
+    throw e;
+  }finally{clearTimeout(t);}
+}
+async function fsRetry(fn){
+  for(let i=0;;i++){
+    try{return await fn();}
+    catch(e){
+      if(e.http&&e.http<500&&e.http!==429)throw e;
+      if(i>=2)throw e;
+      await sleep([700,2500][i]);
+    }
+  }
+}
+async function fsList(path,mask){
+  let out=[],tok='';
+  do{
+    let q=FS_DOCS+'/'+path+'?pageSize=300';
+    (mask||[]).forEach(f=>q+='&mask.fieldPaths='+encodeURIComponent(f));
+    if(tok)q+='&pageToken='+encodeURIComponent(tok);
+    const j=await fsRetry(()=>fsFetch(q));
+    out=out.concat((j&&j.documents)||[]);tok=(j&&j.nextPageToken)||'';
+  }while(tok);
+  return out;
+}
+async function fsChangedWeeks(uid,since){
+  const j=await fsRetry(()=>fsFetch(docName('diaries',uid)+':runQuery',{structuredQuery:{from:[{collectionId:'weeks'}],
+    where:{fieldFilter:{field:{fieldPath:'u'},op:'GREATER_THAN_OR_EQUAL',value:{timestampValue:since}}}}}));
+  return (j||[]).filter(r=>r.document).map(r=>r.document);
+}
+async function fsBatchGet(names){
+  const j=await fsRetry(()=>fsFetch(FS_DOCS+':batchGet',{documents:names},40000));
+  return (j||[]).filter(r=>r.found).map(r=>r.found);
+}
+const fsCommit=writes=>fsFetch(FS_DOCS+':commit',{writes},60000);
+const lastSeg=n=>n.slice(n.lastIndexOf('/')+1);
+function hashStr(s){let h=0x811c9dc5;for(let i=0;i<s.length;i+=7){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36)+s.length.toString(36);}
+const isData=t=>typeof t==='string'&&t.startsWith('data:');
+
+// ===== マージ（イベント単位で新しい方を採用・削除も同期） =====
+function eventIndex(){const idx=new Map();Object.keys(S.events).forEach(dk=>(S.events[dk]||[]).forEach(ev=>idx.set(ev.id,dk)));return idx;}
+function mergeEv(ev,dk,idx){
+  const dd=S.dead[ev.id];
+  if(dd&&(ev.u||0)<=dd.u)return false;
+  const curDk=idx.get(ev.id);
+  if(curDk===undefined){(S.events[dk]=S.events[dk]||[]).push(ev);idx.set(ev.id,dk);return true;}
+  const list=S.events[curDk];const i=list.findIndex(v=>v.id===ev.id);const cur=list[i];
+  const eu=ev.u||0,cu=cur.u||0;
+  if(eu>cu){
+    const nv={...ev};
+    if(!nv.thumb&&nv.th&&cur.th===nv.th&&cur.thumb)nv.thumb=cur.thumb;
+    if(curDk===dk)list[i]=nv;
+    else{list.splice(i,1);(S.events[dk]=S.events[dk]||[]).push(nv);idx.set(ev.id,dk);}
+    return true;
+  }
+  if(eu===cu&&!cur.thumb&&ev.thumb){cur.thumb=ev.thumb;return true;}
+  return false;
+}
+function applyDocs(docs){
+  const idx=eventIndex();
+  let changed=false,maxU=M.lastPull?Date.parse(M.lastPull):0;
+  docs.forEach(doc=>{
+    const wk=lastSeg(doc.name);
+    if(doc.updateTime)M.wkTime[wk]=doc.updateTime;
+    const d=fsObj(doc.fields);
+    if(d.u){const t=Date.parse(d.u);if(t>maxU)maxU=t;}
+    const x=d.x||{};
+    Object.keys(x).forEach(id=>{const t=x[id]||{};const cur=S.dead[id];if(!cur||(t.u||0)>(cur.u||0))S.dead[id]={u:t.u||0,k:t.k||'',yt:t.yt||''};});
+    let legacy=false;
+    const e=d.e||{};
+    Object.keys(e).forEach(dk=>(e[dk]||[]).forEach(ev=>{
+      if(!ev||!ev.id)return;
+      if(!d.v&&isData(ev.thumb))legacy=true;
+      if(mergeEv(ev,dk,idx))changed=true;
+    }));
+    const s=d.s||{},su=d.su||{};
+    Object.keys(s).forEach(dk=>{
+      const cu=su[dk]||0,lu=S.su[dk]||0,arr=s[dk]||[];
+      if(cu>lu||(cu===0&&lu===0&&(!S.stickers[dk]||S.stickers[dk].length<arr.length))){
+        if(JSON.stringify(S.stickers[dk]||[])!==JSON.stringify(arr)){S.stickers[dk]=arr;changed=true;}
+        S.su[dk]=cu;
+      }
+    });
+    // 旧形式（サムネ埋め込み）の週は一度だけ新形式で書き直す → 次回から軽い
+    if(legacy)M.dirty[wk]=(M.dirty[wk]||0)+1;
+  });
+  Object.keys(S.dead).forEach(id=>{
+    const dk=idx.get(id);if(dk===undefined)return;
+    const list=S.events[dk];const i=list.findIndex(v=>v.id===id);
+    if(i>=0&&(list[i].u||0)<=S.dead[id].u){list.splice(i,1);idx.delete(id);changed=true;}
+  });
+  if(maxU)M.lastPull=new Date(maxU).toISOString();
+  return changed;
+}
+
+// ===== 取得 =====
+async function pull(full){
   const uid=getUserId();
-  const fetchTimeout=setTimeout(()=>{
-    setCloudStatus('error','timeout');
-    if(!hasLocal&&cb)cb();
-  },15000);
-  // Fetch weeks and thumbs in parallel
-  Promise.all([
-    db.collection('diaries').doc(uid).collection('weeks').get(),
-    db.collection('diaries').doc(uid).collection('thumbs').get()
-  ]).then(([snap,tsnap])=>{
-    clearTimeout(fetchTimeout);
-    if(snap.size===0){
-      setCloudStatus('synced');
-      if(!hasLocal&&cb)cb();
+  const docs=full?await fsList('diaries/'+uid+'/weeks'):await fsChangedWeeks(uid,M.lastPull||'1970-01-01T00:00:00Z');
+  let changed=applyDocs(docs);
+  const need=new Set();
+  if(full){
+    // クラウドに無い週（この端末だけのデータ）は送る
+    const have=new Set(docs.map(d=>lastSeg(d.name)));
+    Object.keys(S.events).forEach(dk=>{if(S.events[dk]&&S.events[dk].length&&!have.has(dayKey2WeekKey(dk)))markDirty(dk);});
+    const th=await fsList('diaries/'+uid+'/thumbs',['h']);
+    const cloudTh=new Set();
+    th.forEach(d=>{const id=lastSeg(d.name);cloudTh.add(id);const h=d.fields&&d.fields.h&&d.fields.h.stringValue;if(h)M.thumbsUp[id]=h;});
+    Object.values(S.events).forEach(l=>(l||[]).forEach(ev=>{if(!ev.thumb&&cloudTh.has(ev.id))need.add(ev.id);}));
+    M.fullAt=Date.now();
+  }
+  Object.values(S.events).forEach(l=>(l||[]).forEach(ev=>{if(ev.th&&!isData(ev.thumb))need.add(ev.id);}));
+  if(need.size){
+    try{if(await fetchThumbs(uid,[...need]))changed=true;}catch(e){console.warn('thumbs',e);}
+  }
+  persistLocal();
+  return changed;
+}
+async function fetchThumbs(uid,ids){
+  let changed=false;
+  const idx=eventIndex();
+  for(let i=0;i<ids.length;i+=8){
+    const found=await fsBatchGet(ids.slice(i,i+8).map(id=>docName('diaries',uid,'thumbs',id)));
+    found.forEach(doc=>{
+      const id=lastSeg(doc.name),f=fsObj(doc.fields),dk=idx.get(id);
+      if(!f.t||dk===undefined)return;
+      const ev=S.events[dk].find(v=>v.id===id);
+      if(!ev||isData(ev.thumb))return;
+      ev.thumb=f.t;ev.th=f.h||ev.th||hashStr(f.t);M.thumbsUp[id]=f.h||'';
+      changed=true;
+    });
+  }
+  return changed;
+}
+
+// ===== 送信（週ドキュメント単位。更新時刻の前提条件で他端末の変更を上書きしない） =====
+function groupByWeek(){
+  const g={};const G=wk=>g[wk]||(g[wk]={e:{},s:{},su:{},x:{}});
+  Object.keys(S.events).forEach(dk=>{const l=S.events[dk];if(l&&l.length)G(dayKey2WeekKey(dk)).e[dk]=l;});
+  Object.keys(S.stickers).forEach(dk=>{const o=G(dayKey2WeekKey(dk));o.s[dk]=S.stickers[dk]||[];o.su[dk]=S.su[dk]||0;});
+  Object.keys(S.dead).forEach(id=>{const t=S.dead[id];if(t.k)G(dayKey2WeekKey(t.k)).x[id]=t;});
+  return g;
+}
+function chunks(writes,maxBytes,maxN){
+  const out=[];let cur=[],size=0;
+  writes.forEach(w=>{
+    const n=JSON.stringify(w).length;
+    if(cur.length&&(size+n>maxBytes||cur.length>=maxN)){out.push(cur);cur=[];size=0;}
+    cur.push(w);size+=n;
+  });
+  if(cur.length)out.push(cur);
+  return out;
+}
+async function push(){
+  const uid=getUserId();
+  for(let attempt=0;attempt<3;attempt++){
+    const wks=Object.keys(M.dirty);
+    if(!wks.length)return;
+    const seq={};wks.forEach(wk=>seq[wk]=M.dirty[wk]);
+    const g=groupByWeek();
+    const thumbW=[],thumbH={},weekW=[];
+    wks.forEach(wk=>{
+      const o=g[wk]||{e:{},s:{},su:{},x:{}};
+      const e={};
+      Object.keys(o.e).forEach(dk=>{e[dk]=o.e[dk].map(ev=>{
+        if(!isData(ev.thumb))return ev;
+        if(!ev.th)ev.th=hashStr(ev.thumb);
+        if(M.thumbsUp[ev.id]!==ev.th){
+          thumbW.push({update:{name:docName('diaries',uid,'thumbs',ev.id),fields:fsFields({t:ev.thumb,h:ev.th})}});
+          thumbH[ev.id]=ev.th;
+        }
+        const {thumb,...rest}=ev;return rest;
+      });});
+      weekW.push({wk,w:{update:{name:docName('diaries',uid,'weeks',wk),fields:fsFields({v:2,e,s:o.s,su:o.su,x:o.x})},
+        updateTransforms:[{fieldPath:'u',setToServerValue:'REQUEST_TIME'}],
+        currentDocument:M.wkTime[wk]?{updateTime:M.wkTime[wk]}:{exists:false}}});
+    });
+    // サムネを先に（週ドキュメントが参照するので）
+    for(const c of chunks(thumbW,3e6,12)){
+      await fsRetry(()=>fsCommit(c));
+      c.forEach(w=>{const id=lastSeg(w.update.name);M.thumbsUp[id]=thumbH[id];});
+    }
+    let conflict=null;
+    for(const c of chunks(weekW,3e6,100)){
+      try{
+        const r=await fsRetry(()=>fsCommit(c.map(x=>x.w)));
+        (r.writeResults||[]).forEach((wr,i)=>{
+          const wk=c[i].wk;
+          M.wkTime[wk]=wr.updateTime;
+          if(M.dirty[wk]===seq[wk])delete M.dirty[wk];
+        });
+      }catch(e){
+        if(['FAILED_PRECONDITION','ALREADY_EXISTS','NOT_FOUND','ABORTED'].includes(e.code)){conflict=c;break;}
+        throw e;
+      }
+    }
+    persistLocal();
+    if(!conflict)return;
+    // 他端末が先に書いた週：最新を取ってマージしてから再送
+    const docs=await fsBatchGet(conflict.map(x=>docName('diaries',uid,'weeks',x.wk)));
+    const got=new Set(docs.map(d=>lastSeg(d.name)));
+    conflict.forEach(x=>{if(!got.has(x.wk))delete M.wkTime[x.wk];});
+    if(applyDocs(docs))softRender();
+  }
+  const er=new Error('conflict');er.code='conflict';throw er;
+}
+
+// ===== 同期の実行（1本ずつ順番に） =====
+let syncChain=Promise.resolve(),syncQueued=null,pulledOnce=false,lastSyncAt=0,retryN=0,retryTimer=null;
+function syncNow(o){
+  o=Object.assign({pull:true,full:false},o||{});
+  if(syncQueued){syncQueued.pull=syncQueued.pull||o.pull;syncQueued.full=syncQueued.full||o.full;return syncQueued.p;}
+  const q={pull:o.pull,full:o.full};
+  syncQueued=q;
+  q.p=syncChain=syncChain.then(()=>{syncQueued=null;return doSync(q);});
+  return q.p;
+}
+async function doSync(q){
+  if(retryTimer){clearTimeout(retryTimer);retryTimer=null;}
+  if(navigator.onLine===false){setCloudStatus('offline');return{ok:false,code:'offline'};}
+  try{
+    if(q.pull){
+      const needFull=q.full||!M.fullAt||Date.now()-M.fullAt>FULL_EVERY;
+      setCloudStatus('loading');
+      if(M.fullAt&&await pull(false))softRender();
+      if(needFull&&await pull(true))softRender();
+      pulledOnce=true;lastSyncAt=Date.now();
+      if(feed&&applyFeed(feed))softRender();
+    }
+    if(Object.keys(M.dirty).length){
+      setCloudStatus('syncing',Object.keys(M.dirty).length+'wk');
+      await push();
+    }
+    retryN=0;
+    setCloudStatus('synced');
+    return{ok:true};
+  }catch(e){
+    console.error('sync',e);
+    setCloudStatus(navigator.onLine===false?'offline':'error',e.code||'');
+    const wait=[5,15,45,120][Math.min(retryN++,3)]*1000;
+    retryTimer=setTimeout(()=>syncNow(),wait);
+    return{ok:false,code:e.code||e.message};
+  }
+}
+function softRender(){
+  // 入力中のモーダルや削除確認を消さない（閉じた時に描き直される）
+  if(S.modal||document.querySelector('.modal-bg'))return;
+  render();
+}
+
+// ===== YouTube 配信（GitHub Actions が streams.json を更新） =====
+let feed=null,feedAt=0;
+const STREAM_TYPES=['zatsudan','game_single','game_series','collab','event'];
+const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+const dkOf=d=>dk(d.getFullYear(),d.getMonth(),d.getDate());
+const ytThumb=id=>'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg';
+async function loadFeed(){
+  if(feed&&Date.now()-feedAt<5*60000)return;
+  try{
+    const r=await fetch('streams.json?t='+Math.floor(Date.now()/60000),{cache:'no-cache'});
+    if(!r.ok)return;
+    feed=await r.json();feedAt=Date.now();
+    if(pulledOnce&&applyFeed(feed)){softRender();persistLocal();syncNow({pull:false});}
+  }catch(e){console.warn('feed',e);}
+}
+// 手で触っていない自動追加分
+const pristine=ev=>!ev.watched&&!ev.note&&!ev.price&&!ev.ytLock;
+function findManual(st,used){
+  let best=null,bd=181;
+  [-1,0,1].forEach(off=>{
+    const day=dkOf(new Date(st.getTime()+off*864e5));
+    (S.events[day]||[]).forEach(ev=>{
+      if(ev.yt||used.has(ev.id)||!STREAM_TYPES.includes(ev.type))return;
+      if(!ev.time&&off!==0)return;
+      const d=ev.time?Math.abs(new Date(day+'T'+ev.time)-st)/60000:180;
+      if(d<bd){bd=d;best={ev,dk:day};}
+    });
+  });
+  return best;
+}
+function applyFeed(f){
+  const items=(f&&f.items)||[];
+  if(!items.length)return false;
+  if(!M.ytSince)M.ytSince=dkOf(new Date(Date.now()-14*864e5));
+  const now=Date.now();
+  let changed=false;
+  const touch=k=>{markDirty(k);changed=true;};
+  const byYt=new Map();
+  Object.keys(S.events).forEach(k=>(S.events[k]||[]).forEach(ev=>{if(ev.yt){if(!byYt.has(ev.yt))byYt.set(ev.yt,[]);byYt.get(ev.yt).push({ev,dk:k});}}));
+  const deadYt=new Set(Object.values(S.dead).map(t=>t.yt).filter(Boolean));
+  const used=new Set(),ids=new Set(items.map(it=>it.id));
+  // シリーズ（part違い）のゲーム名：自分で直した／手入力したものを最優先で引き継ぐ
+  const skGame={};
+  Object.keys(S.events).sort().forEach(k=>(S.events[k]||[]).forEach(ev=>{
+    if(!ev.sk||!ev.gameTitle)return;
+    const rank=ev.ytLock?2:1,cur=skGame[ev.sk];
+    if(!cur||rank>=cur.rank)skGame[ev.sk]={rank,game:ev.gameTitle};
+  }));
+  const gameOf=it=>{const g=it.sk&&skGame[it.sk];return (g&&g.rank===2&&g.game)||it.game||(g&&g.game)||'';};
+  // 古い回から：紐付けた手入力のゲーム名が、同じ回のうちに後の回へ伝わる
+  items.slice().sort((a,b)=>String(a.start).localeCompare(String(b.start))).forEach(it=>{
+    const st=new Date(it.start);
+    if(isNaN(st))return;
+    const day=dkOf(st),time=hm(st);
+    if(day<M.ytSince)return;
+    const hits=byYt.get(it.id)||[];
+    const auto=hits.find(x=>x.ev.id==='yt-'+it.id);
+    let linked=hits.find(x=>x.ev.id!=='yt-'+it.id);
+    if(!linked&&(!auto||pristine(auto.ev))){
+      // 同じ配信を手入力していたら、新しく足さずにそれに紐付ける
+      const cand=findManual(st,used);
+      if(cand){
+        const ev=cand.ev;
+        ev.yt=it.id;ev.ytLock=true;ev.u=now;
+        if(it.sk&&!ev.sk)ev.sk=it.sk;
+        if(!ev.time)ev.time=time;
+        if(!ev.thumb)ev.thumb=ytThumb(it.id);
+        if(!ev.gameTitle&&gameOf(it)&&(ev.type==='game_single'||ev.type==='game_series'))ev.gameTitle=gameOf(it);
+        if(ev.sk&&ev.gameTitle)skGame[ev.sk]={rank:2,game:ev.gameTitle};
+        used.add(ev.id);linked=cand;touch(cand.dk);
+      }
+    }
+    if(linked){
+      if(auto&&pristine(auto.ev)){killEvent(auto.dk,auto.ev.id);touch(auto.dk);}
       return;
     }
-    const cloudEvents={},cloudStickers={};
-    snap.forEach(doc=>{
-      const d=doc.data();
-      Object.assign(cloudEvents,d.e||{});
-      Object.assign(cloudStickers,d.s||{});
-    });
-    const thumbs={};
-    tsnap.forEach(doc=>{thumbs[doc.id]=doc.data().t;});
-    Object.keys(cloudEvents).forEach(dk=>{
-      cloudEvents[dk]=cloudEvents[dk].map(ev=>{
-        if(thumbs[ev.id]&&!ev.thumb)return {...ev,thumb:thumbs[ev.id]};
-        return ev;
-      });
-    });
-    // Merge: union of local + cloud
-    let changed=false;
-    Object.keys(cloudEvents).forEach(dk=>{
-      const localList=S.events[dk]||[];
-      const cloudList=cloudEvents[dk];
-      const merged={};
-      localList.forEach(ev=>{merged[ev.id]=ev;});
-      cloudList.forEach(ev=>{
-        if(!merged[ev.id])merged[ev.id]=ev;
-        else if(ev.thumb&&!merged[ev.id].thumb)merged[ev.id]=ev;
-      });
-      const newList=Object.values(merged);
-      if(JSON.stringify(newList)!==JSON.stringify(localList)){
-        S.events[dk]=newList;
-        changed=true;
+    if(!auto&&deadYt.has(it.id))return;
+    const want={type:it.type||'zatsudan',title:it.title,time,gameTitle:gameOf(it),collab:it.collab||'',thumb:ytThumb(it.id),sk:it.sk||''};
+    if(auto){
+      const ev=auto.ev;
+      if(ev.ytLock)return;
+      const diff=Object.keys(want).some(k=>(ev[k]||'')!==want[k]);
+      if(!diff&&auto.dk===day)return;
+      Object.assign(ev,want,{u:now});
+      if(auto.dk!==day){
+        S.events[auto.dk]=S.events[auto.dk].filter(x=>x!==ev);
+        (S.events[day]=S.events[day]||[]).push(ev);
+        touch(auto.dk);
       }
-    });
-    Object.keys(cloudStickers).forEach(dk=>{
-      if(!S.stickers[dk]||S.stickers[dk].length<cloudStickers[dk].length){
-        S.stickers[dk]=cloudStickers[dk];changed=true;
-      }
-    });
-    try{localStorage.setItem('saiki-pwa-v1',JSON.stringify({e:S.events,s:S.stickers}));}catch(e){}
-    setCloudStatus('synced');
-    if(!hasLocal&&cb)cb();
-    else if(changed)render();
-  }).catch(e=>{
-    clearTimeout(fetchTimeout);
-    console.error('cloud load err',e);
-    setCloudStatus('error',e.code||'');
-    if(!hasLocal&&cb)cb();
+      touch(day);
+      return;
+    }
+    (S.events[day]=S.events[day]||[]).push({id:'yt-'+it.id,yt:it.id,...want,note:'',watched:false,price:'',u:now});
+    touch(day);
   });
+  // 待機所が消えた（予定取り消し）：未来の自動追加分を消す
+  Object.keys(S.events).forEach(k=>(S.events[k]||[]).slice().forEach(ev=>{
+    if(!ev.yt||ev.id!=='yt-'+ev.yt||!pristine(ev)||ids.has(ev.yt))return;
+    if(new Date(k+'T'+(ev.time||'00:00')).getTime()<now)return;
+    killEvent(k,ev.id);touch(k);
+  }));
+  return changed;
+}
+
+// ===== 起動 =====
+async function boot(){
+  await openLocal();
+  const hadData=Object.keys(S.events).length>0;
+  render();
+  setTimeout(animateScore,200);
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+  loadFeed();
+  await syncNow();
+  if(!hadData&&Object.keys(S.events).length)setTimeout(animateScore,200);
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){
+    writeLocal();
+    if(pushTimer){clearTimeout(pushTimer);pushTimer=null;syncNow({pull:false});}
+  }else if(Date.now()-lastSyncAt>20000){
+    syncNow();loadFeed();
+  }
+});
+window.addEventListener('pagehide',writeLocal);
+window.addEventListener('online',()=>syncNow());
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('message',e=>{if(e.data==='updated')showUpdate();});
+  try{navigator.serviceWorker.startMessages();}catch(e){}
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+function showUpdate(){
+  if(document.getElementById('updBtn'))return;
+  document.body.appendChild(h('button',{id:'updBtn',className:'btn',onClick:()=>location.reload(),
+    style:{position:'fixed',top:'calc(8px + env(safe-area-inset-top))',left:'50%',transform:'translateX(-50%)',zIndex:'1200',borderColor:'#55e84c',color:'#55e84c',fontSize:'11px',padding:'4px 10px'}},'🆕 UPDATE ▶'));
+}
+// 別の端末（Safari／ホーム画面／新しいiPhone）と同じデータを使う
+function transferCode(){
+  const cur=getUserId();
+  const v=prompt('引継ぎコード（別端末のコードを貼るとデータ合流）',cur);
+  if(!v||v.trim()===cur)return;
+  const id=v.trim();
+  if(!/^[A-Za-z0-9_-]{8,64}$/.test(id)){flash('⚠️ コードエラー');return;}
+  setUserId(id);
+  if(IDB.db)IDB.put('uid',id).catch(()=>{});
+  M.lastPull='';M.fullAt=0;M.wkTime={};M.thumbsUp={};
+  markAllDirty();persistLocal();
+  flash('🔑 ...');
+  syncNow({full:true}).then(r=>flash(r.ok?'✅ 引継ぎ完了':'⚠️ '+r.code));
 }
 function flash(m){const el=document.getElementById('toast-el');el.textContent=m;el.classList.remove('hidden');el.style.animation='none';el.offsetHeight;el.style.animation='';setTimeout(()=>el.classList.add('hidden'),1500);}
 
-function devs(d){return S.events[dk(S.year,S.month,d)]||[];}
+function devs(d){return (S.events[dk(S.year,S.month,d)]||[]).slice().sort((a,b)=>(a.time||'').localeCompare(b.time||''));}
 function stats(){const c={};T.forEach(t=>c[t.id]=0);let tot=0,w=0,sp=0;const dim=dIn(S.year,S.month);for(let d=1;d<=dim;d++)devs(d).forEach(ev=>{c[ev.type]++;tot++;if(ev.watched)w++;if(ev.price){const n=parseFloat(ev.price);if(!isNaN(n))sp+=n;}});return{c,tot,w,sp};}
 function allTimeStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>a.forEach(ev=>{tot++;if(ev.watched)w++;}));return{tot,w};}
 
@@ -409,7 +756,7 @@ const now=new Date();const st=stats();const allStats=allTimeStats();const dim=dI
 const isToday=d=>d===now.getDate()&&S.month===now.getMonth()&&S.year===now.getFullYear();
 
 // Score bar
-app.appendChild(h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 12px',fontFamily:"'Press Start 2P',monospace",fontSize:'7px',color:'#55e84c',letterSpacing:'0px',textShadow:'0 0 6px #55e84c80',animation:'scoreFlash 3s ease-in-out infinite'}},h('span',{id:'scoreVal','data-target':String(allStats.tot)},`SCORE ${String(allStats.tot).padStart(8,'0')}`),h('span',{id:'cloudStatus',style:{fontSize:'10px',padding:'0 6px',cursor:'pointer'},title:'クラウド状態'},'○'),h('span',{id:'hiVal','data-target':String(allStats.w)},`HI-SCORE ${String(allStats.w).padStart(8,'0')}`)));
+app.appendChild(h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 12px',fontFamily:"'Press Start 2P',monospace",fontSize:'7px',color:'#55e84c',letterSpacing:'0px',textShadow:'0 0 6px #55e84c80',animation:'scoreFlash 3s ease-in-out infinite'}},h('span',{id:'scoreVal','data-target':String(allStats.tot)},`SCORE ${String(allStats.tot).padStart(8,'0')}`),h('span',{id:'cloudStatus',onClick:()=>syncNow(),style:{fontSize:'10px',padding:'0 6px',cursor:'pointer'},title:'クラウド状態'},'○'),h('span',{id:'hiVal','data-target':String(allStats.w)},`HI-SCORE ${String(allStats.w).padStart(8,'0')}`)));
 setTimeout(()=>setCloudStatus(cloudStatus),0);
 
 // Header
@@ -518,7 +865,7 @@ if(S.view==='cal'){
     // Sticker picker
     if(S.showStk){
       const sg=h('div',{style:{background:'rgba(0,0,0,.4)',border:'1px solid #7b5ea730',padding:'8px',marginBottom:'6px',display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'6px',animation:'popIn .12s'}},
-        ...STK.map(s=>{const act=(S.stickers[dk(S.year,S.month,S.selDay)]||[]).includes(s);return h('div',{className:'stk',onClick:()=>{const k=dk(S.year,S.month,S.selDay);const c=S.stickers[k]||[];if(c.includes(s))S.stickers[k]=c.filter(x=>x!==s);else if(c.length<3)S.stickers[k]=[...c,s];S.showStk=false;saveData(k);render()},style:{background:act?'rgba(123,94,167,.2)':'transparent',opacity:act?'1':'.5'}},s);}),
+        ...STK.map(s=>{const act=(S.stickers[dk(S.year,S.month,S.selDay)]||[]).includes(s);return h('div',{className:'stk',onClick:()=>{const k=dk(S.year,S.month,S.selDay);const c=S.stickers[k]||[];if(c.includes(s))S.stickers[k]=c.filter(x=>x!==s);else if(c.length<3)S.stickers[k]=[...c,s];S.su[k]=Date.now();S.showStk=false;saveData(k);render()},style:{background:act?'rgba(123,94,167,.2)':'transparent',opacity:act?'1':'.5'}},s);}),
         h('div',{style:{gridColumn:'1/-1',fontSize:'9px',opacity:'.25',textAlign:'center',fontFamily:"'Silkscreen','DotGothic16',monospace"}},'MAX: 3'));
       detailContent.push(sg);
     }
@@ -544,7 +891,7 @@ if(S.view==='cal'){
         }
         const row=h('div',{style:{display:'flex',alignItems:'center',gap:'7px'}});
         if(t.ht){
-          const wc=h('div',{className:'wcheck',onClick:e=>{e.stopPropagation();const k=dk(S.year,S.month,S.selDay);S.events[k]=S.events[k].map(x=>x.id===ev.id?{...x,watched:!x.watched}:x);saveData(k);render()},style:{borderColor:t.c,background:ev.watched?t.c:'transparent',color:ev.watched?'#050508':'transparent'}});
+          const wc=h('div',{className:'wcheck',onClick:e=>{e.stopPropagation();const k=dk(S.year,S.month,S.selDay);S.events[k]=S.events[k].map(x=>x.id===ev.id?{...x,watched:!x.watched,u:Date.now()}:x);saveData(k);render()},style:{borderColor:t.c,background:ev.watched?t.c:'transparent',color:ev.watched?'#050508':'transparent'}});
           wc.textContent=ev.watched?'✓':'';row.appendChild(wc);
         }
         const info=h('div',{style:{flex:'1',minWidth:'0'}});
@@ -559,6 +906,7 @@ if(S.view==='cal'){
         if(ev.note)info.appendChild(h('div',{style:{fontFamily:"'Zen Maru Gothic',sans-serif",fontSize:'12px',color:'#e0dce860',marginTop:'2px'}},ev.note));
         row.appendChild(info);
         const btns=h('div',{style:{display:'flex',flexDirection:'column',gap:'3px',flexShrink:'0'}},
+          ev.yt?h('a',{className:'btn',href:'https://www.youtube.com/watch?v='+ev.yt,target:'_blank',rel:'noopener',onClick:e=>e.stopPropagation(),style:{width:'24px',height:'24px',fontSize:'12px',padding:'0',textDecoration:'none',borderColor:'#e84c4c80',color:'#e84c4c',fontFamily:'sans-serif'}},'▶'):null,
           h('button',{className:'btn',onClick:e=>{e.stopPropagation();S.modal=true;S.editing=ev;S.fT=ev.type;S.fTitle=ev.title;S.fTime=ev.time||'';S.fNote=ev.note||'';S.fGame=ev.gameTitle||'';S.fCollab=ev.collab||'';S.fWatch=!!ev.watched;S.fPrice=ev.price||'';S.fThumb=ev.thumb||'';render()},style:{width:'24px',height:'24px',fontSize:'11px',padding:'0'}},'✏️'),
           h('button',{className:'btn',onClick:e=>{e.stopPropagation();showDeleteConfirm(ev.id,ev.title);},style:{width:'24px',height:'24px',fontSize:'11px',padding:'0',borderColor:'#e84c4c50'}},'🗑'));
         row.appendChild(btns);
@@ -645,7 +993,13 @@ const dataBtns=h('div',{id:'dataBtns',style:{display:'none',gap:'6px',justifyCon
       r.onload=()=>{
         try{
           const d=JSON.parse(r.result);
-          if(d.e){S.events=d.e;S.stickers=d.s||{};saveData();flash('✅ 復元完了');render();}
+          if(d.e){
+            const now=Date.now();
+            S.events=d.e;S.stickers=d.s||{};S.su={};
+            Object.values(S.events).forEach(l=>(l||[]).forEach(ev=>{ev.u=now;}));
+            Object.keys(S.stickers).forEach(k=>{S.su[k]=now;});
+            saveData();flash('✅ 復元完了');render();
+          }
           else{flash('⚠️ データ形式エラー');}
         }catch(e){flash('⚠️ '+e.message);}
       };
@@ -654,29 +1008,22 @@ const dataBtns=h('div',{id:'dataBtns',style:{display:'none',gap:'6px',justifyCon
     inp.click();
   },style:{fontSize:'9px',padding:'4px 8px'}},'📂 復元'),
   h('button',{className:'btn',onClick:()=>{
-  try{
-    if(!S.events||Object.keys(S.events).length===0){flash('⚠️ データなし');return;}
-    syncToCloud();
-    flash('☁️ 同期完了');
-  }catch(e){flash('⚠️ '+e.message);}
-},style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期'),
+    flash('☁️ ...');
+    syncNow({full:true}).then(r=>flash(r.ok?'☁️ 同期完了':'⚠️ '+r.code));
+  },style:{fontSize:'9px',padding:'4px 8px'}},'☁️ 同期'),
   h('button',{className:'btn',onClick:()=>{
-    let localCount=0,cloudCount=0;
-    try{
-      const d=JSON.parse(localStorage.getItem('saiki-pwa-v1'));
-      if(d&&d.e)Object.values(d.e).forEach(a=>localCount+=a.length);
-    }catch(e){}
-    Object.values(S.events).forEach(a=>cloudCount+=a.length);
-    if(!window.db){alert('📊 状態\n\nローカル: '+localCount+'件\n表示中: '+cloudCount+'件\nクラウド: 接続なし');return;}
+    let shown=0;
+    Object.values(S.events).forEach(a=>shown+=a.length);
     const uid=getUserId();
-    db.collection('diaries').doc(uid).collection('weeks').get().then(snap=>{
+    const head='📊 状態\n\n表示中: '+shown+'件\n未送信: '+Object.keys(M.dirty).length+'週\nUID: '+uid.slice(0,8);
+    fsList('diaries/'+uid+'/weeks').then(docs=>{
       let cc=0;
-      snap.forEach(doc=>{const d=doc.data();if(d.e)Object.values(d.e).forEach(a=>cc+=a.length);});
-      alert('📊 状態\n\nローカル: '+localCount+'件\n表示中: '+cloudCount+'件\nクラウド: '+cc+'件（'+snap.size+'週分）\nUID: '+uid.slice(0,8));
-    }).catch(e=>{
-      alert('📊 状態\n\nローカル: '+localCount+'件\n表示中: '+cloudCount+'件\nクラウドエラー: '+e.code+'\n\n'+e.message);
-    });
-  },style:{fontSize:'9px',padding:'4px 8px'}},'📊 状態'));
+      docs.forEach(doc=>{const e=fsObj(doc.fields).e||{};Object.values(e).forEach(a=>cc+=(a||[]).length);});
+      alert(head+'\nクラウド: '+cc+'件（'+docs.length+'週分）');
+    }).catch(e=>alert(head+'\nクラウドエラー: '+e.code+'\n\n'+e.message));
+  },style:{fontSize:'9px',padding:'4px 8px'}},'📊 状態'),
+  h('a',{className:'btn',href:'webcal://'+location.host+location.pathname.replace(/[^/]*$/,'')+'streams.ics',style:{fontSize:'9px',padding:'4px 8px',textDecoration:'none'}},'📅 iOSカレンダー'),
+  h('button',{className:'btn',onClick:transferCode,style:{fontSize:'9px',padding:'4px 8px'}},'🔑 引継ぎ'));
 app.appendChild(dataBtns);
   
 // Fixed bottom desktop pet cat - neon pixel style
@@ -953,7 +1300,12 @@ box.appendChild(h('div',{style:{display:'flex',gap:'6px'}},
     const key=dk(S.year,S.month,S.selDay);
     const curT=ti(S.fT);
     const watchVal=curT.ht?S.fWatch:true;
-    const data={type:S.fT,title,time:curT.ht?S.fTime:'',note:S.fNote.trim(),gameTitle:S.fGame.trim(),collab:S.fCollab.trim(),watched:watchVal,price:S.fPrice.trim(),thumb:S.fThumb};
+    const data={type:S.fT,title,time:curT.ht?S.fTime:'',note:S.fNote.trim(),gameTitle:S.fGame.trim(),collab:S.fCollab.trim(),watched:watchVal,price:S.fPrice.trim(),thumb:S.fThumb,u:Date.now()};
+    data.th=isData(S.fThumb)?hashStr(S.fThumb):'';
+    // サムネをまだ受信中の予定を編集した場合は消さない
+    if(S.editing&&!S.fThumb&&S.editing.th&&!S.editing.thumb){data.th=S.editing.th;delete data.thumb;}
+    // 自動取得した配信を手で直したら、以後は自動で上書きしない
+    if(S.editing&&S.editing.yt)data.ytLock=true;
     if(S.editing){S.events[key]=(S.events[key]||[]).map(ev=>ev.id===S.editing.id?{...ev,...data}:ev);flash('UPDATED ✏️');}
     else{data.id=Date.now().toString(36);S.events[key]=[...(S.events[key]||[]),data];flash('EVENT ADDED ⚔️');}
     saveData(key);closeModal();
@@ -993,7 +1345,7 @@ function showDeleteConfirm(evId,evTitle){
   box.querySelector('#delCancel').addEventListener('click',()=>overlay.remove());
   box.querySelector('#delOk').addEventListener('click',()=>{
     const k=dk(S.year,S.month,S.selDay);
-    S.events[k]=(S.events[k]||[]).filter(x=>x.id!==evId);
+    killEvent(k,evId);
     saveData(k);overlay.remove();flash('DELETED 🗑️');render();
   });
 }
@@ -1065,10 +1417,7 @@ function animateStats(){
   }
 }
 
-loadData(()=>{
-  render();
-  setTimeout(animateScore,200);
-});
+boot();
 
 // Floating particles
 if(!window._particles){
