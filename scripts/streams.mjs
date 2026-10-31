@@ -67,7 +67,13 @@ const GENERIC = /^(ストアページ|ストア|公式(サイト|HP|X)?|特設�
 const STORE = /store\.steampowered\.com|store\.nintendo|nintendo\.(co\.jp|com)\/(games|software)|store\.playstation\.com|store\.epicgames\.com|apps\.apple\.com|play\.google\.com\/store|itch\.io/i;
 const URL_RE = /https?:\/\/\S+/;
 const nameLike = s => s && s.length <= 60 && !URL_RE.test(s) && !GENERIC.test(s) && !/[。！？!?…]|[©ⓒ]/.test(s);
-const tidy = s => s.replace(/【[^】]*】/g, '').replace(/[®™]/g, '').replace(/^[『「\s]+|[』」\s：:]+$/g, '').trim();
+const tidy = s => {
+  const q = /『([^』]+)』/.exec(s);   // 「・『つぐのひ』Steam販売サイト」→ つぐのひ
+  if (q) s = q[1];
+  return s.replace(/【[^】]*】/g, '').replace(/[®™]/g, '')
+    .replace(/\s*(Steam\s*)?(販売サイト|販売ページ|ストアページ|公式サイト)\s*$/i, '')
+    .replace(/^[・●■▼▽◆◇▶★☆※\-\s『「]+|[』」\s：:]+$/g, '').trim();
+};
 
 function descGame(desc, title) {
   const head = (desc || '').split(/【\(＾ω＾\)く|※お問い合わせ/)[0];
