@@ -1,5 +1,5 @@
 // 推し活手帳 service worker：画面はキャッシュから即表示し、裏で新しい版を取りに行く
-const SHELL='shell-v2';
+const SHELL='shell-v3';
 const FONTS='fonts-v1';
 const FILES=['./','./index.html','./manifest.json','./icon.png'];
 
