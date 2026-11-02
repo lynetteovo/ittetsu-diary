@@ -451,13 +451,4 @@ URL:https://www.youtube.com/watch?v=FxQssPOlbpU
 DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
  ttps://www.youtube.com/watch?v=FxQssPOlbpU
 END:VEVENT
-BEGIN:VEVENT
-UID:yDkeInXv7e4@ittetsu-diary
-DTSTAMP:20260903T123955Z
-DTSTART:20260903T123955Z
-DTEND:20260903T134950Z
-SUMMARY:💬 【飲食雑談】俺だって食いたい
-URL:https://www.youtube.com/watch?v=yDkeInXv7e4
-DESCRIPTION:https://www.youtube.com/watch?v=yDkeInXv7e4
-END:VEVENT
 END:VCALENDAR
