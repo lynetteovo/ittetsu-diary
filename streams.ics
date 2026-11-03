@@ -26,19 +26,13 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:dWzErNkh8Ns@ittetsu-diary
-DTSTAMP:20261103T100000Z
-DTSTART:20261103T100000Z
-DTEND:20261103T120000Z
+DTSTAMP:20261103T100011Z
+DTSTART:20261103T100011Z
+DTEND:20261103T110507Z
 SUMMARY:💬 【雑談】酒が弱い奴でも楽しめる、此処は居
  水屋
 URL:https://www.youtube.com/watch?v=dWzErNkh8Ns
 DESCRIPTION:https://www.youtube.com/watch?v=dWzErNkh8Ns
-BEGIN:VALARM
-ACTION:DISPLAY
-TRIGGER:-PT10M
-DESCRIPTION:💬 【雑談】酒が弱い奴でも楽しめる、此処は
- 居水屋
-END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:7EvhWJ73H3M@ittetsu-diary
@@ -455,16 +449,5 @@ DTEND:20260905T185354Z
 SUMMARY:💬 2世紀ぶりに酒を飲む
 URL:https://www.youtube.com/watch?v=WIltRWndMMs
 DESCRIPTION:https://www.youtube.com/watch?v=WIltRWndMMs
-END:VEVENT
-BEGIN:VEVENT
-UID:FxQssPOlbpU@ittetsu-diary
-DTSTAMP:20260904T103011Z
-DTSTART:20260904T103011Z
-DTEND:20260904T163230Z
-SUMMARY:🕹️ 【アバタール・チューナー PART03】悪魔を喰
- い散らかしたいんだよぉーーーー※ネタバレ注意
-URL:https://www.youtube.com/watch?v=FxQssPOlbpU
-DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
- ttps://www.youtube.com/watch?v=FxQssPOlbpU
 END:VEVENT
 END:VCALENDAR
