@@ -441,13 +441,4 @@ URL:https://www.youtube.com/watch?v=HcHLw0wfwk4
 DESCRIPTION:🎮 Scritchy Scratchy\nhttps://www.youtube.com/watch?v=HcHLw0w
  fwk4
 END:VEVENT
-BEGIN:VEVENT
-UID:WIltRWndMMs@ittetsu-diary
-DTSTAMP:20260905T162647Z
-DTSTART:20260905T162647Z
-DTEND:20260905T185354Z
-SUMMARY:💬 2世紀ぶりに酒を飲む
-URL:https://www.youtube.com/watch?v=WIltRWndMMs
-DESCRIPTION:https://www.youtube.com/watch?v=WIltRWndMMs
-END:VEVENT
 END:VCALENDAR
