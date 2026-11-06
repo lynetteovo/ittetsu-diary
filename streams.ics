@@ -25,6 +25,15 @@ DESCRIPTION:🤝 【#早瀬とサシ飲み再演】早瀬走×佐伯イッ
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:6qlD7Z-K7nk@ittetsu-diary
+DTSTAMP:20261106T092956Z
+DTSTART:20261106T092956Z
+DTEND:20261106T112956Z
+SUMMARY:🔴 【ほぼ初見 最終回】諸々ゲットだぜ！！
+URL:https://www.youtube.com/watch?v=6qlD7Z-K7nk
+DESCRIPTION:https://www.youtube.com/watch?v=6qlD7Z-K7nk
+END:VEVENT
+BEGIN:VEVENT
 UID:5a65MlMYbnY@ittetsu-diary
 DTSTAMP:20261105T115948Z
 DTSTART:20261105T115948Z
@@ -449,15 +458,5 @@ SUMMARY:🤝 【#放課後オリエンス 】ろくろ初体験！：後編
   / Oriens
 URL:https://www.youtube.com/watch?v=aJKqNn2Oji4
 DESCRIPTION:https://www.youtube.com/watch?v=aJKqNn2Oji4
-END:VEVENT
-BEGIN:VEVENT
-UID:HcHLw0wfwk4@ittetsu-diary
-DTSTAMP:20260907T104509Z
-DTSTART:20260907T104509Z
-DTEND:20260907T143336Z
-SUMMARY:🎮 【Scritchy Scratchy】十円持って挑むは宝くじ
-URL:https://www.youtube.com/watch?v=HcHLw0wfwk4
-DESCRIPTION:🎮 Scritchy Scratchy\nhttps://www.youtube.com/watch?v=HcHLw0w
- fwk4
 END:VEVENT
 END:VCALENDAR
