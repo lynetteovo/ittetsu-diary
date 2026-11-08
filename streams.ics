@@ -9,6 +9,27 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
+UID:LmCjUlcfW6w@ittetsu-diary
+DTSTAMP:20261108T163524Z
+DTSTART:20261108T163524Z
+DTEND:20261108T183524Z
+SUMMARY:🔴 【ほぼ初見 番外編】ポリゴン来た!!!!捕まえる
+ だけ!!!!!!
+URL:https://www.youtube.com/watch?v=LmCjUlcfW6w
+DESCRIPTION:https://www.youtube.com/watch?v=LmCjUlcfW6w
+END:VEVENT
+BEGIN:VEVENT
+UID:pLRq2gGtFTo@ittetsu-diary
+DTSTAMP:20261108T112916Z
+DTSTART:20261108T112916Z
+DTEND:20261108T162312Z
+SUMMARY:🎮 【たろうくんはいってきました】え？佐伯さ
+ んも…？
+URL:https://www.youtube.com/watch?v=pLRq2gGtFTo
+DESCRIPTION:🎮 たろうくんはいってきました\nhttps://www.youtu
+ be.com/watch?v=pLRq2gGtFTo
+END:VEVENT
+BEGIN:VEVENT
 UID:bC0hnpjYbwM@ittetsu-diary
 DTSTAMP:20261107T130025Z
 DTSTART:20261107T130025Z
@@ -452,15 +473,5 @@ SUMMARY:🕹️ 【アバタール・チューナー PART04】やさっし
 URL:https://www.youtube.com/watch?v=Gis_bCsTG8g
 DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
  ttps://www.youtube.com/watch?v=Gis_bCsTG8g
-END:VEVENT
-BEGIN:VEVENT
-UID:aJKqNn2Oji4@ittetsu-diary
-DTSTAMP:20260909T120006Z
-DTSTART:20260909T120006Z
-DTEND:20260909T121448Z
-SUMMARY:🤝 【#放課後オリエンス 】ろくろ初体験！：後編
-  / Oriens
-URL:https://www.youtube.com/watch?v=aJKqNn2Oji4
-DESCRIPTION:https://www.youtube.com/watch?v=aJKqNn2Oji4
 END:VEVENT
 END:VCALENDAR
