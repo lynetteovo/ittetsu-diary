@@ -420,6 +420,24 @@ body.booting #cat{opacity:0}
 .foot{font:400 10px/1 var(--mono);letter-spacing:.12em;color:var(--dim);text-align:center;margin-top:44px;opacity:.8}
 .remain{font:400 13px var(--mono);color:var(--dim);margin-top:10px}
 
+
+/* ---- calendar cells carry the day's items ---- */
+.grid{grid-auto-rows:80px}
+.cell{gap:4px;padding:6px 1px 0;min-width:0;overflow:hidden}
+.cell .g,.lens .g{display:flex;flex-direction:column;align-items:stretch;gap:2px;height:auto;width:100%;min-width:0;font:500 10px/1.3 var(--sans);font-feature-settings:"palt"}
+.g .lb{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-align:left;padding:1px 2px 1px 3px;border-radius:4px;background:rgba(255,255,255,.05);-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
+.g .lb i{font-style:normal;font-family:var(--mono);margin-right:2px;opacity:.7}
+.g .lb.u{color:var(--oshi);background:rgba(218,134,166,.14)}
+.g .lb.w,.g .lb.o{color:var(--ash)}
+.g .more{font:500 10px/1.1 var(--mono);color:var(--dim);text-align:center}
+.lens{height:78px}
+.lens-b{padding-top:4px;gap:4px}
+.lens-n{font-size:20px;line-height:26px}
+/* ---- all-time totals: two plain numbers ---- */
+.alltime{display:flex;gap:40px;margin-top:2px}
+.alltime>div{display:flex;flex-direction:column;gap:8px}
+.alltime .odo{font:500 34px/1 var(--mono);color:var(--ink);--oh:1em}
+.alltime small{font-size:13px;color:var(--dim)}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -495,8 +513,8 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
       <ul class="games" id="lgGames"></ul>
       <h3>グッズ・ボイス</h3>
       <p class="spend" id="lgSpend"></p>
-      <pre class="arcade" id="lgArcade" aria-label="これまでの合計"></pre>
-      <p class="arcade-cap">これまでの合計（SCORE＝配信、HI-SCORE＝見た配信）</p>
+      <h3>これまで</h3>
+      <div class="alltime"><div><span class="odo" id="arS"></span><small>配信</small></div><div><span class="odo" id="arC"></span><small>見た</small></div></div>
       <p class="foot">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>
     </section>
   </main>
@@ -1463,9 +1481,15 @@ function setFilter(f){
 const grid=$('#grid'),lens=$('#lens'),lensB=$('#lensB'),cells=[];
 for(let i=0;i<42;i++){const c=mk('button','cell press');c.n=mk('span','n');c.g=mk('span','g');c.s=mk('span','s');c.append(c.n,c.g,c.s);c.dataset.i=i;
   c.onclick=()=>{if(swiped)return;const d=+c.dataset.d;if(d)openDay(d);};grid.append(c);cells.push(c);}
+/* a short label for the calendar cell: game name, collab partner, or the title without 【】 */
+function cellLabel1(e){const t=String(e.title||'').trim(),bare=t.replace(/【[^】]*】/g,'').replace(/\s+/g,' ').trim();
+  if(e.type==='zatsudan')return e.yt||!t?'雑談':t;
+  if(e.type==='game_single'||e.type==='game_series')return e.gameTitle||e.game||e.sk||bare||t;
+  if(e.type==='collab')return e.collab||bare||t;
+  return bare||t||(T[e.type]||T.zatsudan).l;}
 function glyphHTML(evs,pop){
-  let list=filter?evs.filter(e=>e.type===filter):evs;const more=list.length>3;list=list.slice(0,3);
-  return list.map(e=>`<span class="${watchable(e)?(e.watched?'w':'u'):'o'}${pop?' pop':''}">${esc(TT(e.type).g)}</span>`).join('')+(more?'<span class="o">+</span>':'');
+  let list=filter?evs.filter(e=>e.type===filter):evs;const more=list.length-2;list=list.slice(0,2);
+  return list.map(e=>`<span class="lb ${watchable(e)?(e.watched?'w':'u'):'o'}${pop?' pop':''}"><i>${esc((T[e.type]||T.zatsudan).g)}</i>${esc(cellLabel1(e))}</span>`).join('')+(more>0?`<span class="more">+${more}</span>`:'');
 }
 function cellLabel(d,evs){const left=evs.filter(e=>watchable(e)&&!e.watched).length;
   return `${view.m+1}月${d}日 ${WD[dow(view.y,view.m,d)]}曜日${evs.length?`、予定${evs.length}件`:''}${left?`、まだ見ていない配信${left}件`:''}`;}
@@ -1806,15 +1830,13 @@ function renderLog(){
   if(!gl.children.length)gl.append(mk('li','','<span>まだありません</span>'));
   $('#lgSpend').textContent='¥'+st.sp.toLocaleString('ja-JP');
   $('#lgRemain').textContent=st.tot?(st.left?`REMAINING: ${st.left}`:'ALL CLEAR! PERFECT!!'):'';
-  const ar=$('#lgArcade');
-  ar.innerHTML=`+-------------------------+\n|  SCORE         <span class="odo" id="arS"></span>   |\n|  HI-SCORE      <span class="odo" id="arC"></span>   |\n+-------------------------+`;
-  odo($('#arS'),0,6);odo($('#arC'),0,6);
+  odo($('#arS'),0,String(all.tot).length);odo($('#arC'),0,String(all.w).length);
   renderLog.vals={w:st.w,tot:all.tot,cl:all.w,wl:String(st.tot).length};
 }
 async function playLog(){
   await raf();await raf();
   const v=renderLog.vals;
-  odo($('#lgW'),v.w,v.wl);odo($('#arS'),v.tot,6);odo($('#arC'),v.cl,6);
+  odo($('#lgW'),v.w,v.wl);odo($('#arS'),v.tot,String(v.tot).length);odo($('#arC'),v.cl,String(v.cl).length);
   fillBars($$('#lgTypes .abar'),70);
   const st=monthStats(view.y,view.m),lc=$('#lcig');logSmoke.size();logSmoke.clear();logLit=st.tot>0&&st.left>0;lc.classList.toggle('out',!logLit);
   lc.style.setProperty('--rem',logLit?Math.max(.45,1-st.left/st.tot).toFixed(3):1);
@@ -1925,7 +1947,13 @@ async function runBoot(full,ready=Promise.resolve()){
   await readyOrTimeout;
   return exitBoot();
 }
+const FONT_PROBE=[['500 12px "M PLUS 1 Code"','0123'],['500 16px "Zen Kaku Gothic New"','イッテツ手帳配信']];
+function fontsReady(ms=2500){const gf=document.querySelector('link[href*="fonts.googleapis.com/css2"]');
+  const sheet=new Promise(r=>{if(!gf||gf.media!=='print')r();else{gf.addEventListener('load',r,{once:true});gf.addEventListener('error',r,{once:true});}});
+  const all=sheet.then(()=>document.fonts?Promise.all(FONT_PROBE.map(f=>document.fonts.load(f[0],f[1]).catch(()=>{}))):0);
+  return Promise.race([all,new Promise(r=>setTimeout(r,ms))]);}
 async function exitBoot(){
+  await fontsReady();
   const boot=$('#boot'),bc=$('#bootCat'),log=$('#bootLog'),msg=$('#bootMsg'),hint=$('#bootHint');
   hint.style.opacity='0';
   cat.place();cat.face('o.o');cat.el.style.visibility='hidden';
