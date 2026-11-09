@@ -983,6 +983,67 @@ html{background:#7966A8}
 .lily-stk{top:auto;bottom:-40px;right:-12px;width:66px;height:74px;rotate:-8deg}
 #calPost{right:auto;left:6px;bottom:-62px;rotate:10deg}
 .h-hero{display:none}
+
+/* ===================== round 4: hazy dream / handwritten ===================== */
+.doily-w,.film,#calPost,#logPost,.m-doily,.m-post,.m-film{display:none!important}
+.hand,.hw-title,.pp,.hw-list,.vcols,.hw-sign{font-family:"Klee One","Zen Old Mincho",var(--sans)}
+.hand{color:#5E5868}
+/* card = tracing paper over the lavender ground, airbrushed and soft */
+.spage{display:block;padding:34px 26px 30px 42px;overflow:hidden}
+.spage::before{background:radial-gradient(70% 50% at 50% 40%,rgba(255,255,255,.32),transparent 70%),var(--fiber),#CFCEDA!important;filter:drop-shadow(0 14px 18px rgba(50,30,90,.25))}
+.spage::after{background:radial-gradient(circle,#B2B1C5 0 5.5px,rgba(0,0,0,.06) 6px,transparent 7px) center top/16px 76px repeat-y}
+.spage>*{position:relative;z-index:1}
+.spage>.wash,.spage>.lilyp,.spage>.pgram{position:absolute}
+/* airbrushed violet block with a ruled grid, like the print */
+.wash{z-index:0!important;left:-10px;right:18%;height:44%;bottom:6%;pointer-events:none;
+  background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(70,50,110,.16) 13px 14px),linear-gradient(90deg,rgba(70,50,110,.14) 1px,transparent 1px) 0 0/58px 100%,#A88FB6;
+  opacity:.72;-webkit-mask:radial-gradient(120% 110% at 40% 55%,#000 45%,transparent 78%);mask:radial-gradient(120% 110% at 40% 55%,#000 45%,transparent 78%)}
+.wash.w-mid{top:30%;bottom:auto;height:38%;left:12%;right:-10px}
+.wash.w-side{top:8%;bottom:8%;height:auto;left:auto;right:-10px;width:46%}
+/* white lilies, glowing — photogram */
+.lilyp{z-index:0!important;width:190px;height:210px;opacity:.92;filter:drop-shadow(0 0 10px rgba(255,255,255,.75)) blur(.3px);pointer-events:none}
+.lilyp svg{width:100%;height:100%;display:block}
+.lp-a{right:-40px;top:-30px;rotate:18deg}.lp-b{left:-30px;bottom:-40px;rotate:-24deg;width:170px}
+.lp-c{right:-50px;bottom:-30px;rotate:-12deg;width:170px}.lp-d{right:-46px;top:30%;rotate:30deg;width:150px}
+.lp-e{left:50%;top:6%;margin-left:-95px;rotate:-8deg;opacity:.85}
+/* covers as photograms: white light on violet, feathered edges */
+.pgram{z-index:0!important;-webkit-mask:radial-gradient(closest-side,#000 55%,transparent 100%);mask:radial-gradient(closest-side,#000 55%,transparent 100%)}
+.pgram .thumb{background:#9C83B5;border-radius:0;aspect-ratio:1.3/1}
+.pgram .thumb img{filter:grayscale(1) contrast(1.35) brightness(1.12) blur(.4px);mix-blend-mode:screen;opacity:.95}
+.pgram .thumb::after{display:none}
+.pg-big{right:-24px;top:16px;width:72%}.pg-small{right:-10px;bottom:6%;width:58%}
+/* type */
+.ty{display:inline-block;font:400 11px var(--mono);color:#6B6577;letter-spacing:.08em;margin-bottom:14px}
+.hw-title{font-size:34px;line-height:1.35;font-weight:600;color:#3F3A4C;margin:40px 0 22px;letter-spacing:.06em;rotate:-2deg}
+.pp{font-size:14.5px;line-height:2.05;color:#55506A;margin:12px 0;max-width:88%;rotate:var(--r,-.6deg)}
+.pp b{font-weight:600;color:#3F3A4C;padding:0 1px;background:linear-gradient(transparent 62%,rgba(255,255,255,.55) 62% 92%,transparent 92%)}
+.pp.aside{font-size:13px;color:#6E6880;margin-left:auto;text-align:right;--r:1.4deg}
+.hw-sign{display:block;font-size:13px;color:#6E6880;text-align:right;margin-top:26px}
+.tiny{display:block;font:400 10px var(--mono);color:#7A7488;margin-top:8px}
+.bigglow{display:flex;align-items:baseline;gap:8px;margin:26px 0 6px;font:400 74px/1 var(--type);color:#fff;text-shadow:0 0 18px rgba(255,255,255,.9),0 0 3px rgba(120,90,170,.5)}
+.bigglow small{font-size:30px;color:rgba(255,255,255,.85)}
+.bigglow.end{justify-content:center;margin:120px 0 30px;font-size:68px}
+.asc.soft{font:700 12px var(--mono);color:rgba(60,50,90,.45);margin:2px 0 8px}
+.vcols{writing-mode:vertical-rl;display:flex;gap:10px;height:250px;margin:14px 0 6px auto;font-size:15px;line-height:1.5;color:#4F4A60;max-width:78%;overflow:hidden}
+.vcols p{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:100%}
+.vcols p span{margin-top:10px;color:#7A7488;font-size:13px}
+.vcols p em{font-style:normal;font-family:var(--mono);font-weight:700;color:rgba(60,50,90,.35);margin-top:8px;font-size:11px;letter-spacing:-.05em}
+.vcols.short{height:200px}.vcols .hot{color:#3F3A4C;font-weight:600}
+.hw-list{display:flex;flex-direction:column;gap:6px;font-size:14px;color:#55506A;margin:4px 0 6px 18px;rotate:-1deg}
+.hist.soft{border-bottom:1px solid rgba(60,50,90,.25);margin:16px 0}
+.hist.soft pre{color:rgba(255,255,255,.95);text-shadow:0 0 6px rgba(255,255,255,.8)}
+.hist.soft span{font-family:"Klee One",var(--sans);color:#4F4A60}
+.stk-row{display:flex;gap:14px;margin:30px 0 10px;font-size:30px}
+.stk-row span{display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 6px rgba(255,255,255,.7))}
+.stk-row small{font:400 10px var(--mono);color:#6E6880}
+.sc-tape,.sc-hand{display:none}
+/* calendar page: handwriting on the note */
+.cal-head .hand{font-size:15px}
+.vcols{flex-direction:column;flex-wrap:nowrap;align-items:flex-start;gap:14px;max-width:none;width:auto;height:270px}
+.vcols p{max-height:270px;display:flex;align-items:center}
+.vcols.short{height:220px}.vcols.short p{max-height:220px}
+.wash{filter:blur(1.2px);-webkit-mask:radial-gradient(105% 95% at 45% 50%,#000 38%,rgba(0,0,0,.6) 60%,transparent 82%);mask:radial-gradient(105% 95% at 45% 50%,#000 38%,rgba(0,0,0,.6) 60%,transparent 82%)}
+.c6 .wash{top:24%;bottom:auto;height:44%}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -2793,6 +2854,75 @@ const _renderSum3=renderSum;renderSum=function(){_renderSum3();
     if(kind==='post')p.insertAdjacentHTML('beforeend',`<div class="m-post">${postmarkSVG(kd(today_key()).slice(0,7))}</div>`);
     if(kind==='lily')p.insertAdjacentHTML('beforeend',`<div class="m-lily">${lily(7+i).svg}</div>`);
     if(kind==='film'&&rec.length>1){const f=filmEl(rec);f.classList.add('m-film');p.append(f);}});};
+
+/* ---- round 4: hazy, handwritten — the まとめ cards are diary pages ---- */
+/* handwriting (Klee One, pencil-like). Only the characters on screen are downloaded; one stylesheet, re-requested when new characters appear */
+const HAND_CH=new Set();let handLink=null;
+function loadHand(text){const before=HAND_CH.size;[...String(text)].forEach(c=>{if(c.trim())HAND_CH.add(c);});if(HAND_CH.size===before&&handLink)return Promise.resolve();
+  const chars=[...HAND_CH].join(''),href='https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&text='+encodeURIComponent(chars)+'&display=swap';
+  const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.append(l);
+  return new Promise(r=>{l.onload=()=>{if(handLink&&handLink!==l)handLink.remove();handLink=l;(document.fonts?document.fonts.load('16px "Klee One"',chars.slice(0,40)):Promise.resolve()).then(r,r);};l.onerror=r;setTimeout(r,3000);});}
+loadHand($$('.hand').map(x=>x.textContent).join('')+'あと本見よう ぜんぶ見た！0123456789');
+const _updHead4=updHead;updHead=function(a){_updHead4(a);const hl=$('#handLeft');if(hl)loadHand(hl.textContent);};
+
+function pgram(x,cls=''){if(!x)return '';PH.push(x);return `<div class="pgram ${cls}"><span class="ph" data-ph="${PH.length-1}"></span></div>`;}
+const lilyP=(seed,cls)=>`<div class="lilyp ${cls}" aria-hidden="true">${lily(seed).svg}</div>`;
+const P=(t,cls='')=>`<p class="pp rv ${cls}">${t}</p>`;
+const B=s=>`<b>${esc(s)}</b>`;
+renderSum=function(){
+  const r=sumStats(sumRange),tr=$('#sumTrack');PH=[];
+  $$('#sumSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.r===sumRange));
+  if(!r.tot){tr.innerHTML=card('c-empty',P('まだ記録がありません。')); $('#sumDots').innerHTML='';loadHand('まだ記録がありません。');return;}
+  const pct=r.str?Math.round(r.w/r.str*100):0,hours=Math.round(r.ms/36e5),games=top(r.games,6),collabs=top(r.collab,6);
+  const wdi=r.dow.indexOf(Math.max(...r.dow)),hmax=Math.max(...r.hour),hi=r.hour.indexOf(hmax);
+  const months=Object.keys(r.month).sort(),busy=months.slice().sort((a,b)=>r.month[b]-r.month[a])[0],mmax=Math.max(1,...Object.values(r.month));
+  const stks=top(r.stk,5),range=`${kd(r.first)} — ${kd(r.last)}`,no=n=>`<span class="ty rv">( no.${String(n).padStart(2,'0')} )</span>`;
+  const mlabel=m=>`${+m.slice(5,7)}月`;
+  const cards=[
+    card('c1',`<i class="wash w-low"></i>${lilyP(3,'lp-a')}${lilyP(11,'lp-b')}
+      <span class="ty rv">( ${sumRange==='year'?nowY():'ALL TIME'} )　${esc(range)}</span>
+      <h2 class="hw-title rv">仲磨の<br>推し活記録</h2>
+      ${P(`${B(kd(r.first))}から${B(kd(r.last))}まで、${B(r.days.size)}日分の記録。<br>いっしょにいた時間を、ここに少しずつ残しておく。`)}
+      <span class="hw-sign rv">— 21+∞</span>`),
+    card('c2',`${no(1)}<i class="wash w-mid"></i>
+      <div class="bigglow rv"><span>${r.w}</span><small>/ ${r.str}</small></div>
+      ${P(`記録した予定は${B(r.tot)}件。<br>そのうち配信は${B(r.str)}本で、${B(r.w)}本を見た。<br>見た率は${B(pct+'％')}。`)}
+      <pre class="asc soft rv">[${'#'.repeat(Math.round(pct/5))}${'.'.repeat(20-Math.round(pct/5))}]</pre>
+      ${P(`見られなかった${r.str-r.w}本も、<br>ちゃんと覚えてる。`,'aside')}${lilyP(5,'lp-c')}`),
+    card('c3',`${no(2)}${r.longest?pgram(r.longest,'pg-big'):''}<i class="wash w-side"></i>
+      ${P(`いっしょに過ごした時間は、<br>だいたい${B(hours+'時間')}。`)}
+      ${r.longest?P(`いちばん長かったのは<br>「${esc(cellLabel1(r.longest.e))}」の${B(dur(r.longest.d))}。`):''}
+      ${r.late?P(`いちばん遅く始まったのは${B(kd(r.late.k))}の${B(hm2(r.late.v))}。<br>夜ふかし、おつかれさま。`,'aside'):''}
+      <span class="tiny rv">時間の分かる配信 ${r.nDur}本の合計</span>`),
+    card('c4',`${no(3)}<i class="wash w-low"></i>
+      ${games.length?`<div class="vcols rv">${games.map(([g,n])=>`<p>${esc(g)}<span>${n}回</span></p>`).join('')}</div>
+      ${P(`いちばん遊んでいたのは「${esc(games[0][0])}」。<br>${games.length>1?`次は「${esc(games[1][0])}」。`:''}`)}
+      ${r.gameEv[games[0][0]]?pgram(r.gameEv[games[0][0]],'pg-small'):''}`:P('ゲーム配信の記録はまだありません。')}${lilyP(9,'lp-d')}`),
+    card('c5',`${no(4)}${lilyP(13,'lp-a')}<i class="wash w-mid"></i>
+      ${collabs.length?P(`いちばん多く一緒にいたのは<br>${B(collabs[0][0])}（${collabs[0][1]}回）。`)+
+        `<div class="hw-list rv">${collabs.slice(1).map(([c,n])=>`<span>${esc(c)}　${n}回</span>`).join('')}</div>`+P(`いろんな人と、たくさん笑ってた。`,'aside'):P('コラボの記録はまだありません。')}`),
+    card('c6',`${no(5)}<i class="wash w-mid"></i>
+      ${P(`よく配信するのは${B(WD[wdi]+'曜日')}、<br>${hmax?B(hi+'時台')+'がいちばん多い。':''}`)}
+      <div class="hist soft rv">${r.dow.map((n,i)=>`<div><pre>${('#\n'.repeat(Math.max(0,Math.round(n/Math.max(1,...r.dow)*6)))).trim()}</pre><span>${WD[i]}</span></div>`).join('')}</div>
+      ${P(`夜になると、いつもの声が聞こえる。`,'aside')}${lilyP(17,'lp-c')}`),
+    card('c7',`${no(6)}<i class="wash w-side"></i>
+      <div class="vcols short rv">${months.map(m=>`<p class="${m===busy?'hot':''}">${mlabel(m)}<span>${r.month[m]}本</span><em>${'#'.repeat(Math.max(1,Math.round(r.month[m]/mmax*8)))}</em></p>`).join('')}</div>
+      ${P(`いちばん多かったのは${B(mlabel(busy))}。<br>${r.streak>1?`${B(r.streak+'日')}続けて配信した日もあった。`:''}<br>休みは${B(r.rest+'日')}。`)}`),
+    card('c8',`${no(7)}${lilyP(21,'lp-b')}<i class="wash w-mid"></i>
+      ${stks.length?`<div class="stk-row rv">${stks.map(([s,n])=>`<span>${s}<small>${n}</small></span>`).join('')}</div>`:''}
+      ${P(`メモは${B(r.notes+'件')}。<br>グッズとボイスに${B('¥'+r.sp.toLocaleString('ja-JP'))}。${r.anniv?`<br>記念日は${B(r.anniv+'回')}。`:''}`)}
+      ${P(`ぜんぶ、大事な思い出。`,'aside')}`),
+    card('c9',`<i class="wash w-low"></i>${lilyP(3,'lp-e')}<div class="bigglow end rv"><span>21+∞</span></div>
+      ${P(`これからも、いっしょに。<br>また次の配信で。`)}<span class="hw-sign rv">20XX SAIKI ITTETSU. NAKAMA FOREVER</span>`)];
+  tr.innerHTML=cards.join('');
+  loadHand(tr.textContent);
+  $$('#sumTrack .rv').forEach((el,i)=>el.style.setProperty('--i',i%8));
+  $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
+  $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');
+  tr.scrollLeft=0;
+  if(!sumIO)sumIO=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in');}),{root:tr,threshold:.55});
+  $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
+};
 
 /* ---------- redraw after sync / new streams (keeps what you are looking at) ---------- */
 function refresh(){
