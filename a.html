@@ -717,6 +717,158 @@ html{background:#7966A8}
 .g .lb::before{display:none}
 .g .lb.u{background:linear-gradient(transparent 32%,var(--pink) 32% 92%,transparent 92%)}
 .g .lb.one.u{background:none;text-decoration:underline;text-decoration-color:rgba(232,164,186,.9);text-decoration-thickness:5px;text-underline-offset:-2px;text-decoration-skip-ink:none}
+
+/* =====================================================================
+   A・描図紙 collage layer (planner page, dot stickers, polaroid, recap cards)
+   ===================================================================== */
+:root{--cream:#FBF9F4;--dot-pk:#E7A9C0;--dot-mt:#8FD3BC;--dot-lv:#B9A6E0;--dot-bl:#9DB4D8;--blk:#2E2A38}
+/* month head: year.month + punched strip */
+.punch{display:inline-flex;align-items:center;gap:5px;padding:5px 7px;background:#E9A3BC;border-radius:2px;rotate:-2deg;box-shadow:0 2px 3px rgba(46,42,56,.18)}
+.punch i{width:11px;height:11px;border-radius:50%;background:var(--void);box-shadow:inset 0 1px 1px rgba(0,0,0,.25)}
+.punch i.on{background:var(--dot-lv);box-shadow:inset 0 -1px 0 rgba(0,0,0,.15)}
+.punch b{font:700 11px var(--mono);color:#fff;margin-left:2px}
+.punch.big{padding:7px 9px;gap:7px;background:var(--dot-mt)}.punch.big i{width:15px;height:15px}
+.tally .left dd{display:flex;align-items:center;gap:10px}
+.tally .left dd .punch{margin-top:2px}
+
+/* hero = polaroid */
+.hero::before{background:#FCFBF8;filter:drop-shadow(0 12px 12px rgba(50,30,90,.28));box-shadow:none}
+.hero::after{display:none}
+.hero{padding:11px 11px 0}
+.hero .thumb{aspect-ratio:1.55/1;background:#D9D3E6}
+.hero .thumb img{filter:saturate(.72) contrast(.94) sepia(.08);mix-blend-mode:normal;opacity:1}
+.hero .thumb::after{box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);background:var(--fiber);opacity:.4}
+.hero .cap[data-file]::before{display:block;content:attr(data-file);font:400 10px/1.2 var(--mono);color:var(--dim);letter-spacing:.04em;margin-bottom:6px}
+.hero-wrap .tape{top:-4px;left:-18px;rotate:-34deg;width:72px}
+.hero-wrap::after{content:"";position:absolute;z-index:4;right:22px;top:-15px;width:32px;height:32px;border-radius:50%;background:var(--dot-mt);box-shadow:0 2px 3px rgba(46,42,56,.2),inset 0 -2px 0 rgba(0,0,0,.08)}
+.hero-wrap::before{content:"#サイキ通信ケーブル";position:absolute;z-index:4;left:-8px;bottom:-11px;padding:3px 9px;background:#fff;font:400 10.5px/1.3 var(--mono);color:var(--ink);rotate:-3deg;box-shadow:0 2px 3px rgba(46,42,56,.18)}
+
+/* calendar = a clean planner page */
+.gridwrap{padding-top:44px}
+.gridwrap::before{background:var(--fiber),var(--cream);box-shadow:none;filter:drop-shadow(0 12px 14px rgba(50,30,90,.25))}
+.gridwrap::after{inset:auto;right:12px;top:-11px;width:76px;height:24px;z-index:3;
+  background:radial-gradient(circle at 12px 12px,var(--dot-pk) 0 10px,transparent 10.5px),radial-gradient(circle at 38px 12px,var(--blk) 0 10px,transparent 10.5px),radial-gradient(circle at 64px 12px,var(--dot-mt) 0 10px,transparent 10.5px)}
+.gridwrap>.tape{display:none}
+.cal-head{position:absolute;left:12px;right:12px;top:12px;display:flex;align-items:center;gap:10px;font:400 10px var(--mono);color:var(--dim)}
+.cal-head .mtape{font-size:15px;padding:4px 14px}
+.mtape{display:inline-block;padding:3px 12px;background:rgba(190,196,214,.75);font:400 13px/1.3 var(--type);color:#C2577F;letter-spacing:.06em;rotate:-2deg;
+  clip-path:polygon(0 6%,3% 0,97% 4%,100% 0,99% 50%,100% 96%,96% 100%,4% 97%,0 100%,1% 50%)}
+.wd{border-bottom:1px solid rgba(60,56,80,.15);padding-bottom:5px;margin-bottom:2px;font-family:var(--mono);letter-spacing:.08em}
+.cell{border-top:1px solid rgba(60,56,80,.1)}
+.grid::before{display:none}
+.cell.today .n{background:none;color:var(--ink)}
+.cell.today::before{content:"";position:absolute;z-index:-1;left:50%;top:1px;width:38px;height:38px;margin-left:-19px;border-radius:50%;background:rgba(143,211,188,.55)}
+.cell .g{font:500 10.5px/1.3 var(--sans)}
+.g .lb{padding-left:12px;background:none!important;text-decoration:none!important;color:var(--ink)}
+.g .lb::before{display:block!important;content:"";position:absolute;left:1px;top:3px;bottom:auto;width:8px;height:8px;border-radius:50%;background:var(--dc,#ccc);opacity:1;box-shadow:inset 0 -1px 0 rgba(0,0,0,.14)}
+.g .lb.w,.g .lb.o{color:var(--ash)}
+.g .lb.w::before{opacity:.45}
+.g .lb.u{color:var(--ink);font-weight:700}
+.g .lb.u::after{content:"";position:absolute;left:-1px;top:1px;width:12px;height:12px;border-radius:50%;box-shadow:0 0 0 1.5px #C2577F}
+.lens-b::before{background:var(--dot-pk)}
+
+/* ===================== まとめ ===================== */
+#sumView{position:relative;z-index:1}
+.sum-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.sum-head h2{font:700 21px var(--sans);color:var(--ink)}
+.sum-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 calc(var(--pad) * -1);padding:16px var(--pad) 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.sum-track::-webkit-scrollbar{display:none}
+.scard{flex:0 0 100%;scroll-snap-align:center;scroll-snap-stop:always;min-height:min(600px,calc(100dvh - 250px));position:relative}
+.spage{position:relative;height:100%;min-height:inherit;padding:30px 22px 26px 40px;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.spage::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--fiber),var(--cream);filter:drop-shadow(0 14px 16px rgba(50,30,90,.28))}
+.spage::after{content:"";position:absolute;left:10px;top:24px;bottom:24px;width:16px;z-index:-1;background:radial-gradient(circle,var(--void) 0 6px,rgba(0,0,0,.08) 6.6px,transparent 7.5px) center top/16px 76px repeat-y}
+.c-nums .spage::before{background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(231,169,192,.16) 14px 22px),var(--cream)}
+.c-time .spage::before{background:var(--fiber),#F3F1F7}
+.c-games .spage::before{background:linear-gradient(rgba(60,56,80,.07) 1px,transparent 1px) 0 0/100% 22px,var(--cream)}
+.c-collab .spage::before{background:radial-gradient(circle,rgba(143,211,188,.6) 2.5px,transparent 3px) 0 0/34px 34px,var(--cream)}
+.c-when .spage::before{background:linear-gradient(90deg,rgba(220,150,170,.16) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(rgba(220,150,170,.16) 1px,transparent 1px) 0 0/12px 12px,var(--cream)}
+.c-month .spage::before{background:repeating-linear-gradient(180deg,transparent 0 21px,rgba(157,180,216,.35) 21px 22px),var(--cream)}
+.c-mem .spage::before{background:linear-gradient(160deg,#F7EEF3,#EEF4F2)}
+.c-end .spage::before{background:var(--fiber),#EFEAF6}
+.sum-dots{display:flex;justify-content:center;gap:7px;margin-top:2px}
+.sum-dots i{width:7px;height:7px;border-radius:50%;background:rgba(46,42,56,.18);transition:background-color var(--t2),transform var(--t2) var(--spring)}
+.sum-dots i.on{background:var(--violet);transform:scale(1.3)}
+.s-note{color:var(--dim);font-size:14px}
+/* reveal */
+.scard .rv{opacity:0;transform:translateY(14px) rotate(calc(var(--r,0deg) + 3deg))}
+.scard.in .rv{animation:rvIn 640ms var(--spring) both;animation-delay:calc(var(--i,0) * 70ms)}
+@keyframes rvIn{from{opacity:0;transform:translateY(14px) rotate(calc(var(--r,0deg) + 3deg))}to{opacity:1;transform:rotate(var(--r,0deg))}}
+.rm .scard .rv{opacity:1;transform:rotate(var(--r,0deg))}
+/* atoms */
+.ticket{position:relative;display:inline-flex;flex-direction:column;gap:2px;padding:9px 16px 9px 20px;background:#fff;font:400 13px/1.25 var(--type);color:var(--ink);rotate:var(--r,0deg);box-shadow:0 2px 4px rgba(46,42,56,.16);
+  -webkit-mask:radial-gradient(circle at 0 50%,transparent 6px,#000 6.5px) left/51% 100% no-repeat,radial-gradient(circle at 100% 50%,transparent 6px,#000 6.5px) right/51% 100% no-repeat;
+  mask:radial-gradient(circle at 0 50%,transparent 6px,#000 6.5px) left/51% 100% no-repeat,radial-gradient(circle at 100% 50%,transparent 6px,#000 6.5px) right/51% 100% no-repeat}
+.ticket::before{content:"";position:absolute;left:10px;top:6px;bottom:6px;border-left:1.5px dashed rgba(46,42,56,.25)}
+.ticket small{font:400 10px var(--mono);color:var(--dim)}
+.ticket b{font:400 30px/1 var(--type);color:var(--ink);margin-top:2px}
+.c-cover .ticket::after{content:"";position:absolute;right:16px;top:-3px;width:3px;height:22px;border-radius:1px;background:linear-gradient(90deg,#9A9AA6,#E4E4EA,#8E8E9A)}
+.strip{display:inline-block;padding:4px 10px;background:#fff;font:400 12px/1.4 var(--mono);color:var(--ink);rotate:var(--r,0deg);box-shadow:0 2px 3px rgba(46,42,56,.16)}
+.strip b{font-family:var(--type);font-size:16px;font-weight:400}
+.trio{display:inline-flex;gap:6px}.trio i{width:18px;height:18px;border-radius:50%;background:var(--dot-pk);box-shadow:inset 0 -2px 0 rgba(0,0,0,.1)}
+.trio i:nth-child(2){background:var(--dot-bl)}.trio i:nth-child(3){background:var(--dot-mt)}
+.star{position:absolute;z-index:0;left:var(--sx);top:var(--sy);width:12px;height:12px;background:var(--sc);opacity:.8;pointer-events:none;
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.stamp{font:700 12px/1.1 var(--mono);color:rgba(46,42,56,.5);rotate:-8deg;white-space:pre;border:1.5px solid rgba(46,42,56,.35);border-radius:4px;padding:6px 8px;align-self:flex-end;filter:url(#ink)}
+.stamp.big{font-size:16px;align-self:center;rotate:-4deg}
+.s-cap{font:600 17px/1.5 var(--sans);color:var(--ink);letter-spacing:.08em}
+.bracket{display:flex;align-items:center;gap:14px;font:400 64px/1 var(--sans);color:var(--ink);align-self:center}
+.bracket span{font:200 70px/1 var(--sans);color:rgba(46,42,56,.35);transform:scaleY(1.5)}
+.bracket small{font-size:22px;margin-left:-14px;align-self:flex-end}
+.oval{width:min(220px,62%);align-self:center;margin:-6px 0 -10px}
+.oval svg{display:block;width:100%;height:auto;overflow:visible}
+.torn{position:relative;display:flex;flex-direction:column;gap:4px;padding:18px 20px 22px;width:86%;filter:url(#deckle);color:var(--ink)}
+.torn.mint{background:#B7E3D3}.torn b{font:400 64px/1 var(--type)}.torn small{font-size:12px;color:var(--ash)}
+.tix{display:flex;gap:14px;flex-wrap:wrap}
+.asc{font:700 13px/1.45 var(--mono);color:var(--ink);white-space:pre}
+.clipnote{position:relative;align-self:stretch;margin-top:14px;padding:30px 20px 22px;background:#2E2A38;color:#F5F3F8;display:flex;flex-direction:column;gap:6px;rotate:-1.5deg;filter:url(#deckle2)}
+.clipnote b{font:400 34px/1.2 var(--type)}.clipnote small{font-size:12px;color:rgba(245,243,248,.7)}
+.clipnote pre{font:700 12px/1.3 var(--mono);color:rgba(255,255,255,.75);white-space:pre}
+.clip{position:absolute;top:-16px;left:calc(50% - 24px);width:48px;height:30px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#9EDCC6,#7FC7AE);box-shadow:0 3px 4px rgba(0,0,0,.25)}
+.clip::before{content:"";position:absolute;left:14px;top:-12px;width:20px;height:16px;border:3px solid #7FC7AE;border-bottom:0;border-radius:10px 10px 0 0}
+.pola{display:flex;flex-direction:column;gap:4px;width:74%;padding:9px 9px 12px;background:#fff;rotate:var(--r,0deg);box-shadow:0 10px 18px -10px rgba(50,30,90,.6);align-self:flex-end}
+.pola .thumb{aspect-ratio:1.4/1;border-radius:0}
+.pola .thumb img{filter:saturate(.75) contrast(.94);mix-blend-mode:normal;opacity:1}
+.pcap{font:400 10px var(--mono);color:var(--dim)}.ptitle{font:600 13px/1.4 var(--sans);color:var(--ink)}
+.vchar{position:absolute;right:16px;top:58px;writing-mode:vertical-rl;font:700 30px/1.1 var(--sans);color:rgba(143,211,188,.95);letter-spacing:.06em;max-height:240px;overflow:hidden;z-index:0}
+.rank{list-style:none;width:74%;display:flex;flex-direction:column;gap:6px;z-index:1}
+.rank li{display:flex;align-items:baseline;gap:6px;font:500 14px/1.4 var(--sans);color:var(--ink)}
+.rank li span{font:400 13px var(--type);color:var(--dim)}.rank li em{font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.rank li i{flex:1;border-bottom:1.5px dotted rgba(46,42,56,.35);transform:translateY(-4px)}.rank li b{font:400 14px var(--type)}
+.halves{display:flex;flex-direction:column;gap:8px;width:52%;align-self:flex-end;z-index:1}
+.half{padding:6px;background:#fff;box-shadow:0 6px 12px -8px rgba(50,30,90,.6)}.half .thumb{aspect-ratio:2/1;border-radius:0}
+.half .thumb img{filter:saturate(.75) contrast(.94);mix-blend-mode:normal;opacity:1}
+.doily{position:absolute;left:-60px;top:-60px;width:210px;height:210px;border-radius:50%;z-index:-1;opacity:.9;
+  background:radial-gradient(circle,transparent 0 62%,#fff 62% 64%,transparent 64% 67%,#fff 67%) ,repeating-conic-gradient(#fff 0 6deg,rgba(255,255,255,.35) 6deg 12deg);
+  -webkit-mask:radial-gradient(circle,#000 0 70%,transparent 71%);mask:radial-gradient(circle,#000 0 70%,transparent 71%);box-shadow:0 0 0 1px rgba(0,0,0,.03)}
+.big2{font:500 15px/1.6 var(--sans);color:var(--ash);display:flex;flex-direction:column;gap:2px;z-index:1}
+.big2 b{font:700 26px/1.3 var(--sans);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:10px 12px;z-index:1}
+.hist{display:flex;gap:6px;align-items:flex-end;align-self:stretch;justify-content:space-between;padding:10px 8px 0;border-bottom:1.5px solid rgba(46,42,56,.3)}
+.hist div{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.hist pre{font:700 13px/1 var(--mono);color:var(--violet);white-space:pre;text-align:center}
+.hist span{font:500 12px var(--sans);color:var(--ink)}.hist small{font:400 10px var(--mono);color:var(--dim)}
+.mbars{display:flex;flex-direction:column;gap:5px;align-self:stretch}
+.mbars div{display:grid;grid-template-columns:4.6em 1fr 2em;align-items:center;gap:6px;font:400 12px var(--mono);color:var(--dim)}
+.mbars pre{font:700 13px/1 var(--mono);color:var(--dot-lv);white-space:pre;overflow:hidden}
+.mbars b{font:400 13px var(--type);color:var(--ink);text-align:right}
+.mbars .hot pre{color:#C2577F}.mbars .hot span{color:#C2577F}
+.stkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-self:stretch}
+.stkgrid span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;background:#fff;border-radius:10px;box-shadow:0 2px 4px rgba(46,42,56,.12)}
+.stkgrid b{font-size:30px;line-height:1}.stkgrid small{font:400 11px var(--mono);color:var(--dim)}
+.infty{font:400 72px/1 var(--type);color:var(--ink);align-self:center;margin-top:40px}.infty span{color:#C2577F}
+.c-end .s-cap{align-self:center}.c-end .trio{align-self:center}.foot{align-self:center;margin-top:auto}
+.c-cover .trio{position:absolute;right:20px;top:24px}
+.c-cover .stamp{position:absolute;right:16px;bottom:22px}
+.spage{justify-content:space-around}
+.vchar{display:none}
+.rank{width:100%}
+.halves{flex-direction:row;width:100%;align-self:stretch}
+.half{flex:1;rotate:-1.5deg}.half+.half{rotate:2deg}
+.scard,.spage{min-width:0;max-width:100%}
+.rank li{min-width:0;width:100%}.rank li em{min-width:0;flex:0 1 auto}
+.halves .half{min-width:0}
+
+.tab{padding:0 15px}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -762,7 +914,7 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
           </div>
           <dl class="tally">
             <div><dt>予定</dt><dd><span class="odo" id="odoTotal"></span></dd></div>
-            <div class="left"><dt>まだ見てない</dt><dd><span class="odo" id="odoLeft"></span></dd></div>
+            <div class="left"><dt>まだ見てない</dt><dd><span class="odo" id="odoLeft"></span><span class="punch" id="punch" role="img"></span></dd></div>
           </dl>
         </div>
       </div>
@@ -771,7 +923,7 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
 
       <div class="pills" id="pills" role="radiogroup" aria-label="種類で絞り込む"><span class="pill-ind" id="pillInd"></span></div>
 
-      <div class="gridwrap" id="gridwrap"><span class="tape t1"></span><span class="tape pk t2"></span>
+      <div class="gridwrap" id="gridwrap"><span class="tape t1"></span><span class="tape pk t2"></span><div class="cal-head" aria-hidden="true"><span id="calYM"></span><span class="mtape" id="mtape"></span></div>
         <div class="wd" aria-hidden="true"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
         <div class="grid" id="grid">
           <div class="lens" id="lens" aria-hidden="true"><div class="lens-b glass" id="lensB"><span class="lens-n" id="lensN"></span><span class="g" id="lensG"></span></div></div>
@@ -798,6 +950,11 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
       <div class="alltime"><div><span class="odo" id="arS"></span><small>予定</small></div><div><span class="odo" id="arC"></span><small>済み</small></div></div>
       <p class="foot">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>
     </section>
+    <section id="sumView" class="view" aria-labelledby="sumTitle" hidden>
+      <div class="sum-head"><h2 id="sumTitle">まとめ</h2><div class="seg" id="sumSeg" role="group" aria-label="期間"><button data-r="all">ぜんぶ</button><button data-r="year">今年</button></div></div>
+      <div class="sum-track" id="sumTrack" aria-label="これまでのまとめ（横にスワイプ）"></div>
+      <div class="sum-dots" id="sumDots" aria-hidden="true"></div>
+    </section>
   </main>
 </div>
 
@@ -805,6 +962,7 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
   <span class="tab-ind" id="tabInd"></span>
   <button class="tab" role="tab" data-view="cal" aria-selected="true" aria-controls="calView">カレンダー</button>
   <button class="tab" role="tab" data-view="log" aria-selected="false" aria-controls="logView">記録</button>
+  <button class="tab" role="tab" data-view="sum" aria-selected="false" aria-controls="sumView">まとめ</button>
 </nav>
 <button id="cat" aria-label="ネコに話しかける"><pre id="catArt" aria-hidden="true"></pre></button>
 <div id="bubble" class="glass" aria-hidden="true"></div>
@@ -2094,14 +2252,15 @@ const flash=m=>toast(m);
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),1800);}
 
 /* ---------- views (tab bar) ---------- */
-const tabInd=$('#tabInd'),tabs=$$('.tab'),views={cal:$('#calView'),log:$('#logView')};
+const tabInd=$('#tabInd'),tabs=$$('.tab'),views={cal:$('#calView'),log:$('#logView'),sum:$('#sumView')};
 tabs.forEach(t=>t.onclick=()=>setView(t.dataset.view));
 function setView(v){
   if(v===curView)return;
-  const from=views[curView],to=views[v],dir=v==='log'?1:-1;curView=v;document.body.classList.toggle('view-log',v==='log');
+  const ORD=['cal','log','sum'],from=views[curView],to=views[v],dir=ORD.indexOf(v)>ORD.indexOf(curView)?1:-1;curView=v;document.body.classList.toggle('view-log',v==='log');
   tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.view===v));
   liquid(tabInd,tabs.find(t=>t.dataset.view===v),{squash:.8,dur:560});
   if(v==='log')renderLog();
+  if(v==='sum')renderSum();
   if(RM()){from.hidden=true;to.hidden=false;scrollTo(0,0);if(v==='log')playLog();return;}
   from.animate([{opacity:1,transform:'none',filter:'blur(0)'},{opacity:0,transform:`translateX(${-dir*26}px)`,filter:'blur(6px)'}],{duration:200,easing:'ease-in'}).onfinish=()=>{
     from.hidden=true;to.hidden=false;scrollTo(0,0);
@@ -2326,11 +2485,130 @@ async function exitBoot(){
   boot.hidden=true;[log,msg].forEach(el=>el.getAnimations().forEach(x=>x.cancel()));a.cancel();
 }
 
+/* =====================================================================
+   A・描図紙 — collage layer: planner calendar with dot stickers, polaroid hero,
+   punched strip for unwatched streams, and the まとめ (all-time recap) cards.
+   Data accessors (allItems / spanMs / stkMap / nowY) are swapped for the real
+   data layer when the page is ported.
+   ===================================================================== */
+function allItems(){const out=[];Object.keys(S.events).forEach(k=>(S.events[k]||[]).forEach(e=>{if(e)out.push({e,k});}));return out;}
+function spanMs(e,k){const p=evSpan(e,k);return e.yt&&feedOf(e.yt)?{s:p.s,e:p.e}:{s:p.s,e:0};}
+function stkMap(){return S.stickers;}
+const nowY=()=>today().y;
+const MON_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOTC={zatsudan:'#E7A9C0',game_single:'#9DB4D8',game_series:'#B9A6E0',collab:'#8FD3BC',event:'#F2C46B',merch:'#E8956B',anniversary:'#E56B7E',memo:'#2E2A38',yasumi:'#CFCBD6'};
+
+/* ---- calendar cells: a dot sticker per item ---- */
+glyphHTML=function(evs,pop){
+  let list=filter?evs.filter(e=>e.type===filter):evs.filter(e=>e.type!=='yasumi');const more=list.length-2,one=list.length===1;list=list.slice(0,2);
+  return list.map(e=>`<span class="lb ${watchable(e)?(e.watched?'w':'u'):'o'}${one?' one':''}${pop?' pop':''}" style="--dc:${DOTC[e.type]||DOTC.zatsudan}">${esc(cellLabel1(e))}</span>`).join('')+(more>0?`<span class="more">+${more}</span>`:'');
+};
+
+/* ---- month head: tape label with the month, punched strip for what is still unwatched ---- */
+function decorHead(){
+  const mt=$('#mtape');if(mt)mt.textContent=MON_EN[view.m];
+  const yl=$('#calYM');if(yl)yl.textContent=`${view.y} . ${String(view.m+1).padStart(2,'0')}`;
+  const p=$('#punch');if(!p)return;const st=monthStats(view.y,view.m),n=st.left,holes=5;
+  p.innerHTML=Array.from({length:holes},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')+(n>holes?`<b>+${n-holes}</b>`:'');
+  p.setAttribute('aria-label',`まだ見ていない配信 ${n}本`);}
+const _updHead=updHead;updHead=function(a){_updHead(a);decorHead();};
+/* ---- hero: a polaroid with a file-name caption ---- */
+const _renderHero=renderHero;renderHero=function(){_renderHero();const h=$('#hero'),c=h&&h.querySelector('.cap');if(!c)return;
+  const id=(h.dataset.sig||'').split('|')[0]||('0'+today().d).slice(-2)+today().m;c.dataset.file='IMG_'+String(id).replace(/^yt-/,'').slice(0,11)+'.jpg';};
+
+/* ===================== まとめ: all-time recap ===================== */
+let sumRange='all';
+function sumStats(range){
+  let items=allItems();if(range==='year')items=items.filter(x=>+x.k.slice(0,4)===nowY());
+  const r={tot:items.length,str:0,w:0,days:new Set(),sdays:new Set(),first:'',last:'',ms:0,nDur:0,longest:null,late:null,games:{},gameEv:{},collab:{},dow:[0,0,0,0,0,0,0],hour:Array(24).fill(0),month:{},rest:0,notes:0,sp:0,anniv:0,stk:{},nStk:0,recent:null};
+  items.forEach(({e,k})=>{r.days.add(k);if(!r.first||k<r.first)r.first=k;if(!r.last||k>r.last)r.last=k;
+    if(e.type==='yasumi')r.rest++;if(e.note)r.notes++;if(e.type==='anniversary')r.anniv++;
+    if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))r.sp+=n;}
+    if(!watchable(e))return;
+    r.str++;if(e.watched)r.w++;r.sdays.add(k);
+    const [y,m,d]=k.split('-').map(Number);r.dow[dow(y,m-1,d)]++;r.month[k.slice(0,7)]=(r.month[k.slice(0,7)]||0)+1;
+    if(e.time){const h=+e.time.split(':')[0];if(!isNaN(h))r.hour[h]++;}
+    if(e.type==='game_single'||e.type==='game_series'){const g=cellLabel1(e);r.games[g]=(r.games[g]||0)+1;if(e.thumb&&(!r.gameEv[g]||k>r.gameEv[g].k))r.gameEv[g]={e,k};}
+    if(e.collab)String(e.collab).split(/\s*[\/／、,]\s*/).filter(Boolean).forEach(c=>r.collab[c]=(r.collab[c]||0)+1);
+    const sp=spanMs(e,k);if(sp.s&&sp.e>sp.s){const d2=sp.e-sp.s;r.ms+=d2;r.nDur++;if(!r.longest||d2>r.longest.d)r.longest={e,k,d:d2};}
+    if(e.time){let [hh,mm]=e.time.split(':').map(Number);if(hh<6)hh+=24;const v=hh*60+mm;if(!r.late||v>r.late.v)r.late={e,k,v};}
+    if(e.thumb&&(!r.recent||k>r.recent.k))r.recent={e,k};});
+  const sm=stkMap();Object.keys(sm).forEach(k=>{if(range==='year'&&+k.slice(0,4)!==nowY())return;(sm[k]||[]).forEach(s=>{r.stk[s]=(r.stk[s]||0)+1;r.nStk++;});});
+  // longest run of consecutive days with a stream
+  const ds=[...r.sdays].sort();let best=0,run=0,prev=null;
+  ds.forEach(k=>{const t=Date.UTC(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10));run=prev!==null&&t-prev===864e5?run+1:1;prev=t;if(run>best)best=run;});r.streak=best;
+  return r;}
+const top=(o,n)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,n);
+const kd=k=>k?k.replace(/-/g,'.'):'';
+const hm2=v=>{const h=Math.floor(v/60)%24,m=v%60;return `${h}:${String(m).padStart(2,'0')}`;};
+const dur=ms=>{const m=Math.round(ms/6e4);return m>=60?`${Math.floor(m/60)}時間${m%60?m%60+'分':''}`:`${m}分`;};
+const stars=(n,cls='')=>Array.from({length:n},(_,i)=>`<i class="star ${cls}" style="--sx:${(i*37+11)%88}%;--sy:${(i*53+7)%86}%;--sc:${['#E7A9C0','#8FD3BC','#B9A6E0','#9DB4D8'][i%4]}"></i>`).join('');
+const trio=(cls='')=>`<span class="trio ${cls}"><i></i><i></i><i></i></span>`;
+let PH=[];const ph=(x,cls)=>{if(!x)return '';PH.push(x);return `<span class="ph ${cls||''}" data-ph="${PH.length-1}"></span>`;};
+function oval(x,text,id){PH.push(x);const n=PH.length-1;
+  return `<div class="oval rv"><svg viewBox="0 0 240 320" aria-hidden="true"><defs><path id="ovp${id}" d="M120,22 a100,138 0 1,1 -0.1,0"/><clipPath id="ovc${id}"><ellipse cx="120" cy="160" rx="82" ry="118"/></clipPath></defs>
+    <ellipse cx="120" cy="160" rx="90" ry="126" fill="#FBF9F4" stroke="#B9A6E0" stroke-width="2.4"/><ellipse cx="120" cy="160" rx="86" ry="122" fill="none" stroke="#fff" stroke-width="2"/>
+    <rect x="38" y="42" width="164" height="236" fill="#D9D3E6" clip-path="url(#ovc${id})"/><image class="ovimg" data-ph="${n}" x="38" y="42" width="164" height="236" preserveAspectRatio="xMidYMid slice" clip-path="url(#ovc${id})"/>
+    <text font-size="10.5" letter-spacing="1.2" fill="#7966A8"><textPath href="#ovp${id}">${esc(text)}</textPath></text></svg></div>`;}
+function card(cls,inner){return `<article class="scard ${cls}"><div class="spage">${inner}</div></article>`;}
+function renderSum(){
+  const r=sumStats(sumRange),tr=$('#sumTrack');PH=[];
+  $$('#sumSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.r===sumRange));
+  if(!r.tot){tr.innerHTML=card('c-empty',`<p class="s-note">まだ記録がありません</p>`);$('#sumDots').innerHTML='';return;}
+  const pct=r.str?Math.round(r.w/r.str*100):0,bar=n=>'#'.repeat(Math.round(n/10))+'·'.repeat(10-Math.round(n/10));
+  const games=top(r.games,5),gmax=games.length?games[0][1]:1,collabs=top(r.collab,6);
+  const dmax=Math.max(1,...r.dow),wdi=r.dow.indexOf(Math.max(...r.dow)),hmax=Math.max(...r.hour),hi=r.hour.indexOf(hmax);
+  const months=Object.keys(r.month).sort(),mmax=Math.max(1,...Object.values(r.month)),busy=months.slice().sort((a,b)=>r.month[b]-r.month[a])[0];
+  const stks=top(r.stk,6),hours=Math.round(r.ms/36e5);
+  const titles=allItems().filter(x=>x.e.yt).slice(-12).map(x=>cellLabel1(x.e)).join(' ・ ');
+  const span=`${kd(r.first)} — ${kd(r.last)}`;
+  const cards=[
+    card('c-cover',`<span class="ticket rv" style="--r:-3deg">${sumRange==='year'?nowY()+' / THIS YEAR':'ALL TIME'}<small>${span}</small></span>
+      ${r.recent?oval(r.recent,`SAIKI ITTETSU ・ NAKAMA FOREVER ・ 21+∞ ・ #サイキ通信ケーブル ・ ${titles} ・ `,'a'):''}
+      <h2 class="bracket rv"><span>(</span>推<small>。</small><span>)</span></h2>
+      <p class="s-cap rv">仲磨の推し活記録</p>${trio('rv')}${stars(4)}
+      <pre class="stamp rv" aria-hidden="true"> /\\_/\\ \n( o.o )\n (")(")~</pre>`),
+    card('c-nums',`<span class="mtape rv">NUMBERS</span>
+      <div class="torn mint rv"><small>記録した予定</small><b class="num" data-v="${r.tot}">${r.tot}</b><small>件 ／ ${r.days.size}日分</small></div>
+      <div class="tix rv"><span class="ticket" style="--r:2deg">配信<b class="num" data-v="${r.str}">${r.str}</b></span><span class="ticket" style="--r:-2deg">見た<b class="num" data-v="${r.w}">${r.w}</b></span></div>
+      <pre class="asc rv">見た率  [${bar(pct)}] ${pct}%</pre>${trio('rv')}${stars(3)}`),
+    card('c-time',`<div class="clipnote rv"><i class="clip"></i><small>いっしょに過ごした時間</small><b>約 <span class="num" data-v="${hours}">${hours}</span> 時間</b><small>時間の分かる配信 ${r.nDur}本の合計</small><pre aria-hidden="true">  *   .    +\n .   ✦     .</pre></div>
+      ${r.longest?`<div class="pola rv" style="--r:3deg">${ph(r.longest)}<span class="pcap">いちばん長い配信　${esc(dur(r.longest.d))}</span><span class="ptitle">${esc(cellLabel1(r.longest.e))}</span></div>`:''}
+      ${r.late?`<span class="strip rv" style="--r:-2deg">いちばん遅い開始　<b>${hm2(r.late.v)}</b>　${esc(kd(r.late.k))}</span>`:''}`),
+    card('c-games',`<span class="mtape rv">GAMES</span>${games.length?`<h3 class="vchar rv">${esc(games[0][0].slice(0,6))}</h3>
+      <ol class="rank rv">${games.map(([g,n],i)=>`<li><span>${i+1}.</span><em>${esc(g)}</em><i></i><b>${n}回</b></li>`).join('')}</ol>
+      <div class="halves rv">${games.slice(0,2).map(([g])=>r.gameEv[g]?`<div class="half">${ph(r.gameEv[g])}</div>`:'').join('')}</div>`:'<p class="s-note">ゲーム配信の記録はまだありません</p>'}${stars(3)}`),
+    card('c-collab',`<i class="doily rv"></i><span class="mtape rv">COLLAB</span>${collabs.length?`<p class="big2 rv">いちばん多く一緒にいたのは<b>${esc(collabs[0][0])}</b>（${collabs[0][1]}回）</p>
+      <div class="chips rv">${collabs.map(([c,n],i)=>`<span class="strip" style="--r:${(i%2?2:-2)}deg">${esc(c)}　×${n}</span>`).join('')}</div>`:'<p class="s-note">コラボの記録はまだありません</p>'}${trio('rv')}`),
+    card('c-when',`<span class="mtape rv">WHEN</span><p class="big2 rv">よく配信するのは<b>${WD[wdi]}曜日</b>${hmax?`<b>${hi}時台</b>`:''}</p>
+      <div class="hist rv">${r.dow.map((n,i)=>`<div><pre>${('#\n'.repeat(Math.max(0,Math.round(n/dmax*6)))).trim()}</pre><span>${WD[i]}</span><small>${n}</small></div>`).join('')}</div>
+      <pre class="asc rv">${[18,19,20,21,22,23,0,1].map(h=>`${String(h).padStart(2,'0')}時 ${'#'.repeat(r.hour[h])}`).join('\n')}</pre>`),
+    card('c-month',`<span class="mtape rv">MONTHS</span><div class="mbars rv">${months.map(m=>`<div class="${m===busy?'hot':''}"><span>${m.replace('-','.')}</span><pre>${'#'.repeat(Math.max(1,Math.round(r.month[m]/mmax*16)))}</pre><b>${r.month[m]}</b></div>`).join('')}</div>
+      <div class="tix rv"><span class="ticket" style="--r:-2deg">連続で配信<b>${r.streak}</b>日</span><span class="ticket" style="--r:2deg">休み<b>${r.rest}</b>日</span></div>
+      <div class="punch big rv">${Array.from({length:7},(_,i)=>`<i class="${i<Math.min(7,r.streak)?'on':''}"></i>`).join('')}</div>`),
+    card('c-mem',`<span class="mtape rv">MEMORIES</span><div class="stkgrid rv">${stks.length?stks.map(([s,n])=>`<span><b>${s}</b><small>×${n}</small></span>`).join(''):'<p class="s-note">スタンプはまだありません</p>'}</div>
+      <div class="tix rv"><span class="ticket" style="--r:2deg">メモ<b>${r.notes}</b>件</span><span class="ticket" style="--r:-2deg">グッズ・ボイス<b>¥${r.sp.toLocaleString('ja-JP')}</b></span></div>
+      ${r.anniv?`<span class="strip rv">記念日　${r.anniv}回</span>`:''}${stars(4)}`),
+    card('c-end',`<h2 class="infty rv">21<span>+</span>∞</h2><p class="s-cap rv">これからも、いっしょに。</p><pre class="stamp big rv" aria-hidden="true"> /\\_/\\ \n( ^.^ )\n (")(")~~=[]</pre>${trio('rv')}<p class="foot rv">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>${stars(5)}`)];
+  tr.innerHTML=cards.join('');
+  $$('#sumTrack .rv').forEach((el,i)=>el.style.setProperty('--i',i%8));
+  $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
+  $$('#sumTrack .ovimg').forEach(im=>{const x=PH[+im.dataset.ph];if(x)resolveSrc(x.e).then(src=>im.setAttribute('href',src));});
+  $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');
+  tr.scrollLeft=0;
+  if(!sumIO)sumIO=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&!x.target.classList.contains('in')){x.target.classList.add('in');x.target.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}}),{root:tr,threshold:.55});
+  $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
+}
+let sumIO=null;
+$('#sumTrack').addEventListener('scroll',()=>{const tr=$('#sumTrack'),i=Math.round(tr.scrollLeft/Math.max(1,tr.firstElementChild?tr.firstElementChild.offsetWidth+14:1));$$('#sumDots i').forEach((d,j)=>d.classList.toggle('on',j===i));},{passive:true});
+$$('#sumSeg button').forEach(b=>b.onclick=()=>{sumRange=b.dataset.r;if(sumIO){sumIO.disconnect();}renderSum();});
+
 /* ---------- redraw after sync / new streams (keeps what you are looking at) ---------- */
 function refresh(){
   if(body.classList.contains('booting'))return;
   updHead(false);paintGrid();renderHero();
   if(daySheet.isOpen&&sel)fillDay(sel,{soft:true});
+  if(curView==='sum'&&!stack.length){const sg=JSON.stringify(sumStats(sumRange).tot)+Object.keys(S.events).length;if(refresh.sum!==sg){refresh.sum=sg;renderSum();}}
   if(curView==='log'&&!stack.length){const st=monthStats(view.y,view.m),sig=JSON.stringify(st);if(refresh.log!==sig){refresh.log=sig;renderLog();playLog();}}
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){refresh();syncSub();}});
