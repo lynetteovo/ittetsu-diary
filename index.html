@@ -438,6 +438,17 @@ body.booting #cat{opacity:0}
 .alltime>div{display:flex;flex-direction:column;gap:8px}
 .alltime .odo{font:500 34px/1 var(--mono);color:var(--ink);--oh:1em}
 .alltime small{font-size:13px;color:var(--dim)}
+
+/* ---- calendar labels, calmer ---- */
+.cell[hidden]{display:none}
+.cell .g,.lens .g{font:500 10.5px/1.3 var(--sans);gap:3px}
+.g .lb{position:relative;padding:0 1px 0 5px;border-radius:0;background:none}
+.g .lb::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:2px;border-radius:1px;background:currentColor;opacity:.5}
+.g .lb.u{background:none}
+.g .lb.u::before{opacity:1}
+.g .lb.one{white-space:normal;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;-webkit-mask-image:none;mask-image:none}
+.cell.rest .n{opacity:.4}
+.cell.rest .g::after{content:"休";display:block;text-align:center;font-size:10px;letter-spacing:.2em;color:var(--dim);opacity:.8}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -480,7 +491,7 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
             </div>
           </div>
           <dl class="tally">
-            <div><dt>配信</dt><dd><span class="odo" id="odoTotal"></span></dd></div>
+            <div><dt>予定</dt><dd><span class="odo" id="odoTotal"></span></dd></div>
             <div class="left"><dt>まだ見てない</dt><dd><span class="odo" id="odoLeft"></span></dd></div>
           </dl>
         </div>
@@ -503,7 +514,7 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
         <canvas id="logSmk" aria-hidden="true"></canvas>
         <h2 id="logTitle" class="log-title"></h2>
         <div class="score"><span class="odo" id="lgW"></span><span class="slash">/</span><span class="odo tot" id="lgT"></span></div>
-        <p class="score-cap">見た配信</p>
+        <p class="score-cap">済んだ予定</p>
         <div class="lcig"><span class="cig" id="lcig" role="img"><span class="burnt"></span><span class="paper"><i class="ash"></i><i class="tip"></i></span><span class="filter"><i class="mint"></i><i class="cdot"></i></span></span></div>
         <p class="remain" id="lgRemain"></p>
       </div>
@@ -514,7 +525,7 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
       <h3>グッズ・ボイス</h3>
       <p class="spend" id="lgSpend"></p>
       <h3>これまで</h3>
-      <div class="alltime"><div><span class="odo" id="arS"></span><small>配信</small></div><div><span class="odo" id="arC"></span><small>見た</small></div></div>
+      <div class="alltime"><div><span class="odo" id="arS"></span><small>予定</small></div><div><span class="odo" id="arC"></span><small>済み</small></div></div>
       <p class="foot">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>
     </section>
   </main>
@@ -1220,10 +1231,10 @@ function gTitles(){const s=new Set();Object.values(S.events).forEach(a=>a.forEac
 /* ===================== ここから画面 ===================== */
 
 function monthStats(y,m){const r={tot:0,w:0,c:{},sp:0,games:{}};
-  for(let d=1;d<=dim(y,m);d++)sortedDay(dk(y,m,d)).forEach(e=>{const ty=T[e.type]?e.type:'zatsudan';r.c[ty]=(r.c[ty]||0)+1;if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))r.sp+=n;}if(!watchable(e))return;r.tot++;if(e.watched)r.w++;
+  for(let d=1;d<=dim(y,m);d++)sortedDay(dk(y,m,d)).forEach(e=>{const ty=T[e.type]?e.type:'zatsudan';r.c[ty]=(r.c[ty]||0)+1;if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))r.sp+=n;}r.tot++;if(e.watched||!watchable(e))r.w++;
     if(e.type==='game_series'||e.type==='game_single'){const g=e.gameTitle||e.sk||((e.title||'').match(/【([^】]+)】/)||[,e.title||''])[1];if(g)r.games[g]=(r.games[g]||0)+1;}});
   r.left=r.tot-r.w;return r;}
-function allStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>(a||[]).forEach(e=>{if(!e)return;if(!watchable(e))return;tot++;if(e.watched)w++;}));return{tot,w};}
+function allStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>(a||[]).forEach(e=>{if(!e)return;tot++;if(e.watched||!watchable(e))w++;}));return{tot,w};}
 
 /* ---------- text scramble engine ---------- */
 const SCR='#%&@*+=-:<>/\\|~^';
@@ -1488,8 +1499,8 @@ function cellLabel1(e){const t=String(e.title||'').trim(),bare=t.replace(/【[^�
   if(e.type==='collab')return e.collab||bare||t;
   return bare||t||(T[e.type]||T.zatsudan).l;}
 function glyphHTML(evs,pop){
-  let list=filter?evs.filter(e=>e.type===filter):evs;const more=list.length-2;list=list.slice(0,2);
-  return list.map(e=>`<span class="lb ${watchable(e)?(e.watched?'w':'u'):'o'}${pop?' pop':''}"><i>${esc((T[e.type]||T.zatsudan).g)}</i>${esc(cellLabel1(e))}</span>`).join('')+(more>0?`<span class="more">+${more}</span>`:'');
+  let list=filter?evs.filter(e=>e.type===filter):evs.filter(e=>e.type!=='yasumi');const more=list.length-2,one=list.length===1;list=list.slice(0,2);
+  return list.map(e=>`<span class="lb ${watchable(e)?(e.watched?'w':'u'):'o'}${one?' one':''}${pop?' pop':''}">${esc(cellLabel1(e))}</span>`).join('')+(more>0?`<span class="more">+${more}</span>`:'');
 }
 function cellLabel(d,evs){const left=evs.filter(e=>watchable(e)&&!e.watched).length;
   return `${view.m+1}月${d}日 ${WD[dow(view.y,view.m,d)]}曜日${evs.length?`、予定${evs.length}件`:''}${left?`、まだ見ていない配信${left}件`:''}`;}
@@ -1497,7 +1508,7 @@ function paintCell(c,{decode=false,delay=0,glyphPop=false}={}){
   const d=+c.dataset.d;if(!d)return;
   const key=dk(view.y,view.m,d),evs=sortedDay(key);
   if(decode)scramble(c.n,d,{dur:240,delay});else c.n.textContent=d;
-  c.g.innerHTML=glyphHTML(evs,glyphPop);
+  c.g.innerHTML=glyphHTML(evs,glyphPop);c.classList.toggle('rest',!filter&&evs.length>0&&evs.every(e=>e.type==='yasumi'));
   if(glyphPop)[...c.g.children].forEach((s,i)=>s.style.animationDelay=(i*50+((+c.dataset.i)%7)*14)+'ms');
   const st=S.stickers[key];c.s.textContent=st&&st.length?st[0]:'';
   c.classList.toggle('today',key===today().key);
@@ -1506,9 +1517,10 @@ function paintCell(c,{decode=false,delay=0,glyphPop=false}={}){
 }
 function paintGrid(opt={}){
   const first=dow(view.y,view.m,1),n=dim(view.y,view.m);
-  cells.forEach((c,i)=>{const d=i-first+1,inM=d>=1&&d<=n;
+  const nRows=Math.ceil((first+n)/7);
+  cells.forEach((c,i)=>{const d=i-first+1,inM=d>=1&&d<=n;c.hidden=i>=nRows*7;
     c.dataset.d=inM?d:'';c.disabled=!inM;c.tabIndex=inM?0:-1;
-    if(!inM){c.n.textContent='';c.g.innerHTML='';c.s.textContent='';c.classList.remove('today','fade');c.removeAttribute('aria-label');c.setAttribute('aria-hidden','true');return;}
+    if(!inM){c.n.textContent='';c.g.innerHTML='';c.s.textContent='';c.classList.remove('today','fade','rest');c.removeAttribute('aria-label');c.setAttribute('aria-hidden','true');return;}
     c.removeAttribute('aria-hidden');
     const row=(i/7)|0,col=i%7;
     paintCell(c,{decode:opt.decode,delay:(row+col)*22,glyphPop:opt.glyphPop});
