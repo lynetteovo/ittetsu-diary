@@ -9,6 +9,16 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
+UID:r1QRHP9tOMY@ittetsu-diary
+DTSTAMP:20261109T120107Z
+DTSTART:20261109T120107Z
+DTEND:20261109T144437Z
+SUMMARY:🤝 【来たるAPEXコラボ】かぶとむしも勝利も取り
+ に行くAPEX ※佐伯支店 / 加賀美ハヤト / 皇れお
+URL:https://www.youtube.com/watch?v=r1QRHP9tOMY
+DESCRIPTION:https://www.youtube.com/watch?v=r1QRHP9tOMY
+END:VEVENT
+BEGIN:VEVENT
 UID:LmCjUlcfW6w@ittetsu-diary
 DTSTAMP:20261108T163524Z
 DTSTART:20261108T163524Z
@@ -462,16 +472,5 @@ SUMMARY:🎮 【Don't Let It Starve】愛情込めて化け物に弁当を
 URL:https://www.youtube.com/watch?v=BpsCxyzHcAU
 DESCRIPTION:🎮 Don't Let It Starve\nhttps://www.youtube.com/watch?v=BpsCx
  yzHcAU
-END:VEVENT
-BEGIN:VEVENT
-UID:Gis_bCsTG8g@ittetsu-diary
-DTSTAMP:20260910T105933Z
-DTSTART:20260910T105933Z
-DTEND:20260910T173041Z
-SUMMARY:🕹️ 【アバタール・チューナー PART04】やさっし
- くミートボールを転がし入れろ！※ネタバレ注意
-URL:https://www.youtube.com/watch?v=Gis_bCsTG8g
-DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
- ttps://www.youtube.com/watch?v=Gis_bCsTG8g
 END:VEVENT
 END:VCALENDAR
