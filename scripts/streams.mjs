@@ -289,14 +289,15 @@ async function main() {
   for (const it of got.values()) if (it.type === 'game_single' && count[it.game] > 1) it.type = 'game_series';
 
   const items = [...got.values()].filter(it => Date.parse(it.start) >= keepFrom).sort((a, b) => b.start.localeCompare(a.start));
-  // 登録者数：1万人を超えるごとに、その時刻を記録（手帳が記念日として自動で予定に入れる）
-  // 公開されている登録者数は丸められているので「万」の区切りで見る。いったん超えた区切りは減っても戻さない
-  let subs = prev.subs || null;
+  // 登録者数：1000人増えるごとに、その時刻を記録（手帳が記念日として自動で予定に入れる）
+  // 公開されている登録者数は上から3桁に丸められている（10万〜99.9万人なら1000人単位）。いったん超えた区切りは減っても戻さない
+  const UNIT = 1000;
+  let subs = prev.subs && prev.subs.unit === UNIT ? prev.subs : null;
   if (selfSubs) {
-    const floor = Math.floor(selfSubs / 10000), ms = subs && subs.milestones ? subs.milestones.slice() : [];
+    const floor = Math.floor(selfSubs / UNIT), ms = subs && subs.milestones ? subs.milestones.slice() : [];
     const had = subs && Number.isInteger(subs.floor) ? subs.floor : null;
     if (had !== null && floor > had) for (let n = had + 1; n <= floor; n++) ms.push({n, at: new Date().toISOString()});
-    subs = {count: selfSubs, floor: had === null ? floor : Math.max(had, floor), milestones: ms};
+    subs = {unit: UNIT, count: selfSubs, floor: had === null ? floor : Math.max(had, floor), milestones: ms};
   }
   const same = JSON.stringify(items) === JSON.stringify(prev.items || []) && JSON.stringify(subs) === JSON.stringify(prev.subs || null);
   const out = {updated: same && prev.updated ? prev.updated : new Date().toISOString(), items};

@@ -1135,16 +1135,18 @@ function findManual(st,used){
   });
   return best;
 }
-/* 配信の長さを予定に記録（streams.json は90日で消えるので予定側に残す）／登録者が1万人増えるごとに記念日を追加 */
+/* 配信の長さを予定に記録（streams.json は90日で消えるので予定側に残す）／登録者が1000人増えるごとに記念日を追加 */
 function applyExtras(f){
   let changed=false;const items=(f&&f.items)||[],by=new Map(items.map(it=>[it.id,it])),idx=eventIndex();
   Object.keys(S.events).forEach(k=>(S.events[k]||[]).forEach(ev=>{
     if(!ev||!ev.yt)return;const it=by.get(ev.yt);if(!it||!it.end||it.status!=='none')return;
     const d=Math.round((Date.parse(it.end)-Date.parse(it.start))/6e4);
     if(d>0&&d<24*60&&ev.dur!==d){ev.dur=d;ev.u=Date.now();markDirty(k);changed=true;}}));
-  ((f&&f.subs&&f.subs.milestones)||[]).forEach(m=>{
-    const id='subs-'+m.n;if(S.dead[id]||idx.has(id))return;const t=new Date(m.at);if(isNaN(t))return;const k=dkOf(t);
-    (S.events[k]=S.events[k]||[]).push({id,type:'anniversary',title:`チャンネル登録者 ${m.n}万人`,time:hm(t),note:'',gameTitle:'',collab:'',watched:true,price:'',thumb:'',u:Date.now()});
+  const su=f&&f.subs,unit=(su&&su.unit)||0;
+  (unit?(su.milestones||[]):[]).forEach(m=>{
+    const id='subs-'+m.n*unit;if(S.dead[id]||idx.has(id))return;const t=new Date(m.at);if(isNaN(t))return;const k=dkOf(t);
+    const v=m.n*unit,lbl=v>=1e4?`${+(v/1e4).toFixed(2)}万人`:`${v.toLocaleString('ja-JP')}人`;
+    (S.events[k]=S.events[k]||[]).push({id,type:'anniversary',title:`チャンネル登録者 ${lbl}`,time:hm(t),note:'',gameTitle:'',collab:'',watched:true,price:'',thumb:'',u:Date.now()});
     idx.set(id,k);markDirty(k);changed=true;});
   return changed;}
 function applyFeedAll(f){const a=applyFeed(f),b=applyExtras(f);return a||b;}
