@@ -1081,7 +1081,7 @@ async function doSync(q){
       if(M.fullAt&&await pull(false))softRender();
       if(needFull&&await pull(true))softRender();
       pulledOnce=true;lastSyncAt=Date.now();
-      if(feed&&applyFeed(feed))softRender();
+      if(feed&&applyFeedAll(feed))softRender();
     }
     if(Object.keys(M.dirty).length){
       setCloudStatus('syncing',Object.keys(M.dirty).length+'wk');
@@ -1117,7 +1117,7 @@ async function loadFeed(){
     if(!r.ok)return;
     feed=await r.json();feedAt=Date.now();
     if(typeof renderHero==='function'&&!document.body.classList.contains('booting'))renderHero();
-    if(pulledOnce&&applyFeed(feed)){softRender();persistLocal();syncNow({pull:false});}
+    if(pulledOnce&&applyFeedAll(feed)){softRender();persistLocal();syncNow({pull:false});}
   }catch(e){console.warn('feed',e);}
 }
 // 手で触っていない自動追加分
@@ -1135,6 +1135,19 @@ function findManual(st,used){
   });
   return best;
 }
+/* 配信の長さを予定に記録（streams.json は90日で消えるので予定側に残す）／登録者が1万人増えるごとに記念日を追加 */
+function applyExtras(f){
+  let changed=false;const items=(f&&f.items)||[],by=new Map(items.map(it=>[it.id,it])),idx=eventIndex();
+  Object.keys(S.events).forEach(k=>(S.events[k]||[]).forEach(ev=>{
+    if(!ev||!ev.yt)return;const it=by.get(ev.yt);if(!it||!it.end||it.status!=='none')return;
+    const d=Math.round((Date.parse(it.end)-Date.parse(it.start))/6e4);
+    if(d>0&&d<24*60&&ev.dur!==d){ev.dur=d;ev.u=Date.now();markDirty(k);changed=true;}}));
+  ((f&&f.subs&&f.subs.milestones)||[]).forEach(m=>{
+    const id='subs-'+m.n;if(S.dead[id]||idx.has(id))return;const t=new Date(m.at);if(isNaN(t))return;const k=dkOf(t);
+    (S.events[k]=S.events[k]||[]).push({id,type:'anniversary',title:`チャンネル登録者 ${m.n}万人`,time:hm(t),note:'',gameTitle:'',collab:'',watched:true,price:'',thumb:'',u:Date.now()});
+    idx.set(id,k);markDirty(k);changed=true;});
+  return changed;}
+function applyFeedAll(f){const a=applyFeed(f),b=applyExtras(f);return a||b;}
 function applyFeed(f){
   const items=(f&&f.items)||[];
   if(!items.length)return false;
@@ -1664,7 +1677,7 @@ function evRow(e,key,d){
   else row.append(mk('span','ev-glyph',esc(TT(e.type).g)));
   const main=mk('div','ev-main');
   main.append(mk('h3','ev-title',esc(e.title||TT(e.type).l)));
-  const meta=[];if(e.time)meta.push(`${e.time} から`);meta.push(TT(e.type).l);if(e.gameTitle)meta.push(e.gameTitle);if(e.collab)meta.push(e.collab);if(e.price&&!isNaN(parseFloat(e.price)))meta.push('¥'+parseFloat(e.price).toLocaleString('ja-JP'));
+  const meta=[];if(e.time)meta.push(`${e.time} から`);if(e.dur)meta.push(e.dur>=60?`${Math.floor(e.dur/60)}時間${e.dur%60?e.dur%60+'分':''}`:`${e.dur}分`);meta.push(TT(e.type).l);if(e.gameTitle)meta.push(e.gameTitle);if(e.collab)meta.push(e.collab);if(e.price&&!isNaN(parseFloat(e.price)))meta.push('¥'+parseFloat(e.price).toLocaleString('ja-JP'));
   main.append(mk('p','ev-meta',esc(meta.join('　'))));
   if(e.note)main.append(mk('p','ev-note',esc(e.note)));
   row.append(main);

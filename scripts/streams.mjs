@@ -39,6 +39,7 @@ async function api(path, params) {
 
 const known = {};   // チャンネルID → 本人／ユニットの設定
 let selfId = '';
+let selfSubs = null;   // 本人チャンネルの登録者数（非公開なら null）
 // 「宇佐美リト / Usami Rito【にじさんじ】」→「宇佐美リト」
 function hostName(t) {
   const s = String(t || '').replace(/【[^】]*】|\[[^\]]*\]|（[^）]*）|\([^)]*\)/g, '').trim();
@@ -57,11 +58,15 @@ async function videos(ids) {
 }
 
 async function channelVideos(ch) {
-  const c = await api('channels', {part: 'contentDetails', forHandle: ch.handle});
+  const c = await api('channels', {part: 'contentDetails,statistics', forHandle: ch.handle});
   const item = c.items && c.items[0];
   if (!item) throw new Error('channel not found: ' + ch.handle);
   known[item.id] = ch;
-  if (!ch.collab) selfId = item.id;
+  if (!ch.collab) {
+    selfId = item.id;
+    const st = item.statistics || {};
+    if (!st.hiddenSubscriberCount && st.subscriberCount) selfSubs = Number(st.subscriberCount);
+  }
   const pl = await api('playlistItems', {part: 'contentDetails', playlistId: item.contentDetails.relatedPlaylists.uploads, maxResults: 50});
   return videos((pl.items || []).map(x => x.contentDetails.videoId));
 }
@@ -284,9 +289,18 @@ async function main() {
   for (const it of got.values()) if (it.type === 'game_single' && count[it.game] > 1) it.type = 'game_series';
 
   const items = [...got.values()].filter(it => Date.parse(it.start) >= keepFrom).sort((a, b) => b.start.localeCompare(a.start));
-  const same = JSON.stringify(items) === JSON.stringify(prev.items || []);
+  // 登録者数：1万人を超えるごとに、その時刻を記録（手帳が記念日として自動で予定に入れる）
+  // 公開されている登録者数は丸められているので「万」の区切りで見る。いったん超えた区切りは減っても戻さない
+  let subs = prev.subs || null;
+  if (selfSubs) {
+    const floor = Math.floor(selfSubs / 10000), ms = subs && subs.milestones ? subs.milestones.slice() : [];
+    const had = subs && Number.isInteger(subs.floor) ? subs.floor : null;
+    if (had !== null && floor > had) for (let n = had + 1; n <= floor; n++) ms.push({n, at: new Date().toISOString()});
+    subs = {count: selfSubs, floor: had === null ? floor : Math.max(had, floor), milestones: ms};
+  }
+  const same = JSON.stringify(items) === JSON.stringify(prev.items || []) && JSON.stringify(subs) === JSON.stringify(prev.subs || null);
   const out = {updated: same && prev.updated ? prev.updated : new Date().toISOString(), items};
-  const body = '{"updated":' + JSON.stringify(out.updated) + ',"items":[\n' + items.map(it => JSON.stringify(it)).join(',\n') + '\n]}\n';
+  const body = '{"updated":' + JSON.stringify(out.updated) + (subs ? ',"subs":' + JSON.stringify(subs) : '') + ',"items":[\n' + items.map(it => JSON.stringify(it)).join(',\n') + '\n]}\n';
   const a = writeIfChanged(JSON_FILE, body);
   const b = writeIfChanged(ICS_FILE, ics(items));
   console.log(`${items.length} 件（upcoming ${items.filter(i => i.status === 'upcoming').length}）`, a || b ? '更新あり' : '変更なし');
