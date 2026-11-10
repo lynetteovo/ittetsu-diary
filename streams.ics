@@ -472,15 +472,4 @@ SUMMARY:💬 漁師だったら寝坊
 URL:https://www.youtube.com/watch?v=jhC-UZSAbmo
 DESCRIPTION:https://www.youtube.com/watch?v=jhC-UZSAbmo
 END:VEVENT
-BEGIN:VEVENT
-UID:BpsCxyzHcAU@ittetsu-diary
-DTSTAMP:20260911T101521Z
-DTSTART:20260911T101521Z
-DTEND:20260911T123255Z
-SUMMARY:🎮 【Don't Let It Starve】愛情込めて化け物に弁当を
- 作る
-URL:https://www.youtube.com/watch?v=BpsCxyzHcAU
-DESCRIPTION:🎮 Don't Let It Starve\nhttps://www.youtube.com/watch?v=BpsCx
- yzHcAU
-END:VEVENT
 END:VCALENDAR
