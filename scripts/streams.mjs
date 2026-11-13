@@ -21,6 +21,7 @@ const API = 'https://www.googleapis.com/youtube/v3/';
 const DIR = new URL('..', import.meta.url);
 const JSON_FILE = new URL('streams.json', DIR);
 const ICS_FILE = new URL('streams.ics', DIR);
+const ARCHIVE_FILE = new URL('archive.json', DIR);   // これまでの全配信（まとめ用。手帳の予定には入れない）
 
 async function api(path, params) {
   const u = new URL(API + path);
@@ -62,6 +63,7 @@ async function channelVideos(ch) {
   const item = c.items && c.items[0];
   if (!item) throw new Error('channel not found: ' + ch.handle);
   known[item.id] = ch;
+  ch._uploads = item.contentDetails.relatedPlaylists.uploads;
   if (!ch.collab) {
     selfId = item.id;
     const st = item.statistics || {};
@@ -88,6 +90,64 @@ async function searchCollabs() {
   const vs = (await videos([...ids])).filter(isCollab);
   console.log(`検索 ${ids.size} 件 → 概要欄に本人チャンネルあり ${vs.length} 件`);
   return vs;
+}
+
+// ---- これまでの全配信（初回だけ全部さかのぼる。以後は終わった配信を足していく） ----
+async function allUploads(ch) {
+  const ids = [];
+  let pageToken = '';
+  for (let i = 0; i < 60; i++) {
+    const p = {part: 'contentDetails', playlistId: ch._uploads, maxResults: 50};
+    if (pageToken) p.pageToken = pageToken;
+    const pl = await api('playlistItems', p);
+    ids.push(...(pl.items || []).map(x => x.contentDetails.videoId));
+    pageToken = pl.nextPageToken || '';
+    if (!pageToken) break;
+  }
+  return ids;
+}
+async function allCollabs() {
+  const ids = new Set();
+  for (const eventType of ['completed', '']) {
+    let pageToken = '';
+    for (let i = 0; i < 8; i++) {
+      const p = {part: 'id', type: 'video', q: SEARCH_Q, maxResults: 50, order: 'date'};
+      if (eventType) p.eventType = eventType;
+      if (pageToken) p.pageToken = pageToken;
+      const r = await api('search', p);
+      for (const x of r.items || []) if (x.id && x.id.videoId) ids.add(x.id.videoId);
+      pageToken = r.nextPageToken || '';
+      if (!pageToken) break;
+    }
+  }
+  return (await videos([...ids])).filter(isCollab);
+}
+const toArch = it => {
+  const dur = it.end ? Math.round((Date.parse(it.end) - Date.parse(it.start)) / 60000) : 0;
+  const a = {id: it.id, start: it.start, dur: dur > 0 && dur < 1440 ? dur : 0, type: it.type, title: it.title};
+  if (it.game) a.game = it.game;
+  if (it.collab) a.collab = it.collab;
+  if (it.ext) a.ext = 1;
+  return a;
+};
+async function archive(items) {
+  const prev = existsSync(ARCHIVE_FILE) ? JSON.parse(readFileSync(ARCHIVE_FILE, 'utf8')) : null;
+  const map = new Map(((prev && prev.items) || []).map(a => [a.id, a]));
+  let full = !!(prev && prev.full);
+  if (!full || process.env.ARCHIVE === 'true') {
+    try {
+      const vs = [];
+      for (const ch of CHANNELS) vs.push(...await videos(await allUploads(ch)));
+      vs.push(...await allCollabs());
+      for (const v of vs) { const it = toItem(v); if (it && it.status === 'none' && it.end) map.set(it.id, toArch(it)); }
+      full = true;
+      console.log(`過去の配信をさかのぼって取得: ${map.size} 件`);
+    } catch (e) { console.error('archive:', e.message); }
+  }
+  for (const it of items) if (it.status === 'none' && it.end) map.set(it.id, toArch(it));
+  const list = [...map.values()].sort((a, b) => b.start.localeCompare(a.start));
+  const body = '{"full":' + full + ',"items":[\n' + list.map(a => JSON.stringify(a)).join(',\n') + '\n]}\n';
+  return writeIfChanged(ARCHIVE_FILE, body);
 }
 
 function seconds(iso) {
@@ -304,7 +364,8 @@ async function main() {
   const body = '{"updated":' + JSON.stringify(out.updated) + (subs ? ',"subs":' + JSON.stringify(subs) : '') + ',"items":[\n' + items.map(it => JSON.stringify(it)).join(',\n') + '\n]}\n';
   const a = writeIfChanged(JSON_FILE, body);
   const b = writeIfChanged(ICS_FILE, ics(items));
-  console.log(`${items.length} 件（upcoming ${items.filter(i => i.status === 'upcoming').length}）`, a || b ? '更新あり' : '変更なし');
+  const c = await archive(items);
+  console.log(`${items.length} 件（upcoming ${items.filter(i => i.status === 'upcoming').length}）`, a || b || c ? '更新あり' : '変更なし');
 }
 
 export {classify, toItem, ics, seconds, main, hostName};

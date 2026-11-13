@@ -25,6 +25,7 @@ jobs:
       - name: commit
         run: |
           git add streams.json streams.ics
+          if [ -f archive.json ]; then git add archive.json; fi
           git diff --cached --quiet && exit 0
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
