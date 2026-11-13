@@ -997,6 +997,40 @@ html{background:#7966A8}
 .h-log{font-size:12.5px;rotate:0deg;margin:6px 0 0}
 .sc-hand{font-size:13px;rotate:0deg;margin-top:0;align-self:flex-end;padding:3px 8px;background:rgba(255,255,255,.55);box-shadow:0 1px 2px rgba(46,42,56,.12)}
 html,body{overflow-x:clip}
+
+/* ===================== round 6: each sheet is its own object ===================== */
+/* no texture laid across the whole screen */
+#grain{display:none!important}
+/* cut paper: clean edge, a few sheets visible underneath, light from the top-left */
+.gridwrap::before{background:var(--tooth) 0 0/170px,linear-gradient(180deg,#FDFCF9,#F8F6F1);filter:none;border-radius:1.5px;
+  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.9),inset 0 -1px 0 rgba(0,0,0,.04),0 .5px 0 #D8D3CB,
+    1.5px 2px 0 #FBFAF6,1.5px 2.5px 0 #CFC9C0,3px 4px 0 #F6F4EE,3px 4.5px 0 #C9C3BA,4.5px 6px 0 #F1EEE7,4.5px 6.5px 0 #BFB9B0,
+    3px 9px 6px -3px rgba(40,28,60,.3),16px 24px 26px -16px rgba(40,28,60,.42)}
+.gridwrap{padding-bottom:42px}
+.gridwrap::after{display:block;content:"saiki note";left:0;right:0;top:auto;bottom:0;width:auto;height:28px;z-index:0;border-radius:0 0 1.5px 1.5px;
+  font:400 9px/28px var(--mono);letter-spacing:.14em;color:rgba(60,50,90,.6);text-align:right;padding-right:74px;
+  background:radial-gradient(circle at 50% 46%,#A9A6BE 0 5px,#8F8CA6 5px 5.8px,rgba(0,0,0,.1) 5.8px 6.6px,transparent 7px) 18px 50%/64px 16px repeat-x,#CFC6E6;;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.gridwrap::after{background-size:64px 16px,auto;background-repeat:repeat-x,no-repeat;background-position:18px 50%,0 0;
+  background-image:radial-gradient(circle at 50% 46%,#A9A6BE 0 5px,#8F8CA6 5px 5.8px,rgba(0,0,0,.1) 5.8px 6.6px,transparent 7px),linear-gradient(#CFC6E6,#CFC6E6);
+  clip-path:none}
+/* polaroid */
+.hero::before{background:var(--tooth) 30px 40px/210px,#FDFCFA;filter:none;border-radius:1.5px;
+  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.9),0 .5px 0 #CFCAC3,1px 1.5px 0 #EFECE6,1px 2px 0 #C4BEB5,1px 3px 3px rgba(40,28,60,.22),12px 20px 22px -13px rgba(40,28,60,.45)}
+.hero .thumb::after{background:none;opacity:1;box-shadow:inset 0 1px 2px rgba(0,0,0,.32),inset 0 0 0 1px rgba(0,0,0,.08)}
+/* recap pages */
+.spage{box-shadow:0 .5px 0 #D8D3CB,1.5px 2px 0 #FBFAF6,1.5px 2.5px 0 #CFC9C0,3px 4px 0 #F6F4EE,3px 4.5px 0 #C9C3BA,3px 9px 6px -3px rgba(40,28,60,.3),14px 20px 22px -14px rgba(40,28,60,.4);border-radius:1.5px}
+.spage::before{filter:none;background:var(--tooth) 12px 0/190px,var(--cream)}
+.spage::after{background:radial-gradient(circle at 50% 44%,#A9A6BE 0 5.2px,#8F8CA6 5.2px 6px,rgba(0,0,0,.1) 6px 6.8px,transparent 7.4px) center top/16px 76px repeat-y}
+/* tab bar: a card slip */
+#tabbar::before{filter:none!important;background:var(--tooth) 0 0/150px,#F4F1EA!important;border-radius:2px;
+  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.9),0 .5px 0 #CFC9C0,1px 1.5px 0 #F4F1EA,1px 2px 0 #C6C0B6,2px 5px 4px -2px rgba(40,28,60,.3),8px 14px 16px -9px rgba(40,28,60,.45)}
+/* sheets: a pad sliding up, page edges at the top */
+.sheet.glass::before{filter:none;background:repeating-linear-gradient(180deg,transparent 0 21px,rgba(60,56,80,.06) 21px 22px),var(--tooth) 0 0/200px,#F3F1F5;
+  box-shadow:inset 0 .5px 0 rgba(255,255,255,.9),0 -.5px 0 #CFCAD6,0 -2px 0 #F7F5F9,0 -2.5px 0 #C8C2D0,0 -4px 0 #EFECF3,0 -4.5px 0 #BDB7C6,0 -16px 30px -12px rgba(40,28,60,.42)}
+/* filter slips and small notes keep a thin edge */
+.pill::before{filter:none;background:var(--tooth) 0 0/120px,rgba(244,242,247,.92);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.9),0 .5px 0 #C9C4D2,.5px 1.5px 0 #EDEAF2,.5px 2px 0 #BDB7C8,3px 5px 6px -3px rgba(40,28,60,.3)}
+.pill-ind,.tab-ind{filter:none;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.35),0 .5px 0 #6E5C9C,.5px 2px 0 #5F4E8C,3px 6px 8px -3px rgba(40,28,60,.4)}
+.ticket,.strip,.stkgrid span,.sc-hand{box-shadow:0 .5px 0 #CFCAC3,.5px 1.5px 0 #F3F0EA,.5px 2px 0 #C4BEB5,3px 5px 6px -3px rgba(40,28,60,.3)}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -2815,6 +2849,11 @@ const _renderSum5=renderSum;renderSum=function(){_renderSum5();
   const n=$$('#sumTrack .scard').length;$('#sumDots').innerHTML=Array.from({length:n},(_,i)=>`<i class="${i?'':'on'}"></i>`).join('');
   /* a fresh <image> so the pending cover-thumbnail load cannot overwrite it */
   $$('#sumTrack .c-cover .ovimg').forEach(x=>{const n=x.cloneNode(false);n.setAttribute('href',SUM_HDR);x.replaceWith(n);});};
+
+/* paper tooth: a faint, fine speckle each sheet uses at its own size and offset */
+(function(){const c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d'),d=x.createImageData(160,160);
+  for(let i=0;i<d.data.length;i+=4){const r=Math.random(),dark=r<.5;d.data[i]=d.data[i+1]=d.data[i+2]=dark?70:255;d.data[i+3]=dark?Math.random()*9:Math.random()*40;}
+  x.putImageData(d,0,0);document.documentElement.style.setProperty('--tooth',`url(${c.toDataURL()})`);})();
 
 /* ---------- redraw after sync / new streams (keeps what you are looking at) ---------- */
 function refresh(){
