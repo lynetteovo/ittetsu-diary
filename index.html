@@ -1146,6 +1146,65 @@ html,body{overflow-x:clip}
 .lticket .ls{position:absolute;right:66px;top:8px;padding:2px 8px;border:1.5px solid #C2577F;color:#C2577F;font:700 11px var(--sans);rotate:-8deg;opacity:0;transform:scale(1.6);transition:opacity 200ms,transform 420ms var(--spring-b);filter:url(#ink)}
 .lticket.on .ls{opacity:.9;transform:none}
 .c-games .rep-big{font-size:23px}
+
+/* ===================== round 11: report layout, real tickets, taped notes ===================== */
+.h-left{display:none!important}
+.bignum::before{display:none}
+/* pages fill their height */
+.spage{justify-content:space-evenly;gap:12px;padding-top:40px;padding-bottom:22px}
+.spage>.mtape{margin-bottom:-4px}
+.rep-lead{font-size:15.5px}
+.rep-lead b{font-size:21px}
+.rep-big{font-size:34px}
+.c-games .rep-big{font-size:25px}
+.rep-hint{margin-top:0}
+.c-cover .oval{width:min(210px,60%)}
+.c-nums .torn b,.c-mem .torn b{font-size:68px}
+.c-mem .torn{flex-direction:row;align-items:baseline;gap:8px;width:auto;padding:10px 22px 12px}
+.c-games .halves{display:flex;flex-direction:row;gap:12px;align-self:stretch;width:auto}
+.c-games .half{flex:1;min-width:0}
+.rbars{gap:8px}.rbars i{height:14px}
+.hours{height:130px}
+.chips{gap:14px 14px}.chips .strip{font-size:14px;padding:6px 12px}
+.tix .ticket{font-size:13px}
+/* verdict: a note under a taped slip of tracing paper; tap to lift the slip */
+.fnote{position:relative;align-self:stretch;min-height:74px;padding:16px 16px 14px;text-align:left;background:var(--tooth) 0 0/140px,#FFFDF6;rotate:-.8deg;
+  background-image:var(--tooth),repeating-linear-gradient(180deg,transparent 0 23px,rgba(120,150,200,.28) 23px 24px);
+  box-shadow:0 .5px 0 #CFCAC3,.5px 1.5px 0 #F3F0EA,.5px 2px 0 #C4BEB5,3px 6px 7px -3px rgba(40,28,60,.3)}
+.fnote .fa{display:block;font:600 15px/24px var(--sans);color:var(--ink);opacity:0;transition:opacity 300ms 160ms}
+.fnote.open .fa{opacity:1}
+.fnote .fq{position:absolute;inset:-5px -6px -4px -6px;display:flex;align-items:center;justify-content:center;gap:10px;rotate:1.4deg;transform-origin:50% 0;
+  background:var(--tooth) 30px 0/130px,rgba(216,210,234,.9);box-shadow:inset 0 0 14px rgba(255,255,255,.55),0 .5px 0 rgba(120,110,150,.45),2px 5px 6px -3px rgba(40,28,60,.28);
+  transition:transform 620ms var(--spring),opacity 380ms 120ms}
+.fnote .fq .tape{top:-9px;left:calc(50% - 26px);width:52px;height:16px;rotate:-3deg}
+.fnote .fq em{font:500 14px var(--sans);font-style:normal;color:var(--ink);letter-spacing:.08em}
+.fnote .fq small{font:400 10px var(--mono);color:var(--dim);border:1px dashed rgba(46,42,56,.4);padding:2px 6px;border-radius:2px}
+.fnote.open .fq{transform:perspective(600px) rotateX(-78deg) translateY(-6px);opacity:0;pointer-events:none}
+/* live tickets: photo, printed fields, barcode, perforated stub that tears off when the page turns up */
+.tk{position:relative;align-self:stretch;display:flex;rotate:var(--r);filter:drop-shadow(0 1px 0 #C9C4BC) drop-shadow(4px 8px 7px rgba(40,28,60,.32))}
+.tk-main{position:relative;flex:1;min-width:0;background:#FBFAF7;
+  -webkit-mask:radial-gradient(circle at 100% 0,transparent 7px,#000 7.5px) top/100% 51% no-repeat,radial-gradient(circle at 100% 100%,transparent 7px,#000 7.5px) bottom/100% 51% no-repeat;
+  mask:radial-gradient(circle at 100% 0,transparent 7px,#000 7.5px) top/100% 51% no-repeat,radial-gradient(circle at 100% 100%,transparent 7px,#000 7.5px) bottom/100% 51% no-repeat}
+.tk-img{position:relative;height:104px;background:#2E2A38 center 30%/cover no-repeat}
+.tk-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,12,30,0) 35%,rgba(20,12,30,.78))}
+.tk-name{position:absolute;z-index:1;left:12px;bottom:8px;font:400 23px/1.1 var(--type);color:#fff;letter-spacing:.06em;text-shadow:0 0 10px rgba(255,255,255,.5);display:flex;align-items:baseline;gap:8px}
+.tk-name small{font:700 11px var(--mono);letter-spacing:.14em;opacity:.9}
+.tk-info{display:flex;align-items:flex-end;gap:14px;padding:8px 12px 9px;border-top:1px solid rgba(46,42,56,.12)}
+.tk-info span{display:flex;flex-direction:column;gap:2px;font:700 11px/1.2 var(--mono);color:var(--ink);white-space:nowrap}
+.tk-info small{font:400 8px var(--mono);color:var(--dim);letter-spacing:.12em}
+.tk-bar{display:block;height:24px;flex:1;min-width:30px;background:repeating-linear-gradient(90deg,#2E2A38 0 2px,transparent 2px 3px,#2E2A38 3px 4px,transparent 4px 7px,#2E2A38 7px 10px,transparent 10px 12px)}
+.tk-stub{position:relative;width:62px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:10px 6px;background:#EFEAF6;border-left:1.5px dashed rgba(46,42,56,.35);transform-origin:0 100%;
+  -webkit-mask:radial-gradient(circle at 0 0,transparent 7px,#000 7.5px) top/100% 51% no-repeat,radial-gradient(circle at 0 100%,transparent 7px,#000 7.5px) bottom/100% 51% no-repeat;
+  mask:radial-gradient(circle at 0 0,transparent 7px,#000 7.5px) top/100% 51% no-repeat,radial-gradient(circle at 0 100%,transparent 7px,#000 7.5px) bottom/100% 51% no-repeat}
+.tk-stub span{font:700 8px var(--mono);letter-spacing:.1em;color:var(--dim)}
+.tk-stub b{writing-mode:vertical-rl;font:400 12px var(--type);color:var(--ink);letter-spacing:.08em}
+.tk-stub .tk-bar{flex:none;width:100%;height:14px}
+.tk-stamp{position:absolute;z-index:2;right:10px;top:10px;padding:3px 9px;border:2px solid #E46A94;color:#F3A7C0;font:700 12px var(--sans);rotate:-9deg;opacity:0;transform:scale(1.8);background:rgba(30,16,36,.35)}
+.scard.in .tk-stub{animation:tear 900ms var(--spring) both;animation-delay:calc(900ms + var(--d,0ms))}
+.scard.in .tk-stamp{animation:stampIn 420ms var(--spring-b) both;animation-delay:calc(1500ms + var(--d,0ms))}
+@keyframes tear{0%{transform:none}30%{transform:rotate(-4deg)}100%{transform:translate(9px,7px) rotate(9deg)}}
+@keyframes stampIn{from{opacity:0;transform:scale(1.8)}to{opacity:.95;transform:none}}
+.rm .tk-stub{transform:translate(9px,7px) rotate(9deg)}.rm .tk-stamp{opacity:.95;transform:none}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -2992,15 +3051,15 @@ function repStats(range){
     if(!watchable(e))return;const id=e.yt?'yt-'+e.yt:'ev-'+e.id,sp=spanMs(e,k),cur=S[id]||{};
     S[id]={k,s:sp.s||cur.s||0,dur:e.dur||(sp.e>sp.s?Math.round((sp.e-sp.s)/6e4):0)||cur.dur||0,type:e.type,label:cellLabel1(e),game:(e.type==='game_single'||e.type==='game_series')?cellLabel1(e):'',collab:e.collab||cur.collab||'',title:e.title||cur.title||'',watched:!!e.watched,diary:true,e};});
   const sm=stkMap();Object.keys(sm).forEach(k=>{if(inR(k))(sm[k]||[]).forEach(s=>d.stk[s]=(d.stk[s]||0)+1);});
-  const L=Object.values(S),r={d,n:L.length,w:0,inDiary:0,before:0,min:0,nDur:0,buck:[0,0,0,0,0,0],hour:Array(24).fill(0),nHour:0,games:{},collab:{},nCollab:0,longest:null,late:null,first:'',last:''};
+  const L=Object.values(S),r={d,n:L.length,w:0,inDiary:0,before:0,min:0,nDur:0,buck:[0,0,0,0,0,0],hour:Array(24).fill(0),nHour:0,games:{},gameEv:{},collab:{},nCollab:0,longest:null,late:null,first:'',last:''};
   L.forEach(x=>{if(x.watched)r.w++;if(x.diary)r.inDiary++;else if(d.first&&x.k<d.first)r.before++;
     if(!r.first||x.k<r.first)r.first=x.k;if(!r.last||x.k>r.last)r.last=x.k;
     if(x.dur>0){r.min+=x.dur;r.nDur++;r.buck[x.dur<60?0:x.dur<120?1:x.dur<180?2:x.dur<240?3:x.dur<360?4:5]++;if(!r.longest||x.dur>r.longest.dur)r.longest=x;}
     if(x.s){const h=new Date(x.s).getHours();r.hour[h]++;r.nHour++;const v=((h<6?h+24:h)*60)+new Date(x.s).getMinutes();if(!r.late||v>r.late.v)r.late={v,x};}
-    if(x.game)r.games[x.game]=(r.games[x.game]||0)+1;
+    if(x.game){r.games[x.game]=(r.games[x.game]||0)+1;if(x.e&&x.e.thumb&&(!r.gameEv[x.game]||x.k>r.gameEv[x.game].k))r.gameEv[x.game]={e:x.e,k:x.k};}
     if(x.collab){r.nCollab++;String(x.collab).split(/\s*[\/／、,]\s*/).map(c=>c.replace(/[\s　]+/g,'')).filter(Boolean).forEach(c=>r.collab[c]=(r.collab[c]||0)+1);}});
   return r;}
-const flap=(label,text)=>`<button class="flap rv" type="button"><span class="fq">${label}</span><span class="fa">${text}</span></button>`;
+const flap=(label,text)=>`<button class="fnote rv" type="button"><span class="fa">${text}</span><span class="fq"><i class="tape mk"></i><em>${label}</em><small>めくる</small></span></button>`;
 const bars=(arr,labels,hot)=>{const mx=Math.max(1,...arr);return `<div class="rbars rv">${arr.map((n,i)=>`<div class="${i===hot?'hot':''}"><span>${labels[i]}</span><i style="--w:${(n/mx*100).toFixed(1)}%"></i><b>${n}</b></div>`).join('')}</div>`;};
 renderSum=function(){
   const tr=$('#sumTrack');$$('#sumSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.r===sumRange));
@@ -3014,7 +3073,7 @@ renderSum=function(){
   const hType=r.nHour?(peak>=22||peak<4?'深夜型':peak>=17?'夜型':peak>=4&&peak<11?'朝型':'昼型'):'';
   const dType=avg>=240?'耐久型':avg>=150?'じっくり型':avg?'サクッと型':'';
   const fan=pct>=90?'皆勤の仲磨':pct>=60?'常連の仲磨':pct>=30?'マイペースな仲磨':'これからの仲磨';
-  const seen=liveSeen(),nLive=LIVES.filter(l=>seen[l.id]).length;
+  const nLive=LIVES.length;
   const fmt=m=>m>=60?`${Math.floor(m/60)}時間${m%60?m%60+'分':''}`:`${m}分`;
   const hm=v=>`${Math.floor(v/60)%24}:${String(v%60).padStart(2,'0')}`;
   const cover=`<div class="oval rv"><svg viewBox="0 0 240 320" aria-hidden="true"><defs><path id="ovpR" d="M120,22 a100,138 0 1,1 -0.1,0"/><clipPath id="ovcR"><ellipse cx="120" cy="160" rx="82" ry="118"/></clipPath></defs>
@@ -3041,14 +3100,17 @@ renderSum=function(){
       ${flap('あなたへのひとこと',hType==='深夜型'?'夜ふかしはほどほどに。でも通知が来たら起きるよね。':hType==='夜型'?'晩ごはんを済ませて待機がおすすめ。':hType==='朝型'?'早起きは三文の徳。':'昼の配信は休憩のおとも。')}`),
     card('c-games',`<span class="mtape rv">04 / GAMES</span>${games.length?`<p class="rep-lead rv">いちばん遊んだゲームは</p><h3 class="rep-big rv">${esc(String(games[0][0]).slice(0,30))}<small>${games[0][1]}回</small></h3>
       <ol class="rank rv">${games.slice(1).map(([g,n],i)=>`<li><span>${i+2}.</span><em>${esc(g)}</em><i></i><b>${n}回</b></li>`).join('')}</ol>
+      <div class="halves rv">${games.map(([g])=>r.gameEv[g]).filter(Boolean).slice(0,2).map(x=>`<div class="half">${ph(x)}</div>`).join('')}</div>
       <p class="rep-lead rv">ぜんぶで <b>${Object.keys(r.games).length}</b> タイトル。</p>`:'<p class="s-note">ゲーム配信の記録はまだありません</p>'}`),
     card('c-collab',`<span class="mtape rv">05 / COLLAB</span>${collabs.length?`<p class="rep-lead rv">コラボ配信は <b>${r.nCollab}</b> 本。<br>いちばん多く一緒にいたのは</p><h3 class="rep-big rv">${esc(collabs[0][0])}<small>${collabs[0][1]}回</small></h3>
       <div class="chips rv">${collabs.slice(1).map(([c,n],i)=>`<span class="strip" style="--r:${i%2?2:-2}deg">${esc(c)}　×${n}</span>`).join('')}</div>`:'<p class="s-note">コラボの記録はまだありません</p>'}`),
-    card('c-live',`<span class="mtape rv">06 / LIVE</span><p class="rep-lead rv">配信だけじゃない。<br>ステージにも立ちました。</p>
-      ${LIVES.map((l,i)=>`<button class="lticket rv${seen[l.id]?' on':''}" type="button" data-live="${l.id}" style="--r:${i?2:-2}deg"><img src="${l.img}" alt="" loading="lazy"><span class="ln">${l.name}<small>${l.sub}</small></span><span class="ls">見届けた</span><i class="stub">ADMIT<br>ONE</i></button>`).join('')}
-      <p class="rep-hint rv">見届けたライブをタップ</p>`),
-    card('c-mem',`<span class="mtape rv">07 / MEMORIES</span><div class="stkgrid rv">${stks.length?stks.map(([s,n])=>`<span><b>${s}</b><small>×${n}</small></span>`).join(''):'<p class="s-note">スタンプはまだありません</p>'}</div>
-      <p class="rep-lead rv">手帳に書いた予定は <b>${d.tot}</b> 件。<br>メモは <b>${d.notes}</b> 件、休みは <b>${d.rest}</b> 日。<br>グッズ・ボイスに <b>¥${d.sp.toLocaleString('ja-JP')}</b>。</p>`),
+    card('c-live',`<span class="mtape rv">06 / LIVE</span><p class="rep-lead rv">配信だけじゃない。ステージにも立ちました。</p>
+      ${LIVES.map((l,i)=>`<div class="tk rv" style="--r:${i?1.6:-1.6}deg;--d:${i*420}ms"><div class="tk-main"><div class="tk-img" style="background-image:url(${l.img})"><span class="tk-name">${l.name}<small>${l.sub}</small></span></div>
+        <div class="tk-info"><span><small>ARTIST</small>SAIKI ITTETSU</span><span><small>SEAT</small>NAKAMA</span><span><small>No.</small>${String(i+1).padStart(4,'0')}</span><i class="tk-bar"></i></div><span class="tk-stamp">見届けた</span></div>
+        <div class="tk-stub"><span>ADMIT ONE</span><b>${l.name}</b><i class="tk-bar"></i></div></div>`).join('')}`),
+    card('c-mem',`<span class="mtape rv">07 / DIARY</span><p class="rep-lead rv">この手帳に書いた予定は</p><div class="torn mint rv"><b class="num" data-v="${d.tot}">${d.tot}</b><small>件</small></div>
+      <div class="tix rv"><span class="ticket" style="--r:-2deg">メモ<b>${d.notes}</b></span><span class="ticket" style="--r:2deg">休み<b>${d.rest}</b></span><span class="ticket" style="--r:-1deg">グッズ・ボイス<b>¥${d.sp.toLocaleString('ja-JP')}</b></span></div>
+      <p class="rep-lead rv">${d.first?`${md(d.first)}に書きはじめました。<br>`:''}一行でも残せば、あとで思い出せる。</p>`),
     card('c-end',`<span class="mtape rv">RESULT</span><p class="rep-lead rv" style="align-self:center">あなたの称号は</p>
       <h2 class="rep-title rv">${hType?hType.replace('型','')+'の':''}${fan}</h2>
       <p class="rep-lead rv" style="align-self:center;text-align:center">配信 ${r.n}本・約${hours}時間${nLive?`・ライブ ${nLive}公演`:''}</p>
@@ -3056,9 +3118,8 @@ renderSum=function(){
   tr.innerHTML=cards.join('');
   $$('#sumTrack .scard').forEach((c,i)=>c.querySelector('.spage').insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i>`));
   $$('#sumTrack .rv').forEach((el,i)=>el.style.setProperty('--i',i%8));
-  $$('#sumTrack .lticket img').forEach(im=>im.addEventListener('error',()=>{im.hidden=true;}));
-  $$('#sumTrack .flap').forEach(f=>f.onclick=()=>{if(f.classList.toggle('open'))scramble(f.querySelector('.fa'),f.querySelector('.fa').textContent,{dur:420});});
-  $$('#sumTrack .lticket').forEach(t=>t.onclick=()=>{const s=liveSeen();s[t.dataset.live]=!s[t.dataset.live];try{localStorage.setItem('diary-lives',JSON.stringify(s));}catch(e){}t.classList.toggle('on',!!s[t.dataset.live]);});
+  $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
+  $$('#sumTrack .fnote').forEach(f=>f.onclick=()=>{if(f.classList.toggle('open'))scramble(f.querySelector('.fa'),f.querySelector('.fa').textContent,{dur:420});});
   $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');tr.scrollLeft=0;
   if(sumIO)sumIO.disconnect();
   sumIO=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&!x.target.classList.contains('in')){x.target.classList.add('in');x.target.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}}),{root:tr,threshold:.55});
