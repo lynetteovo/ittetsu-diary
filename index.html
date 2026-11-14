@@ -1380,7 +1380,7 @@ body{font-family:var(--sans)}
 .ncard{position:relative;z-index:0;align-self:center;width:min(330px,100%);aspect-ratio:410/270;margin:6px 0 10px;
   --card:#E4DAF6;--card-b:#E0D5F4;--edge:#F1EBF9;--card-ink:#1A0430}
 .nc-sh{position:absolute;inset:14% 5% -6%;border-radius:24px;background:rgba(62,42,128,.42);filter:blur(16px);opacity:.75;will-change:transform,opacity}
-.ncard::after{content:"";position:absolute;left:6%;right:6%;bottom:-3px;height:14px;border-radius:50%;background:rgba(40,24,80,.32);filter:blur(5px);z-index:-1}
+.nc-ct{position:absolute;left:6%;right:6%;bottom:-3px;height:14px;border-radius:50%;background:rgba(40,24,80,.32);filter:blur(5px);will-change:transform,opacity}
 .nc-3d{position:absolute;inset:0;perspective:1000px}
 .nc-body{all:unset;position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .nc-body:focus-visible{outline:2px solid #8C76B8;outline-offset:5px;border-radius:16px}
@@ -3398,7 +3398,7 @@ renderSum=function(){
       <div class="heat rv">${heatSVG(r,d)}<div class="heat-l"><span><i style="background:#D9CDEE"></i>配信</span><span><i style="background:#8C76B8"></i>多い日</span><span><i class="dot"></i>手帳を書いた日</span></div></div>
       <div class="tix rv"><span class="ticket" style="--r:-2deg">予定<b>${d.tot}</b></span><span class="ticket" style="--r:2deg">メモ<b>${d.notes}</b></span><span class="ticket" style="--r:-1deg">休み<b>${d.rest}</b></span><span class="ticket" style="--r:2deg">グッズ・ボイス<b>¥${d.sp.toLocaleString('ja-JP')}</b></span></div>`),
     card('c-end',`<span class="mtape rv">RESULT</span><p class="rep-lead rv end-lead">あなたの称号は</p>
-      <div class="ncard rv"><i class="nc-sh"></i><div class="nc-3d"><button class="nc-body" type="button" aria-label="カードをめくる" aria-pressed="false">${[-2.7,-1.8,-.9,0,.9,1.8,2.7].map(z=>`<i class="nc-edge" style="--z:${z}px"></i>`).join('')}
+      <div class="ncard rv"><i class="nc-sh"></i><i class="nc-ct"></i><div class="nc-3d"><button class="nc-body" type="button" aria-label="カードをめくる" aria-pressed="false">${[-2.7,-1.8,-.9,0,.9,1.8,2.7].map(z=>`<i class="nc-edge" style="--z:${z}px"></i>`).join('')}
         <span class="nc-face front"><i class="nc-emb a"></i><i class="nc-emb b"></i><span class="nc-in"><span class="mc-top"><span>NAKAMA CARD</span><span>No.${String(r.n).padStart(4,'0')}</span></span>
           <span class="mc-body"><span class="mc-img" style="background-image:url(${SUM_HDR})"></span><span class="mc-f"><small>TITLE</small><b>${hType?hType.replace('型','')+'の':''}${fan}</b><small>SINCE</small><span>${kd(r.first)}</span></span></span>
           <span class="mc-stats"><span><small>配信数</small><b>${r.n}</b></span><span><small>時間</small><b>${hours}</b></span><span><small>ライブ</small><b>${nLive}</b></span><i class="tk-bar"></i></span></span><i class="nc-gr"></i><i class="nc-fz"></i><i class="nc-ptx"></i></span>
@@ -3422,11 +3422,14 @@ renderSum=function(){
   $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
 };
 /* NAKAMA CARD：kaorou の読み取りカードと同じ動き（すべてばね。翻面 k90/c13、傾き k170/c18、拡大 k260/c22） */
-function ncard(pos){const body=pos.querySelector('.nc-body'),sh=pos.querySelector('.nc-sh'),calm=RM();
+function ncard(pos){const body=pos.querySelector('.nc-body'),sh=pos.querySelector('.nc-sh'),ct=pos.querySelector('.nc-ct'),calm=RM();
   const sp=(k,c,x=0)=>({k,c,x,v:0,t:x}),C={rx:sp(170,18),ry:sp(170,18),sc:sp(260,22,1),fl:sp(90,13)},L=Object.values(C);let on=false,last=0;
   const render=()=>{const hov=(C.sc.x-1)/.05,mid=Math.abs(Math.sin(C.fl.x*Math.PI/180));
     body.style.transform=`scale(${C.sc.x.toFixed(4)}) rotateX(${C.rx.x.toFixed(2)}deg) rotateY(${(C.ry.x+C.fl.x).toFixed(2)}deg)`;
-    sh.style.transform=`translate(${(-C.ry.x*1.2).toFixed(1)}px,${(C.rx.x+hov*10).toFixed(1)}px) scale(${(1+hov*.04-mid*.3).toFixed(3)})`;sh.style.opacity=(.75+hov*.2-mid*.35).toFixed(3);};
+    // 影はカードと一緒に動く：横幅は見えているカードの幅（回転の cos）に合わせて縮み、翻面の途中は持ち上がった分だけ下にずれて薄くなる
+    const w=Math.max(.06,Math.abs(Math.cos((C.ry.x+C.fl.x)*Math.PI/180))),sc=C.sc.x;
+    sh.style.transform=`translate(${(-C.ry.x*1.2).toFixed(1)}px,${(C.rx.x+hov*10+mid*8).toFixed(1)}px) scale(${(w*sc*(1+hov*.04)).toFixed(3)},${(sc*(1+hov*.04-mid*.12)).toFixed(3)})`;sh.style.opacity=(.75+hov*.2-mid*.3).toFixed(3);
+    ct.style.transform=`translate(${(-C.ry.x*.4).toFixed(1)}px,${(C.rx.x*.3+mid*10).toFixed(1)}px) scale(${(w*sc).toFixed(3)},${sc.toFixed(3)})`;ct.style.opacity=(1-mid*.7-hov*.3).toFixed(3);};
   const tick=t=>{const dt=Math.min(.033,(t-last)/1000);last=t;let m=false;
     L.forEach(s=>{s.v+=(s.k*(s.t-s.x)-s.c*s.v)*dt;s.x+=s.v*dt;if(Math.abs(s.v)>.003||Math.abs(s.t-s.x)>.003)m=true;else{s.x=s.t;s.v=0;}});
     render();if(m)requestAnimationFrame(tick);else on=false;};
