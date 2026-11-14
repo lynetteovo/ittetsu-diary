@@ -1,4 +1,4 @@
-{"updated":"2026-11-14T01:43:37.050Z","subs":{"unit":1000,"count":413000,"floor":413,"milestones":[{"n":413,"at":"2026-11-11T01:37:47.079Z"}]},"items":[
+{"updated":"2026-11-14T08:23:16.980Z","subs":{"unit":1000,"count":413000,"floor":413,"milestones":[{"n":413,"at":"2026-11-11T01:37:47.079Z"}]},"items":[
 {"id":"dzVoQrcQYcg","start":"2026-11-14T11:00:00Z","end":"","status":"upcoming","title":"【#消えるミュージカル歌枠】ピアノ伴奏でミュージカル楽曲を歌います！ 佐伯イッテツ 周央サンゴ","type":"collab","collab":"宇佐美リト","sk":"","ch":"宇佐美リト","ext":1},
 {"id":"0pdXw-QrmlQ","start":"2026-11-11T11:29:26Z","end":"2026-11-11T17:23:24Z","status":"none","title":"【ほぼ初見 最終回PART2】ファミリーだよ！全員集合!!","type":"game_series","game":"ポケットモンスター シャイニングパール","collab":"","sk":"","ch":""},
 {"id":"L-g3RJ_ovwA","start":"2026-11-10T20:30:51Z","end":"2026-11-10T22:23:38Z","status":"none","title":"べしべし","type":"zatsudan","collab":"","sk":"","ch":""},
@@ -40,7 +40,7 @@
 {"id":"iT2XRN1Jbno","start":"2026-09-24T10:29:02Z","end":"2026-09-24T15:18:47Z","status":"none","title":"【アバタール・チューナー PART06】ただいま！！ジャンクヤード！※ネタバレ注意","type":"game_series","game":"DIGITAL DEVIL SAGA ～アバタール・チューナー","collab":"","sk":"アバタール チューナー","ch":""},
 {"id":"36fY1RUbZOM","start":"2026-09-22T15:29:29Z","end":"2026-09-22T17:40:17Z","status":"none","title":"ねむねむ獅子","type":"zatsudan","collab":"","sk":"","ch":""},
 {"id":"mqKFosn1DxE","start":"2026-09-20T14:14:45Z","end":"2026-09-20T19:20:36Z","status":"none","title":"【Hell Wait】指とお別れ…？ククク…！なるか…！そんなこと…!!","type":"game_single","game":"Hell Wait","collab":"","sk":"","ch":""},
-{"id":"LHemgxUj-ec","start":"2026-09-19T08:59:30Z","end":"2026-09-19T12:45:58Z","status":"none","title":"【生存マイクラ】無性に生き残りたい","type":"game_single","game":"生存マイクラ","collab":"","sk":"","ch":""},
+{"id":"LHemgxUj-ec","start":"2026-09-19T08:59:30Z","end":"2026-09-19T12:45:58Z","status":"none","title":"【生存マイクラ】無性に生き残りたい","type":"game_single","game":"Minecraft","collab":"","sk":"","ch":""},
 {"id":"46CSCrQiGnM","start":"2026-09-18T10:59:24Z","end":"2026-09-18T12:24:38Z","status":"none","title":"叛逆ってる？","type":"zatsudan","collab":"","sk":"","ch":""},
 {"id":"9kVCi0RNEOM","start":"2026-09-17T21:44:47Z","end":"2026-09-17T22:53:48Z","status":"none","title":"マギってる？","type":"zatsudan","collab":"","sk":"","ch":""},
 {"id":"fY7H5DiNXEI","start":"2026-09-17T14:29:37Z","end":"2026-09-17T16:25:49Z","status":"none","title":"ワルプってる？","type":"zatsudan","collab":"","sk":"","ch":""},
