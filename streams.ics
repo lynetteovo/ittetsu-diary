@@ -9,22 +9,15 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
-UID:dzVoQrcQYcg@ittetsu-diary
-DTSTAMP:20261114T110000Z
-DTSTART:20261114T110000Z
-DTEND:20261114T130000Z
-SUMMARY:🤝 【#消えるミュージカル歌枠】ピアノ伴奏でミ
- ュージカル楽曲を歌います！ 佐伯イッテツ 周央サンゴ
-  / 宇佐美リト
-URL:https://www.youtube.com/watch?v=dzVoQrcQYcg
-DESCRIPTION:https://www.youtube.com/watch?v=dzVoQrcQYcg
-BEGIN:VALARM
-ACTION:DISPLAY
-TRIGGER:-PT10M
-DESCRIPTION:🤝 【#消えるミュージカル歌枠】ピアノ伴奏で
- ミュージカル楽曲を歌います！ 佐伯イッテツ 周央サン
- ゴ / 宇佐美リト
-END:VALARM
+UID:gi2V9GFC0ww@ittetsu-diary
+DTSTAMP:20261114T123006Z
+DTSTART:20261114T123006Z
+DTEND:20261114T124006Z
+SUMMARY:🤝 シュガーソングとビターステップ / 宇佐美リ
+ ト 佐伯イッテツ 周央サンゴ 東堂コハク cover / 宇佐美
+ リト
+URL:https://www.youtube.com/watch?v=gi2V9GFC0ww
+DESCRIPTION:https://www.youtube.com/watch?v=gi2V9GFC0ww
 END:VEVENT
 BEGIN:VEVENT
 UID:0pdXw-QrmlQ@ittetsu-diary
