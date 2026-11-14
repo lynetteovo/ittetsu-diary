@@ -122,6 +122,42 @@ async function allCollabs() {
   }
   return (await videos([...ids])).filter(isCollab);
 }
+// ---- ゲーム名の整理・同時配信の重複除去（streams.json と archive.json の両方に使う） ----
+// 説明欄から取れないシリーズの手当て（タイトルの先頭【】が「ほぼ初見」だけの回など）
+const GAME_FIX = [
+  {re: /^【ほぼ初見/, from: '2026-10-01', to: '2026-12-31', game: 'ポケットモンスター シャイニングパール'},
+];
+const NOT_A_GAME = /^(ネタバレ(あり|注意|なし)?|(ほぼ|完全)?初見|雑談|告知)$/;
+const zen2han = s => String(s || '').replace(/[０-９Ａ-Ｚａ-ｚ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+const gameKey = g => zen2han(g).toLowerCase().replace(/[\s　・:：\-‐]/g, '');
+const ALIAS = [[/^apex(legends)?$/, 'Apex Legends'], [/^(splatoon|スプラトゥーン)3$/, 'スプラトゥーン3']];
+function cleanGame(g) {
+  g = zen2han(g).replace(/\s*[#＃]\S+/g, '').replace(/[\s　]+/g, ' ').trim();
+  if (!g || NOT_A_GAME.test(g)) return '';
+  const k = gameKey(g);
+  for (const [re, name] of ALIAS) if (re.test(k)) return name;
+  return g;
+}
+function tidyGames(list) {
+  for (const it of list) {
+    const fix = GAME_FIX.find(f => f.re.test(it.title || '') && it.start >= f.from && it.start <= f.to + 'T99');
+    if (fix) it.game = fix.game;
+    if (it.game !== undefined) { const g = cleanGame(it.game); if (g) it.game = g; else delete it.game; }
+  }
+  // 大文字小文字や全角半角だけ違う表記は、いちばん多い書き方にそろえる
+  const seen = {};
+  for (const it of list) if (it.game) { const k = gameKey(it.game); (seen[k] = seen[k] || {})[it.game] = (seen[k][it.game] || 0) + 1; }
+  for (const it of list) if (it.game) { const v = seen[gameKey(it.game)]; it.game = Object.keys(v).sort((a, b) => v[b] - v[a])[0]; }
+  return list;
+}
+// コラボで本人も同時に枠を立てている時は、相手のチャンネルの枠は入れない（本人の枠だけ残す）
+function dropMirrors(list) {
+  // 本人の枠とほぼ同時（前後40分以内）に始まった相手の枠だけ外す。本人の長い配信の途中に
+  // 相手のチャンネルで公開された別の動画（プレミア公開など）は残す
+  const own = list.filter(it => !it.ext).map(it => Date.parse(it.start));
+  return list.filter(it => { if (!it.ext) return true; const t = Date.parse(it.start); return !own.some(s => Math.abs(t - s) <= 40 * 60000); });
+}
+
 const toArch = it => {
   const dur = it.end ? Math.round((Date.parse(it.end) - Date.parse(it.start)) / 60000) : 0;
   const a = {id: it.id, start: it.start, dur: dur > 0 && dur < 1440 ? dur : 0, type: it.type, title: it.title};
@@ -145,7 +181,7 @@ async function archive(items) {
     } catch (e) { console.error('archive:', e.message); }
   }
   for (const it of items) if (it.status === 'none' && it.end) map.set(it.id, toArch(it));
-  const list = [...map.values()].sort((a, b) => b.start.localeCompare(a.start));
+  const list = tidyGames(dropMirrors([...map.values()])).sort((a, b) => b.start.localeCompare(a.start));
   const body = '{"full":' + full + ',"items":[\n' + list.map(a => JSON.stringify(a)).join(',\n') + '\n]}\n';
   return writeIfChanged(ARCHIVE_FILE, body);
 }
@@ -237,7 +273,7 @@ function classify(title, ch, desc = '') {
   const collab = [ch.collab, ...members].filter(Boolean).join(' / ');
   if (collab || /コラボ/.test(title)) type = 'collab';
   // シリーズの目印（同じ企画の part 違いで共通）：ゲーム名の引き継ぎに使う
-  const sk = tagOk && SERIES.test(first) ? first.replace(SERIES, '').replace(/前編|後編|番外編|最終回/g, '').replace(/[\s　・]+/g, ' ').trim() : '';
+  const sk = tagOk && SERIES.test(first) ? strip(first).replace(/前編|後編|番外編|最終回/g, '').replace(/[\s　・]+/g, ' ').trim() : '';
   return {title: clean, type, game, collab, sk};
 }
 
@@ -348,7 +384,7 @@ async function main() {
   for (const it of got.values()) if (it.game) count[it.game] = (count[it.game] || 0) + 1;
   for (const it of got.values()) if (it.type === 'game_single' && count[it.game] > 1) it.type = 'game_series';
 
-  const items = [...got.values()].filter(it => Date.parse(it.start) >= keepFrom).sort((a, b) => b.start.localeCompare(a.start));
+  const items = tidyGames(dropMirrors([...got.values()].filter(it => Date.parse(it.start) >= keepFrom))).sort((a, b) => b.start.localeCompare(a.start));
   // 登録者数：1000人増えるごとに、その時刻を記録（手帳が記念日として自動で予定に入れる）
   // 公開されている登録者数は上から3桁に丸められている（10万〜99.9万人なら1000人単位）。いったん超えた区切りは減っても戻さない
   const UNIT = 1000;
@@ -368,7 +404,7 @@ async function main() {
   console.log(`${items.length} 件（upcoming ${items.filter(i => i.status === 'upcoming').length}）`, a || b || c ? '更新あり' : '変更なし');
 }
 
-export {classify, toItem, ics, seconds, main, hostName};
+export {classify, toItem, ics, seconds, main, hostName, tidyGames, dropMirrors, cleanGame};
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch(e => { console.error(e); process.exit(1); });
 }

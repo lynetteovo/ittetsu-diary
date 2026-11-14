@@ -681,7 +681,7 @@ const T={
 };
 const TT=t=>T[t]||T.zatsudan;
 const watchable=e=>!!TT(e.type).w;
-const sortedDay=k=>(S.events[k]||[]).filter(Boolean).slice().sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+const sortedDay=k=>(S.events[k]||[]).filter(Boolean).concat(ghostsFor(k)).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
 const STICKERS=['⚔️','💜','🥲','✨','🧸','❤️‍🩹','🥳','😇','💎','🐈‍⬛','🍧','🌟'];
 const NEKOSAY=['メビウス5mm🚬','絶対的ヒーロー✨','#サイキ通信ケーブル📟','悪・即・斬🗡️','(=^・ω・^=)','(ↀᴥↀ)','ฅ^•ﻌ•^ฅ','喋り屋与太郎🏮','残機残り9匹🐈‍⬛','#サイキアクト3📢','仲磨ｱ−👾!','#さいきニブンノイチ💟','俺と握手🤝','21歳+∞'];
 
@@ -1149,6 +1149,19 @@ function applyExtras(f){
     (S.events[k]=S.events[k]||[]).push({id,type:'anniversary',title:`チャンネル登録者 ${lbl}`,time:hm(t),note:'',gameTitle:'',collab:'',watched:true,price:'',thumb:'',u:Date.now()});
     idx.set(id,k);markDirty(k);changed=true;});
   return changed;}
+/* これまでの全配信（archive.json）。手帳に無い配信はカレンダーに「見た」として表示するだけ（保存も同期もしない）。触ったら手帳に入る */
+let ARCHV=null,archP=null;const ARCH_DAY={};
+function archLoad(){if(archP)return archP;
+  archP=fetch('archive.json?t='+Math.floor(Date.now()/36e5),{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{ARCHV=(j&&j.items)||[];
+    ARCHV.forEach(a=>{const t=new Date(a.start);if(isNaN(t))return;const k=dkOf(t);(ARCH_DAY[k]=ARCH_DAY[k]||[]).push(a);});return ARCHV;}).catch(()=>{ARCHV=[];return ARCHV;});
+  return archP;}
+function archLatest(){if(!ARCHV||!ARCHV.length)return null;const t=now();const a=ARCHV.find(x=>Date.parse(x.start)<=t);if(!a)return null;const d=new Date(a.start),k=dkOf(d);
+  const g=ghostsFor(k).find(x=>x.yt===a.id);if(!g)return null;return {e:g,k,p:{s:Date.parse(a.start),e:Date.parse(a.start)+(a.dur||0)*6e4,st:''}};}
+function ghostsFor(k){const L=ARCH_DAY[k];if(!L||!L.length)return [];const have=new Set(),dead=new Set();
+  Object.values(S.events).forEach(l=>(l||[]).forEach(e=>{if(e&&e.yt)have.add(e.yt);}));Object.values(S.dead).forEach(t=>{if(t&&t.yt)dead.add(t.yt);});
+  return L.filter(a=>!have.has(a.id)&&!dead.has(a.id)).map(a=>{const t=new Date(a.start);
+    return {id:'yt-'+a.id,yt:a.id,type:a.type||'zatsudan',title:a.title||'',time:hm(t),gameTitle:a.game||'',collab:a.collab||'',thumb:ytThumb(a.id),watched:true,note:'',price:'',sk:'',dur:a.dur||0,_arch:1};});}
+function materialize(e,k){if(!e||!e._arch)return e;const ev={...e,u:Date.now()};delete ev._arch;(S.events[k]=S.events[k]||[]).push(ev);markDirty(k);persistLocal();return ev;}
 function applyFeedAll(f){const a=applyFeed(f),b=applyExtras(f);return a||b;}
 function applyFeed(f){
   const items=(f&&f.items)||[];
@@ -1444,7 +1457,7 @@ function renderHero(){
   const hero=$('#hero'),wrap=$('#heroWrap'),all=allEv(),t=now();const L=liveNow(all),N=nextUp(all);let x,when,label;
   if(L){x=L;const mins=Math.max(0,Math.round((t-L.p.s)/6e4));when=`<span class="live">● 配信中</span>　${esc(loc(L.p.s).time)} から・${mins>=60?Math.floor(mins/60)+'時間'+(mins%60)+'分':mins+'分'}経過`;label='配信中';}
   else if(N&&N.p.s-t<=2*864e5){x=N;when=`次は ${esc(fmtWhen(N.p.s))} から`;label='次の配信 '+fmtWhen(N.p.s);}
-  else{x=recentWithImage(all);if(!x){wrap.hidden=true;hero.dataset.sig='';return;}const [y,m,d]=x.k.split('-').map(Number);
+  else{x=recentWithImage(all)||archLatest();if(!x){wrap.hidden=true;hero.dataset.sig='';return;}const [y,m,d]=x.k.split('-').map(Number);
     const dd=`${m}月${d}日（${WD[dow(y,m-1,d)]}）${x.e.time?' '+x.e.time:''}`;when=`${x.e.yt?'前回の配信':'最近の'+TT(x.e.type).l}　${esc(dd)}${N?`<span style="opacity:.75">　・次は ${esc(fmtWhen(N.p.s))}</span>`:''}`;label=(x.e.yt?'前回の配信 ':'最近の記録 ')+dd;}
   const e=x.e,title=e.title||TT(e.type).l,sig=[e.id,e.thumb?e.thumb.length+e.thumb.slice(-24):'',title].join('|');
   wrap.hidden=false;hero.hidden=false;
@@ -1690,7 +1703,7 @@ function evRow(e,key,d){
   a.append(row);return a;
 }
 function toggleWatched(id,key,d,btn,art){
-  const e=(S.events[key]||[]).find(x=>x&&x.id===id);if(!e)return;
+  let e=(S.events[key]||[]).find(x=>x&&x.id===id);if(!e)e=materialize(ghostsFor(key).find(x=>x.id===id),key);if(!e)return;
   e.watched=!e.watched;e.u=Date.now();saveData(key);sheetBody.dataset.sig=daySig(key);
   btn.setAttribute('aria-pressed',e.watched);scramble(btn,e.watched?'[x]':'[ ]',{dur:200});
   art.classList.toggle('done',e.watched);
@@ -1747,7 +1760,7 @@ function compress(file){return new Promise(res=>{const r=new FileReader();r.onlo
 function renderThumbPick(){const box=$('#fThumbBox');box.innerHTML='';
   if(fThumb){const w=mk('div','thumb-prev');const im=new Image();im.alt='';im.src=fThumb;w.append(im);const x=mk('button','press','✕');x.setAttribute('aria-label','サムネイルを外す');x.onclick=()=>{fThumb='';renderThumbPick();};w.append(x);box.append(w);}
   else{const l=mk('label','thumb-pick','画像をえらぶ');const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.hidden=true;inp.onchange=async ev=>{const f=ev.target.files&&ev.target.files[0];if(!f)return;fThumb=await compress(f);renderThumbPick();};l.append(inp);box.append(l);}}
-function openForm(e){editing=e||null;
+function openForm(e){if(e&&e._arch)e=materialize(e,dk(view.y,view.m,sel));editing=e||null;
   setType(e&&T[e.type]?e.type:'zatsudan');$('#fTitle').value=e?(e.title||''):'';$('#fGame').value=e?(e.gameTitle||''):'';$('#fCollab').value=e?(e.collab||''):'';$('#fTime').value=e&&e.time?e.time.padStart(5,'0'):'';
   $('#fPrice').value=e?(e.price||''):'';$('#fNote').value=e?(e.note||''):'';fThumb=e?(e.thumb||''):'';setWatch(e?!!e.watched:false);renderThumbPick();
   $('#formTitle').textContent=e?'予定を編集':`${view.m+1}月${sel}日に追加`;$('#fSave').textContent=e?'更新する':'追加する';$('#fDelete').hidden=!e;
@@ -2024,6 +2037,7 @@ liquid(tabInd,tabs[0]);liquid(pillInd,pillsEl.querySelector('[aria-checked="true
   await ready;
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   loadFeed();
+  archLoad().then(()=>refresh());
   await syncNow();
 })();
 })();

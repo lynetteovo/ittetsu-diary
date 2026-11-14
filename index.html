@@ -1205,6 +1205,44 @@ html,body{overflow-x:clip}
 @keyframes tear{0%{transform:none}30%{transform:rotate(-4deg)}100%{transform:translate(9px,7px) rotate(9deg)}}
 @keyframes stampIn{from{opacity:0;transform:scale(1.8)}to{opacity:.95;transform:none}}
 .rm .tk-stub{transform:translate(9px,7px) rotate(9deg)}.rm .tk-stamp{opacity:.95;transform:none}
+
+/* ===================== round 12: torn slip, tracing layers, no filter row ===================== */
+.pills,#sumSeg{display:none!important}
+.sum-head{margin-bottom:0}
+/* stream slip: tracing paper torn along the bottom, a white fibrous core under the tear */
+.hero{filter:drop-shadow(1px 4px 3px rgba(40,28,60,.2));padding-bottom:16px}
+.hero::before{inset:0 0 -10px 0;bottom:-10px;clip-path:var(--tear);border-radius:0;
+  background:var(--tooth) 20px 0/150px,linear-gradient(180deg,rgba(236,234,244,.66),rgba(226,223,238,.6));
+  -webkit-backdrop-filter:blur(2.4px) saturate(115%);backdrop-filter:blur(2.4px) saturate(115%);
+  box-shadow:inset 0 0 18px rgba(255,255,255,.55),inset 0 1px 0 rgba(255,255,255,.8)}
+.hero::after{display:block!important;content:"";position:absolute;z-index:-2;left:0;right:0;top:0;bottom:-10px;pointer-events:none;
+  background:linear-gradient(180deg,transparent 60%,rgba(255,255,255,.95) 60%);clip-path:var(--core);filter:url(#deckleS)}
+.hero-wrap{margin-bottom:26px}
+.hero-wrap>.tape{z-index:4}
+/* the printed sheet under the calendar is also a little translucent */
+.gridwrap .backing{background:var(--tooth) 0 0/170px,linear-gradient(rgba(214,150,172,.26) 1px,transparent 1px) 0 0/100% 13px,linear-gradient(90deg,rgba(214,150,172,.26) 1px,transparent 1px) 0 0/13px 100%,rgba(250,249,252,.7);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  box-shadow:inset 0 0 22px rgba(255,255,255,.55),inset 0 0 0 .5px rgba(255,255,255,.8),0 .5px 0 rgba(170,160,190,.55),1.5px 2px 0 rgba(255,255,255,.55),1.5px 2.5px 0 rgba(160,150,180,.45),3px 4px 0 rgba(255,255,255,.45),3px 4.5px 0 rgba(150,140,170,.38),3px 9px 6px -3px rgba(40,28,60,.22),16px 24px 26px -16px rgba(40,28,60,.32)}
+.gridwrap .backing::after{background:radial-gradient(circle at 50% 46%,rgba(169,166,190,.9) 0 5px,rgba(143,140,166,.9) 5px 5.8px,rgba(0,0,0,.08) 5.8px 6.6px,transparent 7px) 18px 50%/64px 16px repeat-x,rgba(207,198,230,.82)}
+/* recap: the cover ticket is a button */
+.sum-range{cursor:pointer;-webkit-tap-highlight-color:transparent;border:0;text-align:left}
+.sum-range:active{filter:brightness(.97)}
+/* iPhone-size pages: each recap page fits between the header and the tab bar */
+.scard{height:max(500px,calc(100dvh - var(--st) - var(--sb) - 236px));min-height:0}
+.spage{height:100%;min-height:0;padding-top:34px;padding-bottom:16px;gap:9px}
+.rep-lead{font-size:14.5px;line-height:1.8}
+.rep-lead b{font-size:19px}
+.c-cover .oval{width:min(180px,52%)}
+.rep-t{font-size:27px}
+.c-nums .torn b,.c-mem .torn b{font-size:56px}
+.clipnote{padding:24px 18px 16px}.clipnote b{font-size:28px}
+.rbars{gap:5px}.rbars i{height:11px}
+.hours{height:100px}
+.rep-big{font-size:28px}
+.c-games .rep-big{font-size:22px}
+.fnote{min-height:58px;padding:12px 14px 10px}
+.tk-img{height:90px}
+.sum-track{padding-bottom:12px}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -1461,7 +1499,7 @@ const T={
 };
 const TT=t=>T[t]||T.zatsudan;
 const watchable=e=>!!TT(e.type).w;
-const sortedDay=k=>(S.events[k]||[]).filter(Boolean).slice().sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+const sortedDay=k=>(S.events[k]||[]).filter(Boolean).concat(ghostsFor(k)).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
 const STICKERS=['⚔️','💜','🥲','✨','🧸','❤️‍🩹','🥳','😇','💎','🐈‍⬛','🍧','🌟'];
 const NEKOSAY=['メビウス5mm🚬','絶対的ヒーロー✨','#サイキ通信ケーブル📟','悪・即・斬🗡️','(=^・ω・^=)','(ↀᴥↀ)','ฅ^•ﻌ•^ฅ','喋り屋与太郎🏮','残機残り9匹🐈‍⬛','#サイキアクト3📢','仲磨ｱ−👾!','#さいきニブンノイチ💟','俺と握手🤝','21歳+∞'];
 
@@ -1929,6 +1967,19 @@ function applyExtras(f){
     (S.events[k]=S.events[k]||[]).push({id,type:'anniversary',title:`チャンネル登録者 ${lbl}`,time:hm(t),note:'',gameTitle:'',collab:'',watched:true,price:'',thumb:'',u:Date.now()});
     idx.set(id,k);markDirty(k);changed=true;});
   return changed;}
+/* これまでの全配信（archive.json）。手帳に無い配信はカレンダーに「見た」として表示するだけ（保存も同期もしない）。触ったら手帳に入る */
+let ARCHV=null,archP=null;const ARCH_DAY={};
+function archLoad(){if(archP)return archP;
+  archP=fetch('archive.json?t='+Math.floor(Date.now()/36e5),{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{ARCHV=(j&&j.items)||[];
+    ARCHV.forEach(a=>{const t=new Date(a.start);if(isNaN(t))return;const k=dkOf(t);(ARCH_DAY[k]=ARCH_DAY[k]||[]).push(a);});return ARCHV;}).catch(()=>{ARCHV=[];return ARCHV;});
+  return archP;}
+function archLatest(){if(!ARCHV||!ARCHV.length)return null;const t=now();const a=ARCHV.find(x=>Date.parse(x.start)<=t);if(!a)return null;const d=new Date(a.start),k=dkOf(d);
+  const g=ghostsFor(k).find(x=>x.yt===a.id);if(!g)return null;return {e:g,k,p:{s:Date.parse(a.start),e:Date.parse(a.start)+(a.dur||0)*6e4,st:''}};}
+function ghostsFor(k){const L=ARCH_DAY[k];if(!L||!L.length)return [];const have=new Set(),dead=new Set();
+  Object.values(S.events).forEach(l=>(l||[]).forEach(e=>{if(e&&e.yt)have.add(e.yt);}));Object.values(S.dead).forEach(t=>{if(t&&t.yt)dead.add(t.yt);});
+  return L.filter(a=>!have.has(a.id)&&!dead.has(a.id)).map(a=>{const t=new Date(a.start);
+    return {id:'yt-'+a.id,yt:a.id,type:a.type||'zatsudan',title:a.title||'',time:hm(t),gameTitle:a.game||'',collab:a.collab||'',thumb:ytThumb(a.id),watched:true,note:'',price:'',sk:'',dur:a.dur||0,_arch:1};});}
+function materialize(e,k){if(!e||!e._arch)return e;const ev={...e,u:Date.now()};delete ev._arch;(S.events[k]=S.events[k]||[]).push(ev);markDirty(k);persistLocal();return ev;}
 function applyFeedAll(f){const a=applyFeed(f),b=applyExtras(f);return a||b;}
 function applyFeed(f){
   const items=(f&&f.items)||[];
@@ -2224,7 +2275,7 @@ function renderHero(){
   const hero=$('#hero'),wrap=$('#heroWrap'),all=allEv(),t=now();const L=liveNow(all),N=nextUp(all);let x,when,label;
   if(L){x=L;const mins=Math.max(0,Math.round((t-L.p.s)/6e4));when=`<span class="live">● 配信中</span>　${esc(loc(L.p.s).time)} から・${mins>=60?Math.floor(mins/60)+'時間'+(mins%60)+'分':mins+'分'}経過`;label='配信中';}
   else if(N&&N.p.s-t<=2*864e5){x=N;when=`次は ${esc(fmtWhen(N.p.s))} から`;label='次の配信 '+fmtWhen(N.p.s);}
-  else{x=recentWithImage(all);if(!x){wrap.hidden=true;hero.dataset.sig='';return;}const [y,m,d]=x.k.split('-').map(Number);
+  else{x=recentWithImage(all)||archLatest();if(!x){wrap.hidden=true;hero.dataset.sig='';return;}const [y,m,d]=x.k.split('-').map(Number);
     const dd=`${m}月${d}日（${WD[dow(y,m-1,d)]}）${x.e.time?' '+x.e.time:''}`;when=`${x.e.yt?'前回の配信':'最近の'+TT(x.e.type).l}　${esc(dd)}${N?`<span style="opacity:.75">　・次は ${esc(fmtWhen(N.p.s))}</span>`:''}`;label=(x.e.yt?'前回の配信 ':'最近の記録 ')+dd;}
   const e=x.e,title=e.title||TT(e.type).l,sig=[e.id,e.thumb?e.thumb.length+e.thumb.slice(-24):'',title].join('|');
   wrap.hidden=false;hero.hidden=false;
@@ -2471,7 +2522,7 @@ function evRow(e,key,d){
   a.append(row);return a;
 }
 function toggleWatched(id,key,d,btn,art){
-  const e=(S.events[key]||[]).find(x=>x&&x.id===id);if(!e)return;
+  let e=(S.events[key]||[]).find(x=>x&&x.id===id);if(!e)e=materialize(ghostsFor(key).find(x=>x.id===id),key);if(!e)return;
   e.watched=!e.watched;e.u=Date.now();saveData(key);sheetBody.dataset.sig=daySig(key);
   btn.setAttribute('aria-pressed',e.watched);scramble(btn,e.watched?'[x]':'[ ]',{dur:200});
   art.classList.toggle('done',e.watched);
@@ -2528,7 +2579,7 @@ function compress(file){return new Promise(res=>{const r=new FileReader();r.onlo
 function renderThumbPick(){const box=$('#fThumbBox');box.innerHTML='';
   if(fThumb){const w=mk('div','thumb-prev');const im=new Image();im.alt='';im.src=fThumb;w.append(im);const x=mk('button','press','✕');x.setAttribute('aria-label','サムネイルを外す');x.onclick=()=>{fThumb='';renderThumbPick();};w.append(x);box.append(w);}
   else{const l=mk('label','thumb-pick','画像をえらぶ');const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.hidden=true;inp.onchange=async ev=>{const f=ev.target.files&&ev.target.files[0];if(!f)return;fThumb=await compress(f);renderThumbPick();};l.append(inp);box.append(l);}}
-function openForm(e){editing=e||null;
+function openForm(e){if(e&&e._arch)e=materialize(e,dk(view.y,view.m,sel));editing=e||null;
   setType(e&&T[e.type]?e.type:'zatsudan');$('#fTitle').value=e?(e.title||''):'';$('#fGame').value=e?(e.gameTitle||''):'';$('#fCollab').value=e?(e.collab||''):'';$('#fTime').value=e&&e.time?e.time.padStart(5,'0'):'';
   $('#fPrice').value=e?(e.price||''):'';$('#fNote').value=e?(e.note||''):'';fThumb=e?(e.thumb||''):'';setWatch(e?!!e.watched:false);renderThumbPick();
   $('#formTitle').textContent=e?'予定を編集':`${view.m+1}月${sel}日に追加`;$('#fSave').textContent=e?'更新する':'追加する';$('#fDelete').hidden=!e;
@@ -3036,12 +3087,11 @@ const _renderSum5=renderSum;renderSum=function(){_renderSum5();
    YouTube (archive.json, including the time before this diary) plus the diary itself
    ===================================================================== */
 let ARCH=null,archTried=false;
-function loadArchive(){if(archTried)return Promise.resolve();archTried=true;
-  return fetch('archive.json?t='+Math.floor(Date.now()/36e5)).then(r=>r.ok?r.json():null).then(j=>{ARCH=(j&&j.items)||[];}).catch(()=>{ARCH=[];});}
+function loadArchive(){archTried=true;return archLoad().then(a=>{ARCH=a;});}
 const LIVES=[{id:'concerto',name:'CONCERTO',sub:'day2',img:'live-concerto.jpg'},{id:'overdrive',name:'OVER DRIVE',sub:'',img:'live-overdrive.jpg'}];
 const liveSeen=()=>{try{return JSON.parse(localStorage.getItem('diary-lives')||'{}');}catch(e){return{};}};
 function repStats(range){
-  const yr=nowY(),inR=k=>range!=='year'||+k.slice(0,4)===yr,S={};   // streams by id
+  const inR=k=>range==='all'||+k.slice(0,4)===+range,S={};   // streams by id; range = a year, or 'all'
   const lkey=t=>{const x=new Date(t);return dk(x.getFullYear(),x.getMonth(),x.getDate());};
   (ARCH||[]).forEach(a=>{const j={key:lkey(Date.parse(a.start))};if(!inR(j.key))return;
     S['yt-'+a.id]={k:j.key,s:Date.parse(a.start),dur:a.dur||0,type:a.type,label:a.game||(a.type==='collab'?a.collab:'')||a.title,game:(a.type==='game_single'||a.type==='game_series')?(a.game||''):'',collab:a.collab||'',title:a.title,watched:false,diary:false};});
@@ -3065,7 +3115,7 @@ renderSum=function(){
   const tr=$('#sumTrack');$$('#sumSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.r===sumRange));
   if(!archTried||ARCH===null){tr.innerHTML=card('c-empty',`<p class="s-note">レポートを作っています…</p>`);$('#sumDots').innerHTML='';loadArchive().then(()=>{if(curView==='sum')renderSum();});return;}
   const r=repStats(sumRange),d=r.d;PH=[];
-  if(!r.n&&!d.tot){tr.innerHTML=card('c-empty',`<p class="s-note">まだ記録がありません</p>`);$('#sumDots').innerHTML='';return;}
+  if(!r.n&&!d.tot){tr.innerHTML=card('c-cover c-empty',`${rangeTicket(r)}<p class="s-note">この期間の記録はまだありません</p>`);$('#sumDots').innerHTML='';bindRange();return;}
   const md=k=>{if(!k)return'';const [y,m,dd]=k.split('-').map(Number);return `${y}年${m}月${dd}日`;};
   const pct=r.inDiary?Math.round(r.w/r.inDiary*100):0,hours=Math.round(r.min/60),avg=r.nDur?r.min/r.nDur:0;
   const games=top(r.games,5),collabs=top(r.collab,6),stks=top(d.stk,6);
@@ -3080,9 +3130,8 @@ renderSum=function(){
     <ellipse cx="120" cy="160" rx="90" ry="126" fill="#FBF9F4" stroke="#B9A6E0" stroke-width="2.4"/><image href="${SUM_HDR}" x="38" y="42" width="164" height="236" preserveAspectRatio="xMidYMid slice" clip-path="url(#ovcR)"/>
     <text font-size="10.5" letter-spacing="1.2" fill="#7966A8"><textPath href="#ovpR">SAIKI ITTETSU ・ NAKAMA REPORT ・ 21+∞ ・ #サイキ通信ケーブル ・ SAIKI ITTETSU ・ NAKAMA REPORT ・ 21+∞ ・ </textPath></text></svg></div>`;
   const cards=[
-    card('c-cover',`<span class="ticket rv" style="--r:-3deg">${sumRange==='year'?yrLabel():'ALL TIME'}<small>${kd(r.first)} — ${kd(r.last)}</small></span>${cover}
-      <h2 class="rep-t rv">仲磨レポート</h2><p class="rep-lead rv">${md(r.first)}の配信から今日まで。<br>あなたとイッテツの記録をまとめました。</p>
-      <p class="rep-hint rv">横にめくる　→</p>`),
+    card('c-cover',`${rangeTicket(r)}${cover}
+      <h2 class="rep-t rv">仲磨レポート</h2><p class="rep-lead rv">${sumRange==='all'?`${md(r.first)}の配信から今日まで。`:`${sumRange}年の配信をふりかえって。`}<br>あなたとイッテツの記録をまとめました。</p>`),
     card('c-nums',`<span class="mtape rv">01 / STREAMS</span>
       <p class="rep-lead rv">これまでの配信は</p><div class="torn mint rv"><b class="num" data-v="${r.n}">${r.n}</b><small>本</small></div>
       <p class="rep-lead rv">${r.before?`手帳をはじめる前の配信が <b>${r.before}</b> 本。<br>`:''}手帳に記録した配信は <b>${r.inDiary}</b> 本、<br>そのうち <b>${r.w}</b> 本を見ました。</p>
@@ -3119,6 +3168,7 @@ renderSum=function(){
   $$('#sumTrack .scard').forEach((c,i)=>c.querySelector('.spage').insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i>`));
   $$('#sumTrack .rv').forEach((el,i)=>el.style.setProperty('--i',i%8));
   $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
+  bindRange();
   $$('#sumTrack .fnote').forEach(f=>f.onclick=()=>{if(f.classList.toggle('open'))scramble(f.querySelector('.fa'),f.querySelector('.fa').textContent,{dur:420});});
   $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');tr.scrollLeft=0;
   if(sumIO)sumIO.disconnect();
@@ -3126,6 +3176,28 @@ renderSum=function(){
   $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
 };
 const yrLabel=()=>nowY()+' / THIS YEAR';
+/* the cover ticket is the period switch: this year → earlier years → all time → this year */
+sumRange=nowY();
+function sumYears(){const ys=new Set([nowY()]);(ARCH||[]).forEach(a=>ys.add(+String(a.start).slice(0,4)));allItems().forEach(x=>ys.add(+x.k.slice(0,4)));return [...ys].filter(Boolean).sort((a,b)=>b-a);}
+function rangeTicket(r){return `<button type="button" class="ticket rv sum-range" style="--r:-3deg" aria-label="期間を切り替える（いま：${sumRange==='all'?'ぜんぶ':sumRange+'年'}）">${sumRange==='all'?'ALL TIME':sumRange+' / YEAR'}<small>${r.first?`${kd(r.first)} — ${kd(r.last)}`:'&nbsp;'}</small></button>`;}
+function bindRange(){const b=$('#sumTrack .sum-range');if(!b)return;b.onclick=()=>{const L=[...sumYears(),'all'],i=L.indexOf(sumRange);sumRange=L[(i+1)%L.length];
+  if(!RM())b.animate([{transform:'rotate(-3deg)'},{transform:'rotate(4deg) scale(.96)'},{transform:'rotate(-3deg)'}],{duration:380,easing:SP});setTimeout(renderSum,RM()?0:160);};}
+
+/* ---- the stream slip is torn off along the bottom: an irregular edge with a white fibrous core ---- */
+(function(){
+  const R=SRND2(20261113),pts=[],core=[];
+  const ph=[R()*6,R()*6,R()*6],N=96;
+  for(let i=0;i<=N;i++){const t=i/N,x=(t*100).toFixed(2);
+    // large slow wander + medium waves + fine jitter + a few deeper bites
+    let y=3.2*Math.sin(t*3.1+ph[0])+1.8*Math.sin(t*11+ph[1])+.9*Math.sin(t*29+ph[2])+(R()-.5)*1.6;
+    if(R()<.06)y-=2+R()*2.5;
+    const c=1.4+R()*2.4+(R()<.12?2.5:0);          // how much white core shows below the tracing paper
+    pts.push(`${x}% calc(100% - ${(9+y).toFixed(1)}px)`);core.push(`${x}% calc(100% - ${(9+y-c).toFixed(1)}px)`);}
+  const poly=list=>`polygon(0 0,100% 0,${list.slice().reverse().join(',')})`;
+  const h=document.getElementById('hero');if(!h)return;
+  h.style.setProperty('--tear',poly(pts));h.style.setProperty('--core',poly(core));
+})();
+function SRND2(seed){let s=seed%2147483647;return()=>{s=(s*16807)%2147483647;return s/2147483647;};}
 
 /* ---------- redraw after sync / new streams (keeps what you are looking at) ---------- */
 function refresh(){
@@ -3152,6 +3224,7 @@ liquid(tabInd,tabs[0]);liquid(pillInd,pillsEl.querySelector('[aria-checked="true
   await ready;
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   loadFeed();
+  archLoad().then(()=>refresh());
   await syncNow();
 })();
 })();
