@@ -1428,22 +1428,27 @@ body{font-family:var(--sans)}
 .ev-meta,.cap .when{color:#6E6488}
 .s-cap{color:#4A3A72}
 .infty{color:#4A3A72}
-/* ===== round 17: the summary pages turn like sheets in a ring binder ===== */
-.sturn{position:relative;height:100%;min-height:inherit;transform-origin:0 50%;transform-style:preserve-3d;will-change:transform}
-.sturn>.spage{backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.sturn>.sc-tape{z-index:7;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-/* the back of the sheet: plain paper, the punched holes showing through on the other side */
-.sc-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:1.5px;
-  background:radial-gradient(circle at 50% 44%,rgba(169,166,190,.9) 0 5.2px,transparent 6px) right 10px top 24px/16px 76px repeat-y,var(--tooth) 30px 0/190px,linear-gradient(90deg,#EFECE4,#F7F5EF 70%,#EAE6DD);
-  box-shadow:inset 0 0 18px rgba(120,100,80,.12),0 .5px 0 #D8D3CB}
-/* the bend while it turns: a shadow at the rings, a sheen across the curve, a darker free edge */
-.sc-curl{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:var(--curl,0);border-radius:1.5px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  background:linear-gradient(90deg,rgba(40,28,60,.26) 0,rgba(40,28,60,0) 14%,rgba(255,255,255,0) 38%,rgba(255,255,255,.38) 58%,rgba(255,255,255,0) 74%,rgba(40,28,60,.2) 100%)}
+/* ===== round 18: the summary is a stack of sheets; a sheet turns over on the rings, bending as it goes ===== */
+.sum-track{display:grid;overflow:visible;scroll-snap-type:none;padding-top:18px;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.sum-track>.scard{grid-area:1/1}
+.sum-track>.scard:not(.cur):not(.peer){visibility:hidden}
+.sum-track>.scard.cur{z-index:2}.sum-track>.scard.peer{z-index:1}.sum-track>.scard.turning{z-index:3}
+.sturn{position:relative;height:100%;min-height:inherit}
+.scard.turning>.sturn{visibility:hidden}
+/* the sheet while it turns: three strips of the same page, each folded a little more than the last */
+.turner{position:absolute;inset:0;z-index:8;pointer-events:none;transform-style:preserve-3d;perspective:1500px}
+.tseg{position:absolute;top:0;height:100%;transform-origin:0 50%;transform-style:preserve-3d}
+.tface,.tback{position:absolute;top:0;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.tface>.sturn{visibility:visible;height:100%}
+.tface *,.tface *::before,.tface *::after{animation-duration:1ms!important;animation-delay:0ms!important;transition:none!important}
+.tback{transform:rotateY(180deg);background:var(--tooth) 30px 0/190px,linear-gradient(90deg,#EFECE4,#F7F5EF 70%,#EAE6DD);box-shadow:inset 0 0 18px rgba(120,100,80,.12)}
+.tback.spine{background:radial-gradient(circle at 50% 44%,rgba(169,166,190,.85) 0 5.2px,transparent 6px) right 10px top 24px/16px 76px repeat-y,var(--tooth) 30px 0/190px,linear-gradient(90deg,#EFECE4,#F7F5EF 70%,#EAE6DD)}
+.tshade{position:absolute;inset:0;pointer-events:none;z-index:9;background:linear-gradient(90deg,rgba(40,28,60,var(--a0,0)),rgba(40,28,60,var(--a1,0)))}
+.tsheen{position:absolute;inset:0;pointer-events:none;z-index:9;background:linear-gradient(90deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.45) 55%,rgba(255,255,255,0) 85%);opacity:var(--sh,0);mix-blend-mode:soft-light}
 /* the shadow the turning sheet drops on the page underneath, following its free edge */
-.sc-cast{position:absolute;top:0;bottom:0;left:calc(var(--cw,0) * 100%);width:42%;z-index:6;pointer-events:none;opacity:var(--cast,0);
-  background:linear-gradient(90deg,rgba(40,28,60,.34),rgba(40,28,60,.12) 35%,rgba(40,28,60,0))}
-.sum-track{padding-top:18px}
-.rm .sturn{transform:none!important}
+.sc-cast{position:absolute;top:0;bottom:0;left:calc(var(--cw,0) * 100%);width:46%;z-index:6;pointer-events:none;opacity:var(--cast,0);
+  background:linear-gradient(90deg,rgba(40,28,60,.38),rgba(40,28,60,.13) 35%,rgba(40,28,60,0))}
+.sc-under{position:absolute;inset:0;z-index:6;pointer-events:none;background:rgba(40,28,60,.12);opacity:var(--under,0)}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -3252,20 +3257,72 @@ function renderSum(){
   $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
 }
 let sumIO=null;
-/* まとめのページめくり：横スワイプのぶんだけ、上のページが左のリング穴を軸に紙としてめくれる。
-   下のページはその場で待ち、めくれる紙の影が落ちる。裏は紙の裏（無地）。めくる途中は紙のたわみの光と影 */
-let turnRaf=0;
-function sumTurn(){turnRaf=0;const tr=$('#sumTrack');if(!tr)return;const cs=[...tr.children].filter(c=>c.classList.contains('scard'));if(!cs.length)return;
-  const step=cs[0].offsetWidth+14,x=tr.scrollLeft/Math.max(1,step),rm=RM();
-  cs.forEach((c,i)=>{const w=c.querySelector(':scope>.sturn');if(!w)return;const p=i-x;
-    if(rm||Math.abs(p)>=.999||Math.abs(p)<.002){w.style.transform='';w.style.removeProperty('--curl');w.style.removeProperty('--cast');w.style.removeProperty('--cw');c.style.zIndex='';return;}
-    if(p<0){const t=-p,a=t*180,b=Math.sin(t*Math.PI);
-      w.style.transform=`translateX(${(t*step).toFixed(1)}px) perspective(1500px) rotateY(${(-a).toFixed(2)}deg) translateZ(${(b*14).toFixed(1)}px) skewY(${(-b*1.6).toFixed(2)}deg)`;
-      w.style.setProperty('--curl',b.toFixed(3));w.style.setProperty('--cast','0');c.style.zIndex=3;}
-    else{const t=1-p;w.style.transform=`translateX(${(-p*step).toFixed(1)}px)`;
-      w.style.setProperty('--curl','0');w.style.setProperty('--cast',Math.sin(t*Math.PI).toFixed(3));w.style.setProperty('--cw',Math.max(0,Math.cos(t*Math.PI)).toFixed(3));c.style.zIndex=1;}});}
-$('#sumTrack').addEventListener('scroll',()=>{if(!turnRaf)turnRaf=requestAnimationFrame(sumTurn);},{passive:true});
-addEventListener('resize',()=>{if(!turnRaf)turnRaf=requestAnimationFrame(sumTurn);});
+/* まとめのページめくり。ページは重ねて置き、指の動きに合わせて上の紙を左のリング穴を軸にめくる。
+   めくる紙は同じページを3本の帯に切った複製で、外側の帯ほど先に折れる（紙のたわみ）。帯ごとに角度に応じた陰影、
+   裏は無地の紙。下のページには、めくれる紙の端に合わせて影が落ちる。スクロールは使わない（iPhone で揺れない） */
+const BK={i:0,anim:0,turn:null};
+const bookCards=()=>[...$('#sumTrack').children].filter(c=>c.classList.contains('scard'));
+function bookShow(){const cs=bookCards();cs.forEach((c,j)=>{c.classList.toggle('cur',j===BK.i);c.classList.remove('peer','turning');});
+  $$('#sumDots i').forEach((d,j)=>d.classList.toggle('on',j===BK.i));const c=cs[BK.i];
+  if(c&&!c.classList.contains('in')){c.classList.add('in');c.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}}
+function bookGo(i,now){const cs=bookCards();if(!cs.length)return;i=Math.max(0,Math.min(cs.length-1,i));
+  if(now||RM()||i===BK.i||Math.abs(i-BK.i)>1){turnEnd();BK.i=i;bookShow();return;}
+  const fwd=i>BK.i;turnStart(fwd);turnAnim(fwd?1:0,()=>{BK.i=i;turnEnd();bookShow();});}
+/* fwd: the current sheet turns away (0→1). back: the previous sheet comes back over (1→0) */
+function turnStart(fwd){turnEnd();const cs=bookCards(),top=fwd?cs[BK.i]:cs[BK.i-1],under=fwd?cs[BK.i+1]:cs[BK.i];if(!top||!under)return null;
+  const src=top.querySelector(':scope>.sturn'),W=src.offsetWidth,fr=[0,.4,.7,1];
+  const tn=document.createElement('div');tn.className='turner';let parent=tn,segs=[];
+  for(let k=0;k<3;k++){const a=fr[k],b=fr[k+1],seg=document.createElement('div');seg.className='tseg';
+    seg.style.left=(k?(fr[k]-fr[k-1])*W:0)+'px';seg.style.width=((b-a)*W)+'px';
+    const face=document.createElement('div');face.className='tface';face.style.left=(-a*W)+'px';face.style.width=W+'px';
+    face.style.clipPath=`inset(-40px ${((1-b)*W).toFixed(1)}px -40px ${(a*W).toFixed(1)}px)`;face.appendChild(cloneNoIds(src,'t'+k));
+    face.insertAdjacentHTML('beforeend',`<i class="tshade" style="left:${a*W}px;right:${(1-b)*W}px"></i><i class="tsheen" style="left:${a*W}px;right:${(1-b)*W}px"></i>`);
+    const back=document.createElement('div');back.className='tback'+(k===0?' spine':'');back.style.left='0';back.style.width=((b-a)*W)+'px';back.innerHTML='<i class="tshade"></i>';
+    seg.append(face,back);parent.appendChild(seg);segs.push({seg,face,back,w:b-a});parent=seg;}
+  top.appendChild(tn);top.classList.add('turning','cur');under.classList.add('peer');
+  if(!under.classList.contains('in')){under.classList.add('in');under.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}
+  BK.turn={top,under,tn,segs,fwd,W,t:fwd?0:1};turnSet(BK.turn.t);return BK.turn;}
+/* 複製のなかの id（SVG の切り抜きなど）を付け替えて、元のページを参照しないように */
+function cloneNoIds(src,suf){const c=src.cloneNode(true),map={};c.querySelectorAll('[id]').forEach(el=>{const n=el.id+'-'+suf;map[el.id]=n;el.id=n;});
+  if(Object.keys(map).length)c.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(at=>{const v=at.value;if(!/#/.test(v))return;
+    const nv=v.replace(/url\(#([^)]+)\)/g,(m,id)=>map[id]?`url(#${map[id]})`:m).replace(/^#(.+)$/,(m,id)=>map[id]?'#'+map[id]:m);if(nv!==v)el.setAttribute(at.name,nv);}));
+  return c;}
+function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;const bend=Math.sin(t*Math.PI),base=t*180,cl=v=>Math.max(0,Math.min(180,v));
+  // 背に近い帯はゆっくり、外の帯ほど先に倒れる → 紙がたわんで見える
+  const c=[cl(base-34*bend),cl(base),cl(base+30*bend)];let prev=0,edge=0;
+  T.segs.forEach((g,k)=>{g.seg.style.transform=`rotateY(${(-(c[k]-prev)).toFixed(2)}deg)`+(k?'':` translateZ(${(bend*10).toFixed(1)}px)`);prev=c[k];
+    const r=c[k]*Math.PI/180,lit=Math.abs(Math.cos(r)),dark=(1-lit)*.42,front=c[k]<90;
+    const nx=c[k+1]!==undefined?c[k+1]*Math.PI/180:r,dark2=(1-Math.abs(Math.cos(nx)))*.42;
+    [g.face,g.back].forEach(el=>{const sh=el.querySelector('.tshade');if(sh){sh.style.setProperty('--a0',dark.toFixed(3));sh.style.setProperty('--a1',Math.max(dark,dark2).toFixed(3));}});
+    const sn=g.face.querySelector('.tsheen');if(sn)sn.style.setProperty('--sh',(front?bend*(k===1?1:.6):0).toFixed(3));
+    edge+=g.w*Math.cos(r);});
+  const cast=T.under.querySelector('.sc-cast'),un=T.under.querySelector('.sc-under');
+  if(cast){cast.style.setProperty('--cw',Math.max(0,edge).toFixed(3));cast.style.setProperty('--cast',(edge>0?Math.min(1,bend*1.4):0).toFixed(3));}
+  if(un)un.style.setProperty('--under',(edge>0?(1-t)*.9:0).toFixed(3));}
+function turnEnd(){cancelAnimationFrame(BK.anim);BK.anim=0;const T=BK.turn;if(!T)return;T.tn.remove();T.top.classList.remove('turning');
+  [T.under].forEach(u=>{const c=u.querySelector('.sc-cast'),n=u.querySelector('.sc-under');if(c)c.style.setProperty('--cast','0');if(n)n.style.setProperty('--under','0');});BK.turn=null;}
+function turnAnim(to,done){const T=BK.turn;if(!T){done&&done();return;}cancelAnimationFrame(BK.anim);
+  const from=T.t,d=Math.max(240,Math.abs(to-from)*720),t0=performance.now();
+  const step=n=>{const k=Math.min(1,(n-t0)/d),e=1-Math.pow(1-k,3);turnSet(from+(to-from)*e);if(k<1)BK.anim=requestAnimationFrame(step);else{BK.anim=0;done&&done();}};
+  BK.anim=requestAnimationFrame(step);}
+/* 指（マウス）でめくる：横に動いた時だけ。左へ＝次のページ、右へ＝前のページ */
+(function(){const tr=$('#sumTrack');let st=null,drag=false,lastX=0,lastT=0,vx=0,blockClick=false;
+  tr.addEventListener('pointerdown',e=>{if(e.button>0||BK.anim)return;st={x:e.clientX,y:e.clientY,id:e.pointerId};drag=false;lastX=e.clientX;lastT=performance.now();vx=0;});
+  tr.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
+    if(!drag){if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2){if(Math.abs(dy)>14)st=null;return;}
+      const cs=bookCards(),fwd=dx<0;if((fwd&&BK.i>=cs.length-1)||(!fwd&&BK.i<=0)){st=null;return;}
+      if(RM()){st=null;bookGo(BK.i+(fwd?1:-1),true);return;}
+      if(!turnStart(fwd)){st=null;return;}drag=true;try{tr.setPointerCapture(e.pointerId);}catch(_){}}
+    const T=BK.turn,n=performance.now();vx=(e.clientX-lastX)/Math.max(1,n-lastT)*.6+vx*.4;lastX=e.clientX;lastT=n;
+    const p=Math.max(0,Math.min(1,-dx/(T.W*.9)));turnSet(T.fwd?p:1-Math.max(0,Math.min(1,dx/(T.W*.9))));});
+  const up=e=>{if(!st||e.pointerId!==st.id)return;st=null;if(!drag)return;drag=false;blockClick=true;setTimeout(()=>blockClick=false,60);
+    const T=BK.turn;if(!T)return;const go=T.fwd?(T.t>.33||vx<-.35)&&vx<.3:(T.t<.67||vx>.35)&&vx>-.3;
+    if(go){const ni=BK.i+(T.fwd?1:-1);turnAnim(T.fwd?1:0,()=>{BK.i=ni;turnEnd();bookShow();});}
+    else turnAnim(T.fwd?0:1,()=>{turnEnd();bookShow();});};
+  tr.addEventListener('pointerup',up);tr.addEventListener('pointercancel',up);
+  tr.addEventListener('click',e=>{if(blockClick){e.preventDefault();e.stopPropagation();}},true);
+  tr.tabIndex=0;tr.addEventListener('keydown',e=>{if(e.key==='ArrowRight')bookGo(BK.i+1);if(e.key==='ArrowLeft')bookGo(BK.i-1);});
+  $('#sumDots').addEventListener('click',e=>{const d=e.target.closest('i');if(!d)return;bookGo([...d.parentNode.children].indexOf(d));});})();
 $('#sumTrack').addEventListener('scroll',()=>{const tr=$('#sumTrack'),i=Math.round(tr.scrollLeft/Math.max(1,tr.firstElementChild?tr.firstElementChild.offsetWidth+14:1));$$('#sumDots i').forEach((d,j)=>d.classList.toggle('on',j===i));},{passive:true});
 $$('#sumSeg button').forEach(b=>b.onclick=()=>{sumRange=b.dataset.r;if(sumIO){sumIO.disconnect();}renderSum();});
 
@@ -3440,8 +3497,7 @@ renderSum=function(){
       <h2 class="infty rv">21<span>+</span>∞</h2><p class="s-cap rv">これからも、いっしょに。</p><p class="foot rv">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>`)];
   tr.innerHTML=cards.join('');
   $$('#sumTrack .scard').forEach((c,i)=>{const sp=c.querySelector('.spage'),w=document.createElement('div');w.className='sturn';c.insertBefore(w,sp);w.appendChild(sp);
-    w.insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i><i class="sc-back" aria-hidden="true"></i><i class="sc-curl" aria-hidden="true"></i><i class="sc-cast" aria-hidden="true"></i>`);});
-  requestAnimationFrame(sumTurn);
+    w.insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i><i class="sc-cast" aria-hidden="true"></i><i class="sc-under" aria-hidden="true"></i>`);});
   $$('#sumTrack .rv').forEach((el,i)=>el.style.setProperty('--i',i%8));
   $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
   $$('#sumTrack .ytph').forEach(sp=>{const y=sp.dataset.yt;sp.replaceWith(thumbEl({id:'r-'+y,yt:y,type:'zatsudan',thumb:`https://i.ytimg.com/vi/${y}/mqdefault.jpg`}));});
@@ -3450,8 +3506,7 @@ renderSum=function(){
   $$('#sumTrack .fnote').forEach(f=>f.onclick=()=>{if(f.classList.toggle('open'))scramble(f.querySelector('.fa'),f.querySelector('.fa').textContent,{dur:420});});
   $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');tr.scrollLeft=0;
   if(sumIO)sumIO.disconnect();
-  sumIO=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&!x.target.classList.contains('in')){x.target.classList.add('in');x.target.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}}),{root:tr,threshold:.55});
-  $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
+  bookGo(0,true);
 };
 /* NAKAMA CARD：kaorou の読み取りカードと同じ動き（すべてばね。翻面 k90/c13、傾き k170/c18、拡大 k260/c22） */
 function ncard(pos){const body=pos.querySelector('.nc-body'),sh=pos.querySelector('.nc-sh'),ct=pos.querySelector('.nc-ct'),calm=RM();
