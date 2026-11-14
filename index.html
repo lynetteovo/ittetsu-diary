@@ -1306,7 +1306,7 @@ body{font-family:var(--sans)}
 .ytph-none{display:block;aspect-ratio:16/9;background:linear-gradient(140deg,#CFC4EA,#A994D8)}
 /* 03: a 24-hour watch face on a cardboard bezel */
 .dial{position:relative;align-self:center;width:min(236px,74%);aspect-ratio:1;border-radius:50%;
-  filter:drop-shadow(0 .5px 0 #C4BEB5) drop-shadow(1.5px 2px 0 #F3F0EA) drop-shadow(1.5px 2.5px 0 #BDB6AC) drop-shadow(4px 9px 8px rgba(40,28,60,.28))}
+  background:var(--fiber),var(--tooth) 0 0/120px,#F3EFE6;box-shadow:0 0 0 .5px rgba(120,110,100,.35),2px 4px 8px -5px rgba(40,28,60,.28)}
 .dial>.tape{top:9%;left:2%;width:50px;height:16px;rotate:-42deg;z-index:3}
 .dial svg{position:absolute;inset:0;width:100%;height:100%}
 .dial svg line[style]{transform-origin:50% 50%}
@@ -1375,42 +1375,47 @@ body{font-family:var(--sans)}
 /* RESULT: a thick link card pasted into the diary; tap to turn it over */
 .c-end .spage{align-items:center}
 .end-lead{align-self:center;text-align:center}
-.lcard{position:relative;align-self:center;width:min(300px,92%);aspect-ratio:1.3/1;perspective:1100px;rotate:-1.8deg;margin-top:4px}
-.lcard>.tape{z-index:5;width:56px;height:17px}
-.lc-t1{top:-7px;left:-14px;rotate:-38deg}.lc-t2{bottom:-6px;right:-14px;rotate:-36deg}
-.lc-in{all:unset;position:absolute;inset:0;cursor:pointer;transform-style:preserve-3d;transition:transform 780ms cubic-bezier(.3,1.28,.45,1)}
-.lcard.flip .lc-in{transform:rotateY(180deg)}
-.lc-in:focus-visible{outline:2px solid #8C76B8;outline-offset:4px;border-radius:12px}
-.lc-face{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;border-radius:11px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  background:var(--fiber),var(--tooth) 0 0/140px,linear-gradient(160deg,#FFFEFB,#F5F2EB);
-  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.95),inset 0 1px 0 #fff,0 .5px 0 #CEC8BE,0 1.5px 0 #F4F1EB,.5px 2.2px 0 #C2BCB2,0 3px 0 #EFEBE4,.5px 3.7px 0 #BAB3A8,4px 12px 14px -8px rgba(40,28,60,.45)}
-.lc-face::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(118deg,transparent 30%,rgba(255,255,255,.55) 44%,transparent 58%);background-size:260% 100%;background-position:100% 0;mix-blend-mode:soft-light;transition:background-position 900ms ease}
-.lcard.flip .lc-face::after,.scard.in .lc-face::after{background-position:0 0}
-.lc-front{padding:7px}
-.lc-img{position:relative;flex:1;min-height:0;border-radius:6px;background:#CFC4EA center 22%/cover no-repeat;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18)}
-.lc-img::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--tooth) 0 0/90px;mix-blend-mode:screen;opacity:.5}
-.lc-no{position:absolute;z-index:1;right:7px;top:7px;padding:2px 7px;border-radius:20px;background:rgba(250,248,243,.88);font:700 9px var(--mono);letter-spacing:.12em;color:#7966A8}
-.lc-body{display:flex;flex-direction:column;gap:3px;padding:8px 5px 3px}
-.lc-site{display:flex;align-items:center;gap:5px;font:700 8.5px var(--mono);letter-spacing:.12em;color:var(--dim)}
-.lc-site i{width:11px;height:11px;border-radius:3px;background:url(icon.png) center/cover,#B9A6E0}
-.lc-title{font:400 19px/1.3 var(--sans);color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lc-desc{font:400 11px/1.3 var(--ui);color:var(--ash);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lc-back{transform:rotateY(180deg);padding:12px 14px 11px;gap:8px;background:var(--fiber),var(--tooth) 0 0/140px,linear-gradient(160deg,#F7F2FC,#ECE6F6 60%,#E3F1EC)}
-.lc-bh{display:flex;justify-content:space-between;font:700 9.5px var(--mono);letter-spacing:.16em;color:#7966A8;padding-bottom:6px;border-bottom:1px dashed rgba(46,42,56,.22)}
-.lc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.lc-grid span{display:flex;flex-direction:column;gap:1px}
-.lc-grid small,.lc-rows small{font:400 9.5px var(--ui);color:var(--dim)}
-.lc-grid b{font:400 21px/1.05 var(--type);color:var(--ink)}
-.lc-grid b i{font:400 9.5px var(--ui);font-style:normal;margin-left:1px;color:var(--ash)}
-.lc-rows{display:flex;flex-direction:column;gap:3px;min-width:0}
-.lc-rows span{display:grid;grid-template-columns:44px 1fr;align-items:baseline;min-width:0}
-.lc-rows small{font:700 8.5px var(--mono);letter-spacing:.14em}
-.lc-rows em{font:400 13px/1.3 var(--ui);font-style:normal;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lc-back .tk-bar{flex:none;height:18px;margin-top:auto}
-.lc-hint{align-self:center;font:400 11px var(--ui);color:var(--dim);margin-top:-4px}
-.lc-hint::before{content:"↻ "}
-.rm .lc-in{transition-duration:1ms}
+.ncard{position:relative;align-self:center;width:min(310px,94%);aspect-ratio:410/270;rotate:-1.5deg;margin-top:4px;
+  --card:#CCBAEE;--card-b:#C8B5EC;--edge:#E6DAF4;--card-ink:#1A0430}
+.ncard>.tape{z-index:6;top:-7px;left:calc(50% - 30px);width:60px;height:17px;rotate:-2deg}
+.nc-sh{position:absolute;inset:12% 7% -3%;border-radius:24px;background:rgba(62,42,128,.28);filter:blur(16px);opacity:.5;will-change:transform,opacity}
+.nc-3d{position:absolute;inset:0;perspective:1000px}
+.nc-body{all:unset;position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nc-body:focus-visible{outline:2px solid #8C76B8;outline-offset:5px;border-radius:16px}
+.nc-edge{position:absolute;inset:0;border-radius:15px;background:var(--edge);transform:translateZ(var(--z));overflow:hidden}
+.nc-edge::after{content:"";position:absolute;inset:0;background:url(grain.png) 0 0/128px;opacity:.45;mix-blend-mode:multiply}
+.nc-face{position:absolute;inset:0;border-radius:15px;overflow:hidden;background:var(--card);color:var(--card-ink);
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(3.2px)}
+.nc-face.back{transform:rotateY(180deg) translateZ(3.2px);background:var(--card-b)}
+.nc-face::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:4;box-shadow:inset 0 1.4px 0 rgba(255,255,255,.6),inset 1px 0 0 rgba(255,255,255,.24)}
+.nc-emb{position:absolute;inset:0;background:url(bars.png) 0 0/100% 100%;filter:invert(1);pointer-events:none}
+.nc-emb.a{mix-blend-mode:overlay;opacity:.55}.nc-emb.b{mix-blend-mode:multiply;opacity:.12}
+.nc-gr{position:absolute;inset:0;opacity:.3;mix-blend-mode:overlay;pointer-events:none;z-index:3}
+.nc-gr::before{content:"";position:absolute;inset:0;background:url(grain.png) 0 0/128px repeat;opacity:.5}
+.nc-fz{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;opacity:.38;z-index:3;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='1.3 .32' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>") 0 0/180px}
+.nc-ptx{position:absolute;inset:0;pointer-events:none;z-index:3;background:var(--tooth) 0 0/150px;mix-blend-mode:multiply;opacity:.5}
+.nc-in{position:absolute;inset:14px 16px;z-index:2;display:flex;flex-direction:column}
+.nc-face .mc-top{display:flex;justify-content:space-between;font:700 10px var(--mono);letter-spacing:.14em;color:var(--card-ink)}
+.nc-face .mc-body{display:flex;gap:12px;margin-top:9px;min-height:0}
+.nc-face .mc-img{width:72px;height:88px;flex:none;border-radius:6px;background:center 20%/cover no-repeat;box-shadow:0 0 0 1.5px rgba(255,255,255,.7),0 3px 6px -3px rgba(40,20,80,.45)}
+.nc-face .mc-f{display:flex;flex-direction:column;gap:1px;min-width:0}
+.nc-face .mc-f small{font:700 8px var(--mono);letter-spacing:.14em;color:rgba(26,4,48,.55)}
+.nc-face .mc-f b{font:400 18px/1.28 var(--sans);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nc-face .mc-f span{font:400 13px var(--type)}
+.nc-face .mc-stats{display:flex;align-items:flex-end;gap:14px;margin-top:auto;padding-top:7px;border-top:1px dashed rgba(26,4,48,.28)}
+.nc-face .mc-stats span{display:flex;flex-direction:column;font:400 17px/1.1 var(--type)}
+.nc-face .mc-stats small{font:400 9.5px var(--ui);color:rgba(26,4,48,.6)}
+.nc-face .tk-bar{height:20px;opacity:.75;background:repeating-linear-gradient(90deg,var(--card-ink) 0 2px,transparent 2px 3px,var(--card-ink) 3px 4px,transparent 4px 7px,var(--card-ink) 7px 10px,transparent 10px 12px)}
+.nc-bk{justify-content:space-between;gap:6px}
+.nc-bk .r{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font:700 10px var(--mono);letter-spacing:.14em}
+.nc-bk .r .zh{font:400 11px var(--ui);letter-spacing:.03em;color:rgba(26,4,48,.55);text-decoration:underline;text-underline-offset:2px}
+.nc-bk dl{margin:0;display:grid;grid-template-columns:52px 1fr;gap:3px 8px;align-items:baseline;min-width:0}
+.nc-bk dt{font:700 8.5px var(--mono);letter-spacing:.14em;color:rgba(26,4,48,.55)}
+.nc-bk dd{margin:0;font:400 13px/1.3 var(--ui);color:var(--card-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nc-bk dd b{font:400 17px var(--type);margin-right:2px}
+.nc-hint{align-self:center;font:400 11px var(--ui);color:var(--dim);margin-top:-2px}
+.nc-hint::before{content:"↻ "}
 .c-end .rep-title{display:none}
 .c-end .infty{font-size:40px;margin-top:0}
 /* ===== reduced motion ===== */
@@ -3374,16 +3379,15 @@ renderSum=function(){
       <div class="heat rv">${heatSVG(r,d)}<div class="heat-l"><span><i style="background:#D9CDEE"></i>配信</span><span><i style="background:#8C76B8"></i>多い日</span><span><i class="dot"></i>手帳を書いた日</span></div></div>
       <div class="tix rv"><span class="ticket" style="--r:-2deg">予定<b>${d.tot}</b></span><span class="ticket" style="--r:2deg">メモ<b>${d.notes}</b></span><span class="ticket" style="--r:-1deg">休み<b>${d.rest}</b></span><span class="ticket" style="--r:2deg">グッズ・ボイス<b>¥${d.sp.toLocaleString('ja-JP')}</b></span></div>`),
     card('c-end',`<span class="mtape rv">RESULT</span><p class="rep-lead rv end-lead">あなたの称号は</p>
-      <div class="lcard rv"><i class="tape gi lc-t1"></i><i class="tape pt lc-t2"></i>
-        <button class="lc-in" type="button" aria-label="カードをめくる" aria-pressed="false">
-          <span class="lc-face lc-front"><span class="lc-img" style="background-image:url(${SUM_HDR})"><span class="lc-no">No.${String(r.n).padStart(4,'0')}</span></span>
-            <span class="lc-body"><small class="lc-site"><i></i>NAKAMA CARD ・ saiki-ittetsu</small><b class="lc-title">${hType?hType.replace('型','')+'の':''}${fan}</b><span class="lc-desc">${kd(r.first)} から、${r.n}本の配信をいっしょに。</span></span></span>
-          <span class="lc-face lc-back"><span class="lc-bh"><small>NAKAMA CARD</small><span>No.${String(r.n).padStart(4,'0')}</span></span>
-            <span class="lc-grid"><span><small>配信</small><b>${r.n}<i>本</i></b></span><span><small>時間</small><b>${hours}<i>h</i></b></span><span><small>見た率</small><b>${pct}<i>%</i></b></span><span><small>ライブ</small><b>${nLive}<i>公演</i></b></span></span>
-            <span class="lc-rows">${games.length?`<span><small>GAME</small><em>${esc(String(games[0][0]))}</em></span>`:''}${collabs.length?`<span><small>WITH</small><em>${esc(collabs[0][0])}</em></span>`:''}<span><small>SINCE</small><em>${kd(r.first)}</em></span></span>
-            <i class="tk-bar"></i></span>
-        </button></div>
-      <p class="lc-hint rv">タップでうらがえす</p>
+      <div class="ncard rv"><i class="tape gi"></i><i class="nc-sh"></i><div class="nc-3d"><button class="nc-body" type="button" aria-label="カードをめくる" aria-pressed="false">${[-2.7,-1.8,-.9,0,.9,1.8,2.7].map(z=>`<i class="nc-edge" style="--z:${z}px"></i>`).join('')}
+        <span class="nc-face front"><i class="nc-emb a"></i><i class="nc-emb b"></i><span class="nc-in"><span class="mc-top"><span>NAKAMA CARD</span><span>No.${String(r.n).padStart(4,'0')}</span></span>
+          <span class="mc-body"><span class="mc-img" style="background-image:url(${SUM_HDR})"></span><span class="mc-f"><small>TITLE</small><b>${hType?hType.replace('型','')+'の':''}${fan}</b><small>SINCE</small><span>${kd(r.first)}</span></span></span>
+          <span class="mc-stats"><span><small>配信数</small><b>${r.n}</b></span><span><small>時間</small><b>${hours}</b></span><span><small>ライブ</small><b>${nLive}</b></span><i class="tk-bar"></i></span></span><i class="nc-gr"></i><i class="nc-fz"></i><i class="nc-ptx"></i></span>
+        <span class="nc-face back"><i class="nc-emb a"></i><i class="nc-emb b"></i><span class="nc-in nc-bk"><span class="r"><span>NAKAMA CARD</span><span>No.${String(r.n).padStart(4,'0')}</span></span>
+          <dl><dt>見た率</dt><dd>${r.inDiary?`<b>${pct}</b>%（${r.w} / ${r.inDiary}本）`:'—'}</dd>${games.length?`<dt>GAME</dt><dd>${esc(String(games[0][0]))}</dd>`:''}${collabs.length?`<dt>WITH</dt><dd>${esc(collabs[0][0])}</dd>`:''}<dt>PEAK</dt><dd>${peak}時台・${hType||'—'}</dd></dl>
+          <span class="r"><span class="zh">もどる</span><span>21+∞</span></span></span><i class="nc-gr"></i><i class="nc-fz"></i><i class="nc-ptx"></i></span>
+      </button></div></div>
+      <p class="nc-hint rv">タップでうらがえす</p>
       <h2 class="infty rv">21<span>+</span>∞</h2><p class="s-cap rv">これからも、いっしょに。</p><p class="foot rv">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>`)];
   tr.innerHTML=cards.join('');
   $$('#sumTrack .scard').forEach((c,i)=>c.querySelector('.spage').insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i>`));
@@ -3391,40 +3395,48 @@ renderSum=function(){
   $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
   $$('#sumTrack .ytph').forEach(sp=>{const y=sp.dataset.yt;sp.replaceWith(thumbEl({id:'r-'+y,yt:y,type:'zatsudan',thumb:`https://i.ytimg.com/vi/${y}/mqdefault.jpg`}));});
   bindRange();
-  $$('#sumTrack .lcard').forEach(c=>{const b=c.querySelector('.lc-in');b.onclick=()=>{const on=c.classList.toggle('flip');b.setAttribute('aria-pressed',on);};});
+  $$('#sumTrack .ncard').forEach(ncard);
   $$('#sumTrack .fnote').forEach(f=>f.onclick=()=>{if(f.classList.toggle('open'))scramble(f.querySelector('.fa'),f.querySelector('.fa').textContent,{dur:420});});
   $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');tr.scrollLeft=0;
   if(sumIO)sumIO.disconnect();
   sumIO=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&!x.target.classList.contains('in')){x.target.classList.add('in');x.target.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}}),{root:tr,threshold:.55});
   $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
 };
+/* NAKAMA CARD：kaorou の読み取りカードと同じ動き（すべてばね。翻面 k90/c13、傾き k170/c18、拡大 k260/c22） */
+function ncard(pos){const body=pos.querySelector('.nc-body'),sh=pos.querySelector('.nc-sh'),calm=RM();
+  const sp=(k,c,x=0)=>({k,c,x,v:0,t:x}),C={rx:sp(170,18),ry:sp(170,18),sc:sp(260,22,1),fl:sp(90,13)},L=Object.values(C);let on=false,last=0;
+  const render=()=>{const hov=(C.sc.x-1)/.05,mid=Math.abs(Math.sin(C.fl.x*Math.PI/180));
+    body.style.transform=`scale(${C.sc.x.toFixed(4)}) rotateX(${C.rx.x.toFixed(2)}deg) rotateY(${(C.ry.x+C.fl.x).toFixed(2)}deg)`;
+    sh.style.transform=`translate(${(-C.ry.x*1.2).toFixed(1)}px,${(C.rx.x+hov*10).toFixed(1)}px) scale(${(1+hov*.04-mid*.3).toFixed(3)})`;sh.style.opacity=(.5+hov*.25-mid*.3).toFixed(3);};
+  const tick=t=>{const dt=Math.min(.033,(t-last)/1000);last=t;let m=false;
+    L.forEach(s=>{s.v+=(s.k*(s.t-s.x)-s.c*s.v)*dt;s.x+=s.v*dt;if(Math.abs(s.v)>.003||Math.abs(s.t-s.x)>.003)m=true;else{s.x=s.t;s.v=0;}});
+    render();if(m)requestAnimationFrame(tick);else on=false;};
+  const kick=()=>{if(calm){L.forEach(s=>{s.x=s.t;s.v=0;});render();return;}if(!on){on=true;last=performance.now();requestAnimationFrame(tick);}};
+  body.onclick=()=>{const f=C.fl.t?0:180;C.fl.t=f;body.setAttribute('aria-pressed',!!f);kick();};
+  pos.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=pos.getBoundingClientRect();
+    C.ry.t=((e.clientX-r.left)/r.width*2-1)*11;C.rx.t=-((e.clientY-r.top)/r.height*2-1)*11;C.sc.t=1.05;kick();});
+  pos.addEventListener('pointerleave',()=>{C.rx.t=C.ry.t=0;C.sc.t=1;kick();});
+  // 指で押している間だけ少し沈む
+  pos.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'){C.sc.t=.97;kick();}});
+  ['pointerup','pointercancel'].forEach(n=>pos.addEventListener(n,e=>{if(e.pointerType!=='mouse'){C.sc.t=1;kick();}}));
+  render();}
 const yrLabel=()=>nowY()+' / THIS YEAR';
 const thumbYt=yt=>yt?`<span class="ytph" data-yt="${esc(yt)}"></span>`:'<span class="ytph-none"></span>';
 /* 24-hour dial: a bar per hour, the night hours shaded, the peak lit */
-function dialSVG(hour,peak){const C=130,RB=124,RF=101,R0=44,L=50,mx=Math.max(1,...hour),
+function dialSVG(hour,peak){const C=130,RF=106,R0=44,L=54,mx=Math.max(1,...hour),
   P=(h,r)=>{const a=h/24*Math.PI*2-Math.PI/2;return[+(C+Math.cos(a)*r).toFixed(1),+(C+Math.sin(a)*r).toFixed(1)];},
   sec=(h0,h1,r)=>{const [x0,y0]=P(h0,r),[x1,y1]=P(h1,r);return `M${C} ${C}L${x0} ${y0}A${r} ${r} 0 ${((h1-h0+24)%24)>12?1:0} 1 ${x1} ${y1}Z`;};
-  // 文字盤：外側に厚紙のベゼル（時刻の目盛りと数字）、内側は昼（6〜18時）と夜（18〜6時）で色を分ける
-  let s=`<defs><radialGradient id="dlFace" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#FFFEFB"/><stop offset="1" stop-color="#F3EFE6"/></radialGradient>
-    <linearGradient id="dlBez" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F4"/><stop offset="1" stop-color="#E4DFD6"/></linearGradient></defs>
-    <circle cx="${C}" cy="${C}" r="${RB}" fill="url(#dlBez)" stroke="#CFC8BC" stroke-width="1"/>
-    <circle cx="${C}" cy="${C}" r="${RF+3}" fill="none" stroke="#B9A6E0" stroke-width="1.2"/>
-    <circle cx="${C}" cy="${C}" r="${RF}" fill="url(#dlFace)"/>
-    <path d="${sec(18,30,RF)}" fill="rgba(121,102,168,.12)"/><path d="${sec(6,18,RF)}" fill="rgba(242,196,107,.10)"/>
-    <circle cx="${C}" cy="${C}" r="${R0+L}" fill="none" stroke="rgba(46,42,56,.10)" stroke-dasharray="1 4"/>
-    <circle cx="${C}" cy="${C}" r="${R0+L/2}" fill="none" stroke="rgba(46,42,56,.08)" stroke-dasharray="1 4"/>`;
-  for(let h=0;h<24;h++){const big=h%3===0,[a1,b1]=P(h,RF+5),[a2,b2]=P(h,RF+(big?11:8));s+=`<line x1="${a1}" y1="${b1}" x2="${a2}" y2="${b2}" stroke="#5F5869" stroke-width="${big?1.6:.8}" stroke-linecap="round"/>`;
-    for(let q=1;q<4;q++){const [c1,d1]=P(h+q/4,RF+5),[c2,d2]=P(h+q/4,RF+6.5);s+=`<line x1="${c1}" y1="${d1}" x2="${c2}" y2="${d2}" stroke="rgba(46,42,56,.35)" stroke-width=".5"/>`;}}
-  for(let h=0;h<24;h+=3){const [x,y]=P(h,RF+17.5);s+=`<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${h%6?9:11}" fill="${h%6?'#8A8396':'#2E2A38'}" font-family="Courier Prime,monospace" font-weight="700">${h}</text>`;}
-  // 夜と昼の小さな印
-  {const [x,y]=P(0,RF-14);s+=`<circle cx="${x}" cy="${y}" r="5" fill="#8C76B8"/><circle cx="${x+2.4}" cy="${y-1.6}" r="4.3" fill="#FAF8F3"/>`;}
+  // 紙の文字盤：外周は厚紙の縁だけ（数字なし）、内側は昼と夜で色を分ける
+  let s=`<circle cx="${C}" cy="${C}" r="${RF}" fill="rgba(255,254,250,.55)" stroke="rgba(120,110,100,.32)" stroke-width=".8"/>
+    <path d="${sec(18,30,RF)}" fill="rgba(121,102,168,.11)"/><path d="${sec(6,18,RF)}" fill="rgba(242,196,107,.09)"/>
+    <circle cx="${C}" cy="${C}" r="${R0+L}" fill="none" stroke="rgba(46,42,56,.10)" stroke-dasharray="1 4"/>`;
+  for(let h=0;h<24;h+=6){const [a1,b1]=P(h,RF+6),[a2,b2]=P(h,RF+12);s+=`<line x1="${a1}" y1="${b1}" x2="${a2}" y2="${b2}" stroke="rgba(46,42,56,.4)" stroke-width="1.2" stroke-linecap="round"/>`;}
+  {const [x,y]=P(0,RF-14);s+=`<circle cx="${x}" cy="${y}" r="5" fill="#8C76B8" opacity=".8"/><circle cx="${x+2.4}" cy="${y-1.6}" r="4.3" fill="#F7F4EE"/>`;}
   {const [x,y]=P(12,RF-14);s+=`<circle cx="${x}" cy="${y}" r="3.2" fill="#E8B04E"/>`;for(let k=0;k<8;k++){const a=k/8*Math.PI*2;s+=`<line x1="${(x+Math.cos(a)*5).toFixed(1)}" y1="${(y+Math.sin(a)*5).toFixed(1)}" x2="${(x+Math.cos(a)*7).toFixed(1)}" y2="${(y+Math.sin(a)*7).toFixed(1)}" stroke="#E8B04E" stroke-width="1.1" stroke-linecap="round"/>`;}}
   for(let h=0;h<24;h++){if(!hour[h])continue;const len=Math.max(3,hour[h]/mx*L),[x1,y1]=P(h+.5,R0),[x2,y2]=P(h+.5,R0+len),pk=h===peak;
     s+=`<line class="${pk?'pk':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${pk?'#C2577F':hour[h]/mx>.5?'#8C76B8':'#C3B3E6'}" stroke-width="${pk?8:6.5}" stroke-linecap="round" style="--i:${h}"/>`;}
-  // いちばん多い時刻：ベゼルにピンクの三角と、時刻の針
-  {const [hx,hy]=P(peak+.5,R0+L+4),[bx,by]=P(peak+.5,R0-6),[t1x,t1y]=P(peak+.5,RF+2),[t2x,t2y]=P(peak+.5-.35,RF+9),[t3x,t3y]=P(peak+.5+.35,RF+9);
-    s+=`<line x1="${bx}" y1="${by}" x2="${hx}" y2="${hy}" stroke="#C2577F" stroke-width="1.2" stroke-dasharray="2 2.5" opacity=".7"/><path d="M${t1x} ${t1y}L${t2x} ${t2y}L${t3x} ${t3y}Z" fill="#C2577F"/>`;}
-  s+=`<circle cx="${C}" cy="${C}" r="${R0-6}" fill="#FFFEFB" stroke="rgba(46,42,56,.14)"/><circle cx="${C}" cy="${C}" r="${R0-9}" fill="none" stroke="rgba(185,166,224,.6)" stroke-dasharray="1 2.6"/>`;
+  {const [x,y]=P(peak+.5,RF+9);s+=`<circle cx="${x}" cy="${y}" r="3.2" fill="#C2577F"/>`;}
+  s+=`<circle cx="${C}" cy="${C}" r="${R0-6}" fill="rgba(255,254,250,.8)" stroke="rgba(46,42,56,.12)"/>`;
   return `<svg viewBox="0 0 260 260" aria-hidden="true">${s}</svg>`;}
 /* a year on graph paper: one square per day, darker on days with more streams; a pink dot on days written in the diary */
 const heatYear=r=>sumRange==='all'?+String(r.last||today().key).slice(0,4):+sumRange;
