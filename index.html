@@ -1428,6 +1428,22 @@ body{font-family:var(--sans)}
 .ev-meta,.cap .when{color:#6E6488}
 .s-cap{color:#4A3A72}
 .infty{color:#4A3A72}
+/* ===== round 17: the summary pages turn like sheets in a ring binder ===== */
+.sturn{position:relative;height:100%;min-height:inherit;transform-origin:0 50%;transform-style:preserve-3d;will-change:transform}
+.sturn>.spage{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.sturn>.sc-tape{z-index:7;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+/* the back of the sheet: plain paper, the punched holes showing through on the other side */
+.sc-back{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:1.5px;
+  background:radial-gradient(circle at 50% 44%,rgba(169,166,190,.9) 0 5.2px,transparent 6px) right 10px top 24px/16px 76px repeat-y,var(--tooth) 30px 0/190px,linear-gradient(90deg,#EFECE4,#F7F5EF 70%,#EAE6DD);
+  box-shadow:inset 0 0 18px rgba(120,100,80,.12),0 .5px 0 #D8D3CB}
+/* the bend while it turns: a shadow at the rings, a sheen across the curve, a darker free edge */
+.sc-curl{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:var(--curl,0);border-radius:1.5px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:linear-gradient(90deg,rgba(40,28,60,.26) 0,rgba(40,28,60,0) 14%,rgba(255,255,255,0) 38%,rgba(255,255,255,.38) 58%,rgba(255,255,255,0) 74%,rgba(40,28,60,.2) 100%)}
+/* the shadow the turning sheet drops on the page underneath, following its free edge */
+.sc-cast{position:absolute;top:0;bottom:0;left:calc(var(--cw,0) * 100%);width:42%;z-index:6;pointer-events:none;opacity:var(--cast,0);
+  background:linear-gradient(90deg,rgba(40,28,60,.34),rgba(40,28,60,.12) 35%,rgba(40,28,60,0))}
+.sum-track{padding-top:18px}
+.rm .sturn{transform:none!important}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -3236,6 +3252,20 @@ function renderSum(){
   $$('#sumTrack .scard').forEach(c=>sumIO.observe(c));
 }
 let sumIO=null;
+/* まとめのページめくり：横スワイプのぶんだけ、上のページが左のリング穴を軸に紙としてめくれる。
+   下のページはその場で待ち、めくれる紙の影が落ちる。裏は紙の裏（無地）。めくる途中は紙のたわみの光と影 */
+let turnRaf=0;
+function sumTurn(){turnRaf=0;const tr=$('#sumTrack');if(!tr)return;const cs=[...tr.children].filter(c=>c.classList.contains('scard'));if(!cs.length)return;
+  const step=cs[0].offsetWidth+14,x=tr.scrollLeft/Math.max(1,step),rm=RM();
+  cs.forEach((c,i)=>{const w=c.querySelector(':scope>.sturn');if(!w)return;const p=i-x;
+    if(rm||Math.abs(p)>=.999||Math.abs(p)<.002){w.style.transform='';w.style.removeProperty('--curl');w.style.removeProperty('--cast');w.style.removeProperty('--cw');c.style.zIndex='';return;}
+    if(p<0){const t=-p,a=t*180,b=Math.sin(t*Math.PI);
+      w.style.transform=`translateX(${(t*step).toFixed(1)}px) perspective(1500px) rotateY(${(-a).toFixed(2)}deg) translateZ(${(b*14).toFixed(1)}px) skewY(${(-b*1.6).toFixed(2)}deg)`;
+      w.style.setProperty('--curl',b.toFixed(3));w.style.setProperty('--cast','0');c.style.zIndex=3;}
+    else{const t=1-p;w.style.transform=`translateX(${(-p*step).toFixed(1)}px)`;
+      w.style.setProperty('--curl','0');w.style.setProperty('--cast',Math.sin(t*Math.PI).toFixed(3));w.style.setProperty('--cw',Math.max(0,Math.cos(t*Math.PI)).toFixed(3));c.style.zIndex=1;}});}
+$('#sumTrack').addEventListener('scroll',()=>{if(!turnRaf)turnRaf=requestAnimationFrame(sumTurn);},{passive:true});
+addEventListener('resize',()=>{if(!turnRaf)turnRaf=requestAnimationFrame(sumTurn);});
 $('#sumTrack').addEventListener('scroll',()=>{const tr=$('#sumTrack'),i=Math.round(tr.scrollLeft/Math.max(1,tr.firstElementChild?tr.firstElementChild.offsetWidth+14:1));$$('#sumDots i').forEach((d,j)=>d.classList.toggle('on',j===i));},{passive:true});
 $$('#sumSeg button').forEach(b=>b.onclick=()=>{sumRange=b.dataset.r;if(sumIO){sumIO.disconnect();}renderSum();});
 
@@ -3409,7 +3439,9 @@ renderSum=function(){
       <p class="nc-hint rv">タップでうらがえす</p>
       <h2 class="infty rv">21<span>+</span>∞</h2><p class="s-cap rv">これからも、いっしょに。</p><p class="foot rv">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>`)];
   tr.innerHTML=cards.join('');
-  $$('#sumTrack .scard').forEach((c,i)=>c.querySelector('.spage').insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i>`));
+  $$('#sumTrack .scard').forEach((c,i)=>{const sp=c.querySelector('.spage'),w=document.createElement('div');w.className='sturn';c.insertBefore(w,sp);w.appendChild(sp);
+    w.insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i><i class="sc-back" aria-hidden="true"></i><i class="sc-curl" aria-hidden="true"></i><i class="sc-cast" aria-hidden="true"></i>`);});
+  requestAnimationFrame(sumTurn);
   $$('#sumTrack .rv').forEach((el,i)=>el.style.setProperty('--i',i%8));
   $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
   $$('#sumTrack .ytph').forEach(sp=>{const y=sp.dataset.yt;sp.replaceWith(thumbEl({id:'r-'+y,yt:y,type:'zatsudan',thumb:`https://i.ytimg.com/vi/${y}/mqdefault.jpg`}));});
