@@ -130,10 +130,18 @@ const GAME_FIX = [
 const NOT_A_GAME = /^(ネタバレ(あり|注意|なし)?|(ほぼ|完全)?初見|雑談|告知)$/;
 const zen2han = s => String(s || '').replace(/[０-９Ａ-Ｚａ-ｚ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
 const gameKey = g => zen2han(g).toLowerCase().replace(/[\s　・:：\-‐]/g, '');
-const ALIAS = [[/^apex(legends)?$/, 'Apex Legends'], [/^(splatoon|スプラトゥーン)3$/, 'スプラトゥーン3']];
+const ALIAS = [[/^(apex(legends)?|apex練習|ばぶapex|にじエペ祭\d*)$/, 'Apex Legends'], [/^(splatoon|スプラトゥーン)3$/, 'スプラトゥーン3'],
+  [/^(スマブラ|スマッシュブラザーズ)(sp|special)$/, 'スマッシュブラザーズSPECIAL'], [/^(マリカ|マリオカート)8dx(視聴者参加型)?$/, 'マリオカート8DX'],
+  [/^(persona|ペルソナ)5thephantomx$/, 'ペルソナ5: The Phantom X'], [/^(supermarioparty|スーパーマリオパーティ)ジャンボリー$/, 'スーパーマリオパーティ ジャンボリー'],
+  [/^ペルソナ5ザロイヤル/, 'ペルソナ5 ザ・ロイヤル'], [/^雀魂(もやります)?$/, '雀魂'], [/^葛葉ライドウ対超力兵団/, '葛葉ライドウ 対 超力兵団'], [/^生存マイクラ$/, 'Minecraft']];
+// 説明欄の「購入はこちら」などはゲーム名ではない
+const JUNK = /(ダウンロード|購入|買える|サイト|URL|こちら|⇩|↓)|^(※|【|🔴\s*LIVE$|MV$)/i;
 function cleanGame(g) {
   g = zen2han(g).replace(/\s*[#＃]\S+/g, '').replace(/[\s　]+/g, ' ').trim();
-  if (!g || NOT_A_GAME.test(g)) return '';
+  if (!g || NOT_A_GAME.test(g) || JUNK.test(g)) return '';
+  // シリーズの回数（その3・part2・第1弾・前説）は外す
+  g = g.replace(/^神ゲーへの誘い\s*[・:：]?\s*/, '').replace(/\s*(シン)?その\s*\d+.*$/, '').replace(/\s*part\s*\d+.*$/i, '').replace(/\s*第\d+弾$/, '').replace(/\s*前説$/, '').replace(/\s*実況$/, '').trim();
+  if (!g) return '';
   const k = gameKey(g);
   for (const [re, name] of ALIAS) if (re.test(k)) return name;
   return g;

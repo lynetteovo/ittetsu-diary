@@ -1304,60 +1304,66 @@ body{font-family:var(--sans)}
 
 /* ===================== round 14: richer pages 03 → RESULT ===================== */
 .ytph-none{display:block;aspect-ratio:16/9;background:linear-gradient(140deg,#CFC4EA,#A994D8)}
-/* 03: dial */
-.dial{position:relative;align-self:center;width:min(250px,78%);aspect-ratio:1;border-radius:50%;
-  background:var(--tooth) 0 0/140px,radial-gradient(circle,rgba(255,255,255,.9),rgba(246,243,250,.85));
-  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.9),0 .5px 0 #CFC9C0,1px 2px 0 #F3F0EA,1px 2.5px 0 #C4BEB5,4px 9px 12px -6px rgba(40,28,60,.35)}
-.dial svg{position:absolute;inset:-2%;width:104%;height:104%}
+/* 03: a 24-hour watch face on a cardboard bezel */
+.dial{position:relative;align-self:center;width:min(236px,74%);aspect-ratio:1;border-radius:50%;
+  filter:drop-shadow(0 .5px 0 #C4BEB5) drop-shadow(1.5px 2px 0 #F3F0EA) drop-shadow(1.5px 2.5px 0 #BDB6AC) drop-shadow(4px 9px 8px rgba(40,28,60,.28))}
+.dial>.tape{top:9%;left:2%;width:50px;height:16px;rotate:-42deg;z-index:3}
+.dial svg{position:absolute;inset:0;width:100%;height:100%}
 .dial svg line[style]{transform-origin:50% 50%}
 .scard.in .dial svg line[style]{animation:dialIn 700ms var(--spring) both;animation-delay:calc(var(--i) * 25ms + 200ms)}
 @keyframes dialIn{from{opacity:0;transform:scale(.7)}}
-.dial svg .pk{filter:drop-shadow(0 0 4px rgba(226,106,148,.8))}
-.dial-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.dial-c b{font:400 40px/1 var(--type);color:var(--ink);text-shadow:0 0 10px #fff}
-.dial-c b small{font:400 13px var(--ui);margin-left:2px}
-.dial-c span{font:400 13px var(--ui);color:#9A4A6C}
+.dial svg .pk{filter:drop-shadow(0 0 3px rgba(226,106,148,.7))}
+.dial-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.dial-c small{font:700 7.5px var(--mono);letter-spacing:.2em;color:var(--dim)}
+.dial-c b{font:400 27px/1 var(--type);color:var(--ink)}
+.dial-c b span{font-size:13px;color:var(--dim)}
+.dial-c em{font:400 11px var(--ui);font-style:normal;color:#9A4A6C;margin-top:1px}
 .lateslip{position:relative;align-self:stretch;display:flex;align-items:center;gap:12px;padding:9px 12px 9px 9px;rotate:-1.5deg;
   background:var(--tooth) 0 0/130px,rgba(232,229,242,.82);box-shadow:inset 0 0 14px rgba(255,255,255,.5),0 .5px 0 rgba(120,110,150,.45),2px 5px 6px -3px rgba(40,28,60,.28)}
 .lateslip .tape{top:-8px;left:18px;width:52px;height:16px;rotate:-5deg}
 .lateslip .thumb,.lateslip .ytph-none{width:92px;flex:none;aspect-ratio:16/9;border:3px solid #FBFAF7;border-radius:1px}
 .lateslip p{display:flex;flex-direction:column;gap:2px;font:400 12px var(--ui);color:var(--ash)}
 .lateslip b{font:400 26px/1.05 var(--type);color:var(--ink)}
-/* 04: games */
-.gtop{position:relative;align-self:stretch;padding:8px 8px 0;background:#FBFAF7;rotate:-1.2deg;box-shadow:0 .5px 0 #CFCAC3,1px 2px 0 #F3F0EA,1px 2.5px 0 #C4BEB5,4px 9px 12px -6px rgba(40,28,60,.35)}
-.gtop .tape{top:-9px;right:30px;width:60px;height:17px;rotate:4deg;z-index:3}
-.gtop .thumb{aspect-ratio:16/8;border-radius:0}
-.gno{position:absolute;z-index:2;left:-10px;top:-12px;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#C2577F;color:#fff;font:400 15px var(--type);rotate:-12deg;box-shadow:0 0 14px rgba(226,106,148,.65),inset 0 -2px 0 rgba(0,0,0,.15)}
-.gcap{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:8px 4px 9px}
-.gcap b{font:400 18px/1.35 var(--sans);color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gcap small{font:400 18px var(--type);color:#9A4A6C;flex:none}
-.gshelf{align-self:stretch;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.gcard{position:relative;display:flex;flex-direction:column;gap:3px;padding:4px 4px 6px;background:#FBFAF7;rotate:var(--r);box-shadow:0 .5px 0 #CFCAC3,1px 1.5px 0 #F3F0EA,1px 2px 0 #C4BEB5,3px 6px 7px -4px rgba(40,28,60,.32);min-width:0}
-.gcard .thumb,.gcard .ytph-none{aspect-ratio:1;border-radius:0}
-.gcard .thumb img{object-position:30% 50%}
-.gcard .gr{position:absolute;left:-5px;top:-7px;font:400 14px var(--type);color:#fff;background:#8C76B8;width:20px;height:20px;display:grid;place-items:center;border-radius:50%}
-.gcard em{font:400 10px/1.25 var(--ui);font-style:normal;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.gcard b{font:400 11px var(--type);color:#9A4A6C}
-/* 05: collab */
-.ctop{position:relative;align-self:stretch;height:132px}
-.ctop .thumb,.ctop .ytph-none{position:absolute;right:0;top:0;width:62%;aspect-ratio:16/9;border:4px solid #FBFAF7;rotate:3deg;box-shadow:3px 7px 9px -5px rgba(40,28,60,.4)}
-.ctorn{position:absolute;left:-4px;bottom:0;display:flex;align-items:baseline;gap:8px;padding:14px 22px 16px 18px;background:#C8E2D8;filter:url(#deckle) drop-shadow(1px 1px 0 #FBFAF7) drop-shadow(0 4px 6px rgba(50,30,90,.22));rotate:-2deg}
-.ctorn b{font:400 28px/1.1 var(--sans);color:var(--ink)}
-.ctorn small{font:400 17px var(--type);color:#9A4A6C}
-.fan{position:relative;align-self:stretch;height:150px;margin-top:6px}
-.fc{position:absolute;left:calc(50% - 46px);bottom:0;width:92px;height:128px;transform-origin:50% 190%;rotate:var(--a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-  background:var(--tooth) 0 0/120px,var(--c);border-radius:3px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.8),0 .5px 0 rgba(120,110,150,.4),2px 4px 6px -2px rgba(40,28,60,.28)}
-.fc b{writing-mode:vertical-rl;font:400 15px/1.1 var(--ui);color:var(--ink);letter-spacing:.06em;max-height:84px;overflow:hidden}
-.fc small{font:400 13px var(--type);color:#9A4A6C}
-.scard.in .fc{animation:fanIn 700ms var(--spring) both}
-.scard.in .fc:nth-child(2){animation-delay:80ms}.scard.in .fc:nth-child(3){animation-delay:160ms}.scard.in .fc:nth-child(4){animation-delay:240ms}.scard.in .fc:nth-child(5){animation-delay:320ms}
-@keyframes fanIn{from{rotate:0deg;opacity:0}}
-/* 06: stage light behind the tickets */
-.c-live .spage{isolation:isolate}
-.stage{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.stage i{position:absolute;inset:auto;width:80%;height:46%;background:center/cover no-repeat;filter:blur(18px) saturate(1.1);opacity:.32}
-.stage i:first-child{left:-10%;top:16%}.stage i:last-child{right:-10%;bottom:6%}
-.stage::after{content:"";position:absolute;inset:0;background:conic-gradient(from 200deg at 50% -8%,transparent 0 6deg,rgba(255,255,255,.55) 9deg 15deg,transparent 18deg 30deg,rgba(255,255,255,.4) 33deg 38deg,transparent 41deg);mix-blend-mode:soft-light}
+/* 04: the No.1 game as a polaroid, 2–5 as a ruled ranking with thumbnails and bars */
+.gtop{position:relative;align-self:center;width:88%;padding:9px 9px 0;background:var(--tooth) 0 0/150px,#FCFBF8;rotate:-1.6deg;
+  box-shadow:0 .5px 0 #CFCAC3,1px 2px 0 #F3F0EA,1px 2.5px 0 #C4BEB5,5px 10px 12px -7px rgba(40,28,60,.38)}
+.gtop>.tape{top:-9px;left:calc(50% - 32px);width:64px;height:18px;rotate:-3deg;z-index:3}
+.gph{position:relative}
+.gph .thumb,.gph .ytph-none{aspect-ratio:16/8;border-radius:0;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.gno{position:absolute;z-index:2;right:-16px;top:-14px;display:flex;align-items:baseline;justify-content:center;width:50px;height:50px;padding-top:13px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#E07FA1,#C2577F 62%);color:#fff;font:400 22px/1 var(--type);rotate:10deg;
+  box-shadow:0 0 0 2.5px #FCFBF8,0 0 0 3.5px rgba(194,87,127,.45),2px 4px 6px -1px rgba(60,20,40,.35)}
+.gno small{font:700 8px var(--mono);letter-spacing:.06em;margin-right:1px}
+.gcap{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:9px 3px 11px}
+.gcap b{font:400 17px/1.35 var(--sans);color:var(--ink);min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.gcap small{font:400 12px var(--ui);color:#9A4A6C;flex:none}
+.gcap small i{font:400 22px var(--type);font-style:normal;margin-right:2px}
+.glist{align-self:stretch;list-style:none;margin:0;padding:2px 2px 0;display:flex;flex-direction:column}
+.glist li{position:relative;display:grid;grid-template-columns:18px 44px 1fr auto;grid-template-rows:auto 5px;column-gap:9px;row-gap:3px;align-items:center;padding:4px 2px;border-bottom:1px dashed rgba(46,42,56,.18)}
+.glist .gr{grid-row:1/3;font:400 17px var(--type);color:#8C76B8;text-align:center}
+.glist .thumb,.glist .ytph-none{grid-row:1/3;width:44px;aspect-ratio:16/9;border:2px solid #FCFBF8;border-radius:1px;box-shadow:0 1px 2px rgba(40,28,60,.28);rotate:-2deg}
+.glist li:nth-child(even) .thumb,.glist li:nth-child(even) .ytph-none{rotate:2deg}
+.glist em{font:400 13px/1.25 var(--ui);font-style:normal;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.glist .gbar{grid-column:3;height:5px;border-radius:3px;background:rgba(46,42,56,.07);position:relative;overflow:hidden}
+.glist .gbar::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:3px;background:linear-gradient(90deg,#C9B8EA,#8C76B8)}
+.glist b{grid-row:1/3;grid-column:4;font:400 18px var(--type);color:#9A4A6C}
+.glist b small{font:400 10px var(--ui);margin-left:1px}
+/* 06: tickets printed on thick paper (tooth, fibres, a printed border, a perforated stub) */
+.c-live .spage::before{background:radial-gradient(circle,rgba(120,110,150,.32) .9px,transparent 1.3px) 7px 7px/14px 14px,var(--tooth) 12px 0/190px,var(--cream)}
+.tk{filter:drop-shadow(0 .5px 0 #BDB7AE) drop-shadow(.8px 1.2px 0 #F2EFE8) drop-shadow(.8px 1.7px 0 #C8C2B8) drop-shadow(4px 8px 7px rgba(40,28,60,.3))}
+.tk-tape{top:-8px;left:22px;width:54px;height:16px;rotate:-4deg;z-index:4}
+.tk:nth-of-type(odd) .tk-tape{left:auto;right:84px;rotate:5deg}
+.tk-main{background:var(--fiber),var(--tooth) 0 0/120px,linear-gradient(180deg,#FBF8F1,#F4EFE4)}
+.tk-main::after{content:"";position:absolute;inset:4px;border:1px solid rgba(121,102,168,.28);outline:.5px solid rgba(121,102,168,.16);outline-offset:2px;pointer-events:none;z-index:1}
+.tk-img{margin:7px 7px 0;height:96px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25)}
+.tk-img::before{content:"";position:absolute;inset:0;z-index:1;background:var(--tooth) 0 0/90px;mix-blend-mode:screen;opacity:.55;pointer-events:none}
+.tk-info{position:relative;margin:0 7px 4px;padding:7px 6px 6px;border-top:none;
+  background:repeating-radial-gradient(circle at 110% 120%,transparent 0 5px,rgba(121,102,168,.07) 5px 5.6px)}
+.tk-info span{font-weight:400}
+.tk-bar{opacity:.85}
+.tk-stub{background:var(--fiber),var(--tooth) 0 0/110px,linear-gradient(180deg,#EFEAF6,#E6DFF0);border-left:none}
+.tk-stub::before{content:"";position:absolute;left:-1px;top:9px;bottom:9px;width:2px;background:radial-gradient(circle,rgba(46,42,56,.35) .9px,transparent 1.2px) 0 0/2px 6px repeat-y}
+.tk-stamp{z-index:3}
 /* 07: year on graph paper */
 .heat{align-self:stretch;padding:12px 10px 10px;background:var(--tooth) 0 0/140px,linear-gradient(rgba(214,150,172,.22) 1px,transparent 1px) 0 0/100% 9px,linear-gradient(90deg,rgba(214,150,172,.22) 1px,transparent 1px) 0 0/9px 100%,#FDFCFA;
   box-shadow:0 .5px 0 #CFCAC3,1px 2px 0 #F3F0EA,1px 2.5px 0 #C4BEB5,4px 9px 12px -6px rgba(40,28,60,.32);rotate:-.6deg}
@@ -1366,30 +1372,47 @@ body{font-family:var(--sans)}
 .heat-l span{display:flex;align-items:center;gap:5px}
 .heat-l i{width:9px;height:9px;border-radius:2px}.heat-l i.dot{width:6px;height:6px;border-radius:50%;background:#E46A94}
 .c-mem .tix{gap:10px 12px}
-/* RESULT: member card */
-.mcard{position:relative;align-self:stretch;padding:12px 14px 12px;border-radius:10px;overflow:hidden;color:var(--ink);rotate:-1.5deg;
-  background:var(--tooth) 0 0/140px,linear-gradient(135deg,#F6F1FB,#E9E1F6 55%,#DCEFE8);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.9),0 .5px 0 #CFC9D9,1px 2px 0 #F1EDF6,1px 2.5px 0 #BDB6CB,5px 12px 16px -8px rgba(40,28,60,.42)}
-.mcard>.tape{top:-6px;left:calc(50% - 30px);width:60px;height:17px;z-index:3}
-.mc-top{display:flex;justify-content:space-between;font:700 10px var(--mono);letter-spacing:.16em;color:#7966A8}
-.mc-body{display:flex;gap:12px;margin-top:10px}
-.mc-img{width:84px;height:104px;flex:none;border-radius:6px;background:center 20%/cover no-repeat;box-shadow:0 0 0 2px #fff,0 4px 8px -3px rgba(40,28,60,.4)}
-.mc-f{display:flex;flex-direction:column;gap:2px;min-width:0}
-.mc-f small{font:700 8px var(--mono);letter-spacing:.14em;color:var(--dim)}
-.mc-f b{font:400 19px/1.3 var(--sans);margin-bottom:6px}
-.mc-f span{font:400 14px var(--type)}
-.mc-stats{display:flex;align-items:flex-end;gap:14px;margin-top:10px;padding-top:8px;border-top:1px dashed rgba(46,42,56,.25)}
-.mc-stats span{display:flex;flex-direction:column;font:400 18px/1.1 var(--type)}
-.mc-stats small{font:400 10px var(--ui);color:var(--dim)}
-.mc-stats .tk-bar{height:22px}
-.holo{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 42%,rgba(190,170,240,.35) 47%,rgba(170,220,210,.3) 52%,transparent 62%);background-size:260% 100%;mix-blend-mode:soft-light;animation:holo 5s ease-in-out infinite}
-@keyframes holo{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+/* RESULT: a thick link card pasted into the diary; tap to turn it over */
+.c-end .spage{align-items:center}
+.end-lead{align-self:center;text-align:center}
+.lcard{position:relative;align-self:center;width:min(300px,92%);aspect-ratio:1.3/1;perspective:1100px;rotate:-1.8deg;margin-top:4px}
+.lcard>.tape{z-index:5;width:56px;height:17px}
+.lc-t1{top:-7px;left:-14px;rotate:-38deg}.lc-t2{bottom:-6px;right:-14px;rotate:-36deg}
+.lc-in{all:unset;position:absolute;inset:0;cursor:pointer;transform-style:preserve-3d;transition:transform 780ms cubic-bezier(.3,1.28,.45,1)}
+.lcard.flip .lc-in{transform:rotateY(180deg)}
+.lc-in:focus-visible{outline:2px solid #8C76B8;outline-offset:4px;border-radius:12px}
+.lc-face{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;border-radius:11px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:var(--fiber),var(--tooth) 0 0/140px,linear-gradient(160deg,#FFFEFB,#F5F2EB);
+  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.95),inset 0 1px 0 #fff,0 .5px 0 #CEC8BE,0 1.5px 0 #F4F1EB,.5px 2.2px 0 #C2BCB2,0 3px 0 #EFEBE4,.5px 3.7px 0 #BAB3A8,4px 12px 14px -8px rgba(40,28,60,.45)}
+.lc-face::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(118deg,transparent 30%,rgba(255,255,255,.55) 44%,transparent 58%);background-size:260% 100%;background-position:100% 0;mix-blend-mode:soft-light;transition:background-position 900ms ease}
+.lcard.flip .lc-face::after,.scard.in .lc-face::after{background-position:0 0}
+.lc-front{padding:7px}
+.lc-img{position:relative;flex:1;min-height:0;border-radius:6px;background:#CFC4EA center 22%/cover no-repeat;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18)}
+.lc-img::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--tooth) 0 0/90px;mix-blend-mode:screen;opacity:.5}
+.lc-no{position:absolute;z-index:1;right:7px;top:7px;padding:2px 7px;border-radius:20px;background:rgba(250,248,243,.88);font:700 9px var(--mono);letter-spacing:.12em;color:#7966A8}
+.lc-body{display:flex;flex-direction:column;gap:3px;padding:8px 5px 3px}
+.lc-site{display:flex;align-items:center;gap:5px;font:700 8.5px var(--mono);letter-spacing:.12em;color:var(--dim)}
+.lc-site i{width:11px;height:11px;border-radius:3px;background:url(icon.png) center/cover,#B9A6E0}
+.lc-title{font:400 19px/1.3 var(--sans);color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lc-desc{font:400 11px/1.3 var(--ui);color:var(--ash);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lc-back{transform:rotateY(180deg);padding:12px 14px 11px;gap:8px;background:var(--fiber),var(--tooth) 0 0/140px,linear-gradient(160deg,#F7F2FC,#ECE6F6 60%,#E3F1EC)}
+.lc-bh{display:flex;justify-content:space-between;font:700 9.5px var(--mono);letter-spacing:.16em;color:#7966A8;padding-bottom:6px;border-bottom:1px dashed rgba(46,42,56,.22)}
+.lc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.lc-grid span{display:flex;flex-direction:column;gap:1px}
+.lc-grid small,.lc-rows small{font:400 9.5px var(--ui);color:var(--dim)}
+.lc-grid b{font:400 21px/1.05 var(--type);color:var(--ink)}
+.lc-grid b i{font:400 9.5px var(--ui);font-style:normal;margin-left:1px;color:var(--ash)}
+.lc-rows{display:flex;flex-direction:column;gap:3px;min-width:0}
+.lc-rows span{display:grid;grid-template-columns:44px 1fr;align-items:baseline;min-width:0}
+.lc-rows small{font:700 8.5px var(--mono);letter-spacing:.14em}
+.lc-rows em{font:400 13px/1.3 var(--ui);font-style:normal;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lc-back .tk-bar{flex:none;height:18px;margin-top:auto}
+.lc-hint{align-self:center;font:400 11px var(--ui);color:var(--dim);margin-top:-4px}
+.lc-hint::before{content:"↻ "}
+.rm .lc-in{transition-duration:1ms}
 .c-end .rep-title{display:none}
 .c-end .infty{font-size:40px;margin-top:0}
-.dial-c b{font-size:30px}
-.dial-c span{font-size:12px}
-.fc{justify-content:flex-start;align-items:flex-start;padding:10px 0 0 9px}
-.fc b{max-height:96px}
-.stage i{opacity:.2}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -2124,14 +2147,44 @@ function archLatest(){if(!ARCHV||!ARCHV.length)return null;const t=now();const a
   const g=ghostsFor(k).find(x=>x.yt===a.id);if(!g)return null;return {e:g,k,p:{s:Date.parse(a.start),e:Date.parse(a.start)+(a.dur||0)*6e4,st:''}};}
 const GN_SEEN={};
 const GN_ALIAS=[[/^(スト|ストリートファイター|streetfighter|sf)6$/,'ストリートファイター6'],[/^(スト|ストリートファイター|streetfighter|sf)(4|iv|ultrastreetfighteriv|usf4)$/,'Ultra Street Fighter IV'],
-  [/^apex(legends)?$/,'Apex Legends'],[/^(splatoon|スプラトゥーン|スプラ)3$/,'スプラトゥーン3'],[/^(マイクラ|minecraft|マインクラフト)$/,'Minecraft'],[/^(ポケモン)?(シャイニングパール|bdsp|ポケットモンスターシャイニングパール)$/,'ポケットモンスター シャイニングパール']];
-function gameNorm(g){g=String(g||'').replace(/[０-９Ａ-Ｚａ-ｚ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/\s*[#＃]\S+/g,'').replace(/[\s　]+/g,' ').trim();if(!g)return '';
+  [/^(apex(legends)?|apex練習|ばぶapex|にじエペ祭\d*|にじapex祭\d*)$/,'Apex Legends'],[/^(splatoon|スプラトゥーン|スプラ)3$/,'スプラトゥーン3'],[/^(マイクラ|minecraft|マインクラフト|生存マイクラ)$/,'Minecraft'],[/^(ポケモン)?(シャイニングパール|bdsp|ポケットモンスターシャイニングパール)$/,'ポケットモンスター シャイニングパール'],
+  [/^(スマブラ|スマッシュブラザーズ|大乱闘スマッシュブラザーズ)(sp|special)$/,'スマッシュブラザーズSPECIAL'],[/^(マリカ|マリオカート)8(dx|デラックス)(視聴者参加型)?$/,'マリオカート8DX'],
+  [/^(persona|ペルソナ)5thephantomx$/,'ペルソナ5: The Phantom X'],[/^(supermarioparty|スーパーマリオパーティ)(ジャンボリー|jamboree)$/,'スーパーマリオパーティ ジャンボリー'],
+  [/^(ペルソナ5ザロイヤル|p5r)/,'ペルソナ5 ザ・ロイヤル'],[/^雀魂(もやります)?$/,'雀魂'],[/^葛葉ライドウ対超力兵団/,'葛葉ライドウ 対 超力兵団'],[/^(liesofp|ライズオブp)$/,'Lies of P']];
+/* 説明欄から拾った「購入はこちら」などはゲーム名ではない */
+const GN_JUNK=/(ダウンロード|購入|買える|サイト|URL|こちら|⇩|↓)|^(※|【|🔴\s*LIVE$|MV$)/i;
+function gameNorm(g){g=String(g||'').replace(/[０-９Ａ-Ｚａ-ｚ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/\s*[#＃]\S+/g,'').replace(/[\s　]+/g,' ').trim();
+  if(!g||GN_JUNK.test(g))return '';
+  // シリーズの回数（その3・part2・第1弾・前説）は外してひとつのゲームにまとめる
+  g=g.replace(/^神ゲーへの誘い\s*[・:：]?\s*/,'').replace(/\s*(シン)?その\s*\d+.*$/,'').replace(/\s*(part|PART|Part)\s*\d+.*$/,'').replace(/\s*第\d+弾$/,'').replace(/\s*前説$/,'').replace(/\s*実況$/,'').trim();if(!g)return '';
   const k=g.toLowerCase().replace(/[\s・:：\-‐]/g,'');for(const [re,name] of GN_ALIAS)if(re.test(k))return name;return GN_SEEN[k]||(GN_SEEN[k]=g);}
 const ARCH_ID={};
 function archGame(yt){if(!yt)return '';const f=feedOf(yt);return (f&&f.game)||(ARCH_ID[yt]&&ARCH_ID[yt].game)||'';}
-function ghostsFor(k){const L=ARCH_DAY[k];if(!L||!L.length)return [];const have=new Set(),dead=new Set();
+/* 手帳に手で書いた配信（YouTube と紐付いていないもの）を、同じ配信の archive.json の回と突き合わせる。
+   時刻が近い（1時間以内）か、3時間以内でゲーム名・コラボ相手・タイトル・種類のどれかが合えば同じ配信とみなす。
+   時刻を書いていない時は、その日の配信のうちゲーム名などが合うもの（その日1本だけならそれ）。
+   手帳のデータは書き換えず、まとめの集計とカレンダーの「見た」表示の二重を消すのに使う */
+let MANL={sig:'',map:new Map(),by:new Map()};
+const collabSet=c=>new Set(String(c||'').split(/\s*[\/／、,×]\s*/).map(x=>x.replace(/[\s　]+/g,'')).filter(Boolean));
+function sameStream(e,a){const ge=gameNorm(e.gameTitle||''),ga=gameNorm(a.game||'');if(ge&&ga&&ge===ga)return true;
+  const ca=collabSet(a.collab);for(const c of collabSet(e.collab))if(ca.has(c))return true;
+  const te=String(e.title||'').replace(/【[^】]*】|\s/g,''),ta=String(a.title||'').replace(/\s/g,'');if(te.length>=4&&ta.includes(te.slice(0,8)))return true;
+  return !!e.type&&e.type===a.type;}
+function manLinks(){if(!ARCHV||!ARCHV.length)return MANL;let n=0,u=0;
+  Object.keys(S.events).forEach(k=>(S.events[k]||[]).forEach(e=>{if(e){n++;if((e.u||0)>u)u=e.u||0;}}));const sig=n+':'+u+':'+ARCHV.length;if(MANL.sig===sig)return MANL;
+  const pairs=[];
+  Object.keys(S.events).forEach(k=>(S.events[k]||[]).forEach(e=>{if(!e||e.yt||!STREAM_TYPES.includes(e.type))return;
+    if(e.time){const t=new Date(k+'T'+e.time).getTime();if(isNaN(t))return;const [y,m,d]=k.split('-').map(Number);
+      [-1,0,1].forEach(o=>(ARCH_DAY[dkOf(new Date(y,m-1,d+o))]||[]).forEach(a=>{const dt=Math.abs(Date.parse(a.start)-t)/6e4;
+        if(dt<=60)pairs.push({e,a,c:dt});else if(dt<=180&&sameStream(e,a))pairs.push({e,a,c:dt+60});}));}
+    else{const L=ARCH_DAY[k]||[],hit=L.filter(a=>sameStream(e,a));
+      if(hit.length)hit.forEach((a,i)=>pairs.push({e,a,c:200+i}));else if(L.length===1)pairs.push({e,a:L[0],c:300});}}));
+  pairs.sort((x,y)=>x.c-y.c);const map=new Map(),by=new Map();
+  pairs.forEach(p=>{if(map.has(p.e.id)||by.has(p.a.id))return;map.set(p.e.id,p.a.id);by.set(p.a.id,p.e.id);});
+  MANL={sig,map,by};return MANL;}
+function ghostsFor(k){const L=ARCH_DAY[k];if(!L||!L.length)return [];const have=new Set(),dead=new Set(),ml=manLinks();
   Object.values(S.events).forEach(l=>(l||[]).forEach(e=>{if(e&&e.yt)have.add(e.yt);}));Object.values(S.dead).forEach(t=>{if(t&&t.yt)dead.add(t.yt);});
-  return L.filter(a=>!have.has(a.id)&&!dead.has(a.id)).map(a=>{const t=new Date(a.start);
+  return L.filter(a=>!have.has(a.id)&&!dead.has(a.id)&&!ml.by.has(a.id)).map(a=>{const t=new Date(a.start);
     return {id:'yt-'+a.id,yt:a.id,type:a.type||'zatsudan',title:a.title||'',time:hm(t),gameTitle:a.game||'',collab:a.collab||'',thumb:ytThumb(a.id),watched:true,note:'',price:'',sk:'',dur:a.dur||0,_arch:1};});}
 function materialize(e,k){if(!e||!e._arch)return e;const ev={...e,u:Date.now()};delete ev._arch;(S.events[k]=S.events[k]||[]).push(ev);markDirty(k);persistLocal();return ev;}
 function applyFeedAll(f){const a=applyFeed(f),b=applyExtras(f);return a||b;}
@@ -3249,13 +3302,16 @@ function repStats(range){
   const lkey=t=>{const x=new Date(t);return dk(x.getFullYear(),x.getMonth(),x.getDate());};
   (ARCH||[]).forEach(a=>{const j={key:lkey(Date.parse(a.start))};if(!inR(j.key))return;
     S['yt-'+a.id]={k:j.key,s:Date.parse(a.start),dur:a.dur||0,type:a.type,yt:a.id,label:a.game||(a.type==='collab'?a.collab:'')||a.title,game:(a.type==='game_single'||a.type==='game_series')?gameNorm(a.game||''):'',collab:a.collab||'',title:a.title,watched:false,diary:false};});
-  const d={tot:0,notes:0,sp:0,stk:{},rest:0,first:'',days:new Set()};
+  const d={tot:0,notes:0,sp:0,stk:{},rest:0,first:'',days:new Set()},ml=manLinks();let dup=0;
   allItems().forEach(({e,k})=>{if(!inR(k))return;d.tot++;if(e.note||!e.yt)d.days.add(k);if(e.note)d.notes++;if(e.type==='yasumi')d.rest++;if(!d.first||k<d.first)d.first=k;
     if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))d.sp+=n;}
-    if(!watchable(e))return;const id=e.yt?'yt-'+e.yt:'ev-'+e.id,sp=spanMs(e,k),cur=S[id]||{};
-    S[id]={yt:e.yt||cur.yt||'',k,s:sp.s||cur.s||0,dur:e.dur||(sp.e>sp.s?Math.round((sp.e-sp.s)/6e4):0)||cur.dur||0,type:e.type,label:cellLabel1(e),game:(e.type==='game_single'||e.type==='game_series')?gameNorm(cellLabel1(e)):'',collab:e.collab||cur.collab||'',title:e.title||cur.title||'',watched:!!e.watched,diary:true,e};});
+    if(!watchable(e))return;const yt=e.yt||ml.map.get(e.id)||'',id=yt?'yt-'+yt:'ev-'+e.id,sp=spanMs(e,k),cur=S[id]||{},isG=e.type==='game_single'||e.type==='game_series',arch=cur.yt&&!cur.diary;
+    // 手で書いた予定と YouTube の回が同じ配信なら1本に数える（手帳の中で二重に書いていても1本。見た・写真はどちらかにあれば残す）
+    if(cur.diary)dup++;
+    S[id]={yt,k:arch?cur.k:k,s:arch?cur.s:(sp.s||cur.s||0),dur:e.dur||(sp.e>sp.s?Math.round((sp.e-sp.s)/6e4):0)||cur.dur||0,type:e.type,label:cellLabel1(e),
+      game:isG?(gameNorm(e.gameTitle||'')||cur.game||gameNorm(cellLabel1(e))):'',collab:e.collab||cur.collab||'',title:e.title||cur.title||'',watched:!!e.watched||!!(cur.diary&&cur.watched),diary:true,e:(cur.e&&cur.e.thumb&&!e.thumb)?cur.e:e};});
   const sm=stkMap();Object.keys(sm).forEach(k=>{if(inR(k))(sm[k]||[]).forEach(s=>d.stk[s]=(d.stk[s]||0)+1);});
-  const L=Object.values(S),r={d,n:L.length,w:0,inDiary:0,before:0,min:0,nDur:0,buck:[0,0,0,0,0,0],hour:Array(24).fill(0),nHour:0,games:{},gameEv:{},gameYt:{},collab:{},collabYt:{},dayN:{},nCollab:0,longest:null,late:null,first:'',last:''};
+  const L=Object.values(S),r={d,dup,n:L.length,w:0,inDiary:0,before:0,min:0,nDur:0,buck:[0,0,0,0,0,0],hour:Array(24).fill(0),nHour:0,games:{},gameEv:{},gameYt:{},collab:{},collabYt:{},dayN:{},nCollab:0,longest:null,late:null,first:'',last:''};
   L.forEach(x=>{if(x.watched)r.w++;if(x.diary)r.inDiary++;else if(d.first&&x.k<d.first)r.before++;
     r.dayN[x.k]=(r.dayN[x.k]||0)+1;
     if(!r.first||x.k<r.first)r.first=x.k;if(!r.last||x.k>r.last)r.last=x.k;
@@ -3298,31 +3354,36 @@ renderSum=function(){
       <p class="rep-lead rv">平均は <b>${fmt(Math.round(avg))}</b>。${r.longest?`<br>最長は <b>${fmt(r.longest.dur)}</b>「${esc(String(r.longest.label).slice(0,14))}」`:''}</p>
       ${flap('配信スタイル診断',dType==='耐久型'?'耐久型。始まったら朝まで覚悟。':dType==='じっくり型'?'じっくり型。腰をすえて見たい配信者。':'サクッと型。寝る前にちょうどいい。')}`),
     card('c-when',`<span class="mtape rv">03 / TIME</span>
-      <p class="rep-lead rv">配信がいちばん始まるのは</p>
-      <div class="dial rv">${dialSVG(r.hour,peak)}<div class="dial-c"><b>${peak}<small>時台</small></b><span>${hType}</span></div></div>
+      <p class="rep-lead rv">配信がいちばん始まるのは <b>${peak}時台</b></p>
+      <div class="dial rv"><i class="tape mk"></i>${dialSVG(r.hour,peak)}<div class="dial-c"><small>PEAK</small><b>${peak}<span>:00</span></b><em>${hType}</em></div></div>
       ${r.late?`<div class="lateslip rv"><i class="tape gi"></i>${thumbYt(r.late.x.yt)}<p><small>いちばん遅い開始</small><b>${hm(r.late.v)}</b><span>${md(r.late.x.k)}</span></p></div>`:''}
       ${flap('あなたへのひとこと',hType==='深夜型'?'夜ふかしはほどほどに。でも通知が来たら起きるよね。':hType==='夜型'?'晩ごはんを済ませて待機がおすすめ。':hType==='朝型'?'早起きは三文の徳。':'昼の配信は休憩のおとも。')}`),
     card('c-games',`<span class="mtape rv">04 / GAMES</span>${games.length?`
-      <div class="gtop rv"><i class="tape mk"></i>${thumbYt(r.gameYt[games[0][0]]&&r.gameYt[games[0][0]].yt)}<span class="gno">No.1</span><div class="gcap"><b>${esc(String(games[0][0]))}</b><small>${games[0][1]}回</small></div></div>
-      <div class="gshelf rv">${games.slice(1).map(([g,n],i)=>`<div class="gcard" style="--r:${[-3,2,-1,3][i]}deg">${thumbYt(r.gameYt[g]&&r.gameYt[g].yt)}<span class="gr">${i+2}</span><em>${esc(g)}</em><b>${n}回</b></div>`).join('')}</div>
-      <p class="rep-lead rv">ぜんぶで <b>${Object.keys(r.games).length}</b> タイトルを遊びました。</p>`:'<p class="s-note">ゲーム配信の記録はまだありません</p>'}`),
-    card('c-collab',`<span class="mtape rv">05 / COLLAB</span>${collabs.length?`
-      <p class="rep-lead rv">コラボ配信は <b>${r.nCollab}</b> 本。いちばん多く一緒にいたのは</p>
-      <div class="ctop rv">${thumbYt(r.collabYt[collabs[0][0]]&&r.collabYt[collabs[0][0]].yt)}<div class="ctorn"><b>${esc(collabs[0][0])}</b><small>× ${collabs[0][1]}</small></div></div>
-      <div class="fan rv">${collabs.slice(1,6).map(([c,n],i,arr)=>`<div class="fc" style="--a:${((i-(arr.length-1)/2)*11).toFixed(1)}deg;--c:${['#E9DDF6','#DCEBE6','#F4E2EA','#E3E6F4','#F1EDE2'][i]}"><b>${esc(c)}</b><small>×${n}</small></div>`).join('')}</div>`:'<p class="s-note">コラボの記録はまだありません</p>'}`),
-    card('c-live',`<span class="mtape rv">06 / LIVE</span><div class="stage" aria-hidden="true"><i style="background-image:url(${LIVES[0].img})"></i><i style="background-image:url(${LIVES[1].img})"></i></div>
+      <p class="rep-lead rv">遊んだ <b>${Object.keys(r.games).length}</b> タイトルの中の1位は</p>
+      <div class="gtop rv"><i class="tape mk"></i><div class="gph">${thumbYt(r.gameYt[games[0][0]]&&r.gameYt[games[0][0]].yt)}<span class="gno"><small>No.</small>1</span></div><div class="gcap"><b>${esc(String(games[0][0]))}</b><small><i>${games[0][1]}</i>回</small></div></div>
+      <ol class="glist rv">${games.slice(1).map(([g,n],i)=>`<li><span class="gr">${i+2}</span>${thumbYt(r.gameYt[g]&&r.gameYt[g].yt)}<em>${esc(g)}</em><i class="gbar" style="--w:${(n/games[0][1]*100).toFixed(0)}%"></i><b>${n}<small>回</small></b></li>`).join('')}</ol>`:'<p class="s-note">ゲーム配信の記録はまだありません</p>'}`),
+    card('c-collab',`<span class="mtape rv">05 / COLLAB</span>${collabs.length?`<p class="rep-lead rv">コラボ配信は <b>${r.nCollab}</b> 本。<br>いちばん多く一緒にいたのは</p><h3 class="rep-big rv">${esc(collabs[0][0])}<small>${collabs[0][1]}回</small></h3>
+      <div class="chips rv">${collabs.slice(1).map(([c,n],i)=>`<span class="strip" style="--r:${i%2?2:-2}deg">${esc(c)}　×${n}</span>`).join('')}</div>`:'<p class="s-note">コラボの記録はまだありません</p>'}`),
+    card('c-live',`<span class="mtape rv">06 / LIVE</span>
       <p class="rep-lead rv">配信だけじゃない。ステージにも立ちました。</p>
-      ${LIVES.map((l,i)=>`<div class="tk rv" style="--r:${i?1.6:-1.6}deg;--d:${i*420}ms"><div class="tk-main"><div class="tk-img" style="background-image:url(${l.img})"><span class="tk-name">${l.name}<small>${l.sub}</small></span></div>
+      ${LIVES.map((l,i)=>`<div class="tk rv" style="--r:${i?1.6:-1.6}deg;--d:${i*420}ms"><i class="tape ${i?'pt':'mk'} tk-tape"></i><div class="tk-main"><div class="tk-img" style="background-image:url(${l.img})"><span class="tk-name">${l.name}<small>${l.sub}</small></span></div>
         <div class="tk-info"><span><small>ARTIST</small>SAIKI ITTETSU</span><span><small>SEAT</small>NAKAMA</span><span><small>No.</small>${String(i+1).padStart(4,'0')}</span><i class="tk-bar"></i></div><span class="tk-stamp">見届けた</span></div>
         <div class="tk-stub"><span>ADMIT ONE</span><b>${l.name}</b><i class="tk-bar"></i></div></div>`).join('')}`),
     card('c-mem',`<span class="mtape rv">07 / DIARY</span>
       <p class="rep-lead rv">${heatYear(r)}年の配信と、手帳を書いた日</p>
       <div class="heat rv">${heatSVG(r,d)}<div class="heat-l"><span><i style="background:#D9CDEE"></i>配信</span><span><i style="background:#8C76B8"></i>多い日</span><span><i class="dot"></i>手帳を書いた日</span></div></div>
       <div class="tix rv"><span class="ticket" style="--r:-2deg">予定<b>${d.tot}</b></span><span class="ticket" style="--r:2deg">メモ<b>${d.notes}</b></span><span class="ticket" style="--r:-1deg">休み<b>${d.rest}</b></span><span class="ticket" style="--r:2deg">グッズ・ボイス<b>¥${d.sp.toLocaleString('ja-JP')}</b></span></div>`),
-    card('c-end',`<span class="mtape rv">RESULT</span><p class="rep-lead rv" style="align-self:center">あなたの称号は</p>
-      <div class="mcard rv"><i class="tape gi"></i><div class="mc-top"><span>NAKAMA CARD</span><span>No.${String(r.n).padStart(4,'0')}</span></div>
-        <div class="mc-body"><div class="mc-img" style="background-image:url(${SUM_HDR})"></div><div class="mc-f"><small>TITLE</small><b>${hType?hType.replace('型','')+'の':''}${fan}</b><small>SINCE</small><span>${kd(r.first)}</span></div></div>
-        <div class="mc-stats"><span><small>配信数</small><b>${r.n}</b></span><span><small>時間</small><b>${hours}</b></span><span><small>ライブ</small><b>${nLive}</b></span><i class="tk-bar"></i></div><i class="holo"></i></div>
+    card('c-end',`<span class="mtape rv">RESULT</span><p class="rep-lead rv end-lead">あなたの称号は</p>
+      <div class="lcard rv"><i class="tape gi lc-t1"></i><i class="tape pt lc-t2"></i>
+        <button class="lc-in" type="button" aria-label="カードをめくる" aria-pressed="false">
+          <span class="lc-face lc-front"><span class="lc-img" style="background-image:url(${SUM_HDR})"><span class="lc-no">No.${String(r.n).padStart(4,'0')}</span></span>
+            <span class="lc-body"><small class="lc-site"><i></i>NAKAMA CARD ・ saiki-ittetsu</small><b class="lc-title">${hType?hType.replace('型','')+'の':''}${fan}</b><span class="lc-desc">${kd(r.first)} から、${r.n}本の配信をいっしょに。</span></span></span>
+          <span class="lc-face lc-back"><span class="lc-bh"><small>NAKAMA CARD</small><span>No.${String(r.n).padStart(4,'0')}</span></span>
+            <span class="lc-grid"><span><small>配信</small><b>${r.n}<i>本</i></b></span><span><small>時間</small><b>${hours}<i>h</i></b></span><span><small>見た率</small><b>${pct}<i>%</i></b></span><span><small>ライブ</small><b>${nLive}<i>公演</i></b></span></span>
+            <span class="lc-rows">${games.length?`<span><small>GAME</small><em>${esc(String(games[0][0]))}</em></span>`:''}${collabs.length?`<span><small>WITH</small><em>${esc(collabs[0][0])}</em></span>`:''}<span><small>SINCE</small><em>${kd(r.first)}</em></span></span>
+            <i class="tk-bar"></i></span>
+        </button></div>
+      <p class="lc-hint rv">タップでうらがえす</p>
       <h2 class="infty rv">21<span>+</span>∞</h2><p class="s-cap rv">これからも、いっしょに。</p><p class="foot rv">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>`)];
   tr.innerHTML=cards.join('');
   $$('#sumTrack .scard').forEach((c,i)=>c.querySelector('.spage').insertAdjacentHTML('afterbegin',`<i class="tape ${['mk','gi','pt'][i%3]} sc-tape" aria-hidden="true"></i>`));
@@ -3330,6 +3391,7 @@ renderSum=function(){
   $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
   $$('#sumTrack .ytph').forEach(sp=>{const y=sp.dataset.yt;sp.replaceWith(thumbEl({id:'r-'+y,yt:y,type:'zatsudan',thumb:`https://i.ytimg.com/vi/${y}/mqdefault.jpg`}));});
   bindRange();
+  $$('#sumTrack .lcard').forEach(c=>{const b=c.querySelector('.lc-in');b.onclick=()=>{const on=c.classList.toggle('flip');b.setAttribute('aria-pressed',on);};});
   $$('#sumTrack .fnote').forEach(f=>f.onclick=()=>{if(f.classList.toggle('open'))scramble(f.querySelector('.fa'),f.querySelector('.fa').textContent,{dur:420});});
   $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');tr.scrollLeft=0;
   if(sumIO)sumIO.disconnect();
@@ -3339,12 +3401,30 @@ renderSum=function(){
 const yrLabel=()=>nowY()+' / THIS YEAR';
 const thumbYt=yt=>yt?`<span class="ytph" data-yt="${esc(yt)}"></span>`:'<span class="ytph-none"></span>';
 /* 24-hour dial: a bar per hour, the night hours shaded, the peak lit */
-function dialSVG(hour,peak){const C=130,R0=60,L=56,mx=Math.max(1,...hour),P=(h,r)=>{const a=h/24*Math.PI*2-Math.PI/2;return[(C+Math.cos(a)*r).toFixed(1),(C+Math.sin(a)*r).toFixed(1)];};
-  const arc=(h0,h1,r0,r1)=>{const [x0,y0]=P(h0,r1),[x1,y1]=P(h1,r1),[x2,y2]=P(h1,r0),[x3,y3]=P(h0,r0),big=((h1-h0+24)%24)>12?1:0;return `M${x0} ${y0}A${r1} ${r1} 0 ${big} 1 ${x1} ${y1}L${x2} ${y2}A${r0} ${r0} 0 ${big} 0 ${x3} ${y3}Z`;};
-  let s=`<path d="${arc(18,28,R0-4,R0+L+8)}" fill="rgba(121,102,168,.13)"/><circle cx="${C}" cy="${C}" r="${R0+L+12}" fill="none" stroke="rgba(46,42,56,.28)" stroke-width="1"/><circle cx="${C}" cy="${C}" r="${R0-6}" fill="rgba(255,255,255,.55)" stroke="rgba(46,42,56,.18)"/>`;
-  for(let h=0;h<24;h++){const [a1,b1]=P(h,R0+L+12),[a2,b2]=P(h,R0+L+(h%6?16:20));s+=`<line x1="${a1}" y1="${b1}" x2="${a2}" y2="${b2}" stroke="rgba(46,42,56,.4)" stroke-width="${h%6?1:1.6}"/>`;
-    const len=Math.max(2,hour[h]/mx*L),[x1,y1]=P(h,R0),[x2,y2]=P(h,R0+len);s+=`<line class="${h===peak?'pk':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${h===peak?'#C2577F':'#A994D8'}" stroke-width="7" stroke-linecap="round" style="--i:${h}"/>`;}
-  [0,6,12,18].forEach(h=>{const [x,y]=P(h,R0+L+32);s+=`<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#5F5869" font-family="Courier Prime,monospace" font-weight="700">${h}</text>`;});
+function dialSVG(hour,peak){const C=130,RB=124,RF=101,R0=44,L=50,mx=Math.max(1,...hour),
+  P=(h,r)=>{const a=h/24*Math.PI*2-Math.PI/2;return[+(C+Math.cos(a)*r).toFixed(1),+(C+Math.sin(a)*r).toFixed(1)];},
+  sec=(h0,h1,r)=>{const [x0,y0]=P(h0,r),[x1,y1]=P(h1,r);return `M${C} ${C}L${x0} ${y0}A${r} ${r} 0 ${((h1-h0+24)%24)>12?1:0} 1 ${x1} ${y1}Z`;};
+  // 文字盤：外側に厚紙のベゼル（時刻の目盛りと数字）、内側は昼（6〜18時）と夜（18〜6時）で色を分ける
+  let s=`<defs><radialGradient id="dlFace" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#FFFEFB"/><stop offset="1" stop-color="#F3EFE6"/></radialGradient>
+    <linearGradient id="dlBez" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF9F4"/><stop offset="1" stop-color="#E4DFD6"/></linearGradient></defs>
+    <circle cx="${C}" cy="${C}" r="${RB}" fill="url(#dlBez)" stroke="#CFC8BC" stroke-width="1"/>
+    <circle cx="${C}" cy="${C}" r="${RF+3}" fill="none" stroke="#B9A6E0" stroke-width="1.2"/>
+    <circle cx="${C}" cy="${C}" r="${RF}" fill="url(#dlFace)"/>
+    <path d="${sec(18,30,RF)}" fill="rgba(121,102,168,.12)"/><path d="${sec(6,18,RF)}" fill="rgba(242,196,107,.10)"/>
+    <circle cx="${C}" cy="${C}" r="${R0+L}" fill="none" stroke="rgba(46,42,56,.10)" stroke-dasharray="1 4"/>
+    <circle cx="${C}" cy="${C}" r="${R0+L/2}" fill="none" stroke="rgba(46,42,56,.08)" stroke-dasharray="1 4"/>`;
+  for(let h=0;h<24;h++){const big=h%3===0,[a1,b1]=P(h,RF+5),[a2,b2]=P(h,RF+(big?11:8));s+=`<line x1="${a1}" y1="${b1}" x2="${a2}" y2="${b2}" stroke="#5F5869" stroke-width="${big?1.6:.8}" stroke-linecap="round"/>`;
+    for(let q=1;q<4;q++){const [c1,d1]=P(h+q/4,RF+5),[c2,d2]=P(h+q/4,RF+6.5);s+=`<line x1="${c1}" y1="${d1}" x2="${c2}" y2="${d2}" stroke="rgba(46,42,56,.35)" stroke-width=".5"/>`;}}
+  for(let h=0;h<24;h+=3){const [x,y]=P(h,RF+17.5);s+=`<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${h%6?9:11}" fill="${h%6?'#8A8396':'#2E2A38'}" font-family="Courier Prime,monospace" font-weight="700">${h}</text>`;}
+  // 夜と昼の小さな印
+  {const [x,y]=P(0,RF-14);s+=`<circle cx="${x}" cy="${y}" r="5" fill="#8C76B8"/><circle cx="${x+2.4}" cy="${y-1.6}" r="4.3" fill="#FAF8F3"/>`;}
+  {const [x,y]=P(12,RF-14);s+=`<circle cx="${x}" cy="${y}" r="3.2" fill="#E8B04E"/>`;for(let k=0;k<8;k++){const a=k/8*Math.PI*2;s+=`<line x1="${(x+Math.cos(a)*5).toFixed(1)}" y1="${(y+Math.sin(a)*5).toFixed(1)}" x2="${(x+Math.cos(a)*7).toFixed(1)}" y2="${(y+Math.sin(a)*7).toFixed(1)}" stroke="#E8B04E" stroke-width="1.1" stroke-linecap="round"/>`;}}
+  for(let h=0;h<24;h++){if(!hour[h])continue;const len=Math.max(3,hour[h]/mx*L),[x1,y1]=P(h+.5,R0),[x2,y2]=P(h+.5,R0+len),pk=h===peak;
+    s+=`<line class="${pk?'pk':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${pk?'#C2577F':hour[h]/mx>.5?'#8C76B8':'#C3B3E6'}" stroke-width="${pk?8:6.5}" stroke-linecap="round" style="--i:${h}"/>`;}
+  // いちばん多い時刻：ベゼルにピンクの三角と、時刻の針
+  {const [hx,hy]=P(peak+.5,R0+L+4),[bx,by]=P(peak+.5,R0-6),[t1x,t1y]=P(peak+.5,RF+2),[t2x,t2y]=P(peak+.5-.35,RF+9),[t3x,t3y]=P(peak+.5+.35,RF+9);
+    s+=`<line x1="${bx}" y1="${by}" x2="${hx}" y2="${hy}" stroke="#C2577F" stroke-width="1.2" stroke-dasharray="2 2.5" opacity=".7"/><path d="M${t1x} ${t1y}L${t2x} ${t2y}L${t3x} ${t3y}Z" fill="#C2577F"/>`;}
+  s+=`<circle cx="${C}" cy="${C}" r="${R0-6}" fill="#FFFEFB" stroke="rgba(46,42,56,.14)"/><circle cx="${C}" cy="${C}" r="${R0-9}" fill="none" stroke="rgba(185,166,224,.6)" stroke-dasharray="1 2.6"/>`;
   return `<svg viewBox="0 0 260 260" aria-hidden="true">${s}</svg>`;}
 /* a year on graph paper: one square per day, darker on days with more streams; a pink dot on days written in the diary */
 const heatYear=r=>sumRange==='all'?+String(r.last||today().key).slice(0,4):+sumRange;
