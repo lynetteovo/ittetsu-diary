@@ -1352,7 +1352,8 @@ body{font-family:var(--sans)}
 .c-live .spage::before{background:radial-gradient(circle,rgba(120,110,150,.32) .9px,transparent 1.3px) 7px 7px/14px 14px,var(--tooth) 12px 0/190px,var(--cream)}
 .tk{filter:drop-shadow(0 .5px 0 #BDB7AE) drop-shadow(.8px 1.2px 0 #F2EFE8) drop-shadow(.8px 1.7px 0 #C8C2B8) drop-shadow(4px 8px 7px rgba(40,28,60,.3))}
 .tk-tape{top:-8px;left:22px;width:54px;height:16px;rotate:-4deg;z-index:4}
-.tk:nth-of-type(odd) .tk-tape{left:auto;right:84px;rotate:5deg}
+.tk-tape.pt{left:auto;right:84px;rotate:5deg}
+.tkw{align-self:stretch;display:flex;flex-direction:column}
 .tk-main{background:var(--fiber),var(--tooth) 0 0/120px,linear-gradient(180deg,#FBF8F1,#F4EFE4)}
 .tk-main::after{content:"";position:absolute;inset:4px;border:1px solid rgba(121,102,168,.28);outline:.5px solid rgba(121,102,168,.16);outline-offset:2px;pointer-events:none;z-index:1}
 .tk-img{margin:7px 7px 0;height:96px;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25)}
@@ -1436,7 +1437,7 @@ body{font-family:var(--sans)}
 .sturn{position:relative;height:100%;min-height:inherit}
 .scard.turning>.sturn{visibility:hidden}
 /* the sheet while it turns: three strips of the same page, each folded a little more than the last */
-.turner{position:absolute;inset:0;z-index:8;pointer-events:none;transform-style:preserve-3d;perspective:1100px;perspective-origin:0 50%}
+.turner{position:absolute;inset:0;z-index:8;pointer-events:none;transform-style:preserve-3d;perspective:1600px;perspective-origin:30% 50%}
 .tseg{position:absolute;top:0;height:100%;transform-origin:0 50%;transform-style:preserve-3d}
 .tface,.tback{position:absolute;top:0;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .tface>.sturn{visibility:visible;height:100%}
@@ -1450,16 +1451,15 @@ body{font-family:var(--sans)}
   background:linear-gradient(90deg,rgba(40,28,60,.28),rgba(40,28,60,.09) 35%,rgba(40,28,60,0))}
 .sc-under{position:absolute;inset:0;z-index:6;pointer-events:none;background:rgba(40,28,60,.12);opacity:var(--under,0)}
 /* ===== round 19: collage motion — each piece is laid down and pressed flat, tapes unroll, photos develop (a little slower) ===== */
-.scard.in .rv{animation:pasteIn 900ms cubic-bezier(.22,1.15,.36,1) both;animation-delay:calc(var(--i,0) * 110ms + 120ms)}
-@keyframes pasteIn{0%{opacity:0;transform:translate(var(--dx,0px),-18px) scale(1.09) rotate(calc(var(--r,0deg) + var(--dr,5deg)))}
-  45%{opacity:1}
-  62%{transform:translate(0,2px) scale(.985) rotate(calc(var(--r,0deg) - var(--dr,5deg) * .2))}
+.scard.in .rv{animation:pasteIn 950ms cubic-bezier(.2,.75,.25,1) both;animation-delay:calc(var(--i,0) * 110ms + 120ms)}
+@keyframes pasteIn{0%{opacity:0;transform:translate(var(--dx,0px),-12px) scale(1.035) rotate(calc(var(--r,0deg) + var(--dr,5deg)))}
+  35%{opacity:1}
   100%{opacity:1;transform:rotate(var(--r,0deg))}}
 @keyframes tapeIn{from{clip-path:inset(-4px 100% -4px 0)}to{clip-path:inset(-4px 0 -4px 0)}}
 @keyframes develop{from{filter:brightness(1.8) saturate(0) contrast(.7) blur(1.5px)}}
 .scard.in .sc-tape{animation:tapeIn 560ms cubic-bezier(.3,.7,.25,1) 60ms both}
 .scard.in .spage .tape,.scard.in .mtape.rv{animation:tapeIn 560ms cubic-bezier(.3,.7,.25,1) both;animation-delay:calc(var(--i,0) * 110ms + 520ms)}
-.scard.in .mtape.rv{animation:pasteIn 900ms cubic-bezier(.22,1.15,.36,1) both,tapeIn 620ms cubic-bezier(.3,.7,.25,1) both;animation-delay:120ms,200ms}
+.scard.in .mtape.rv{animation:pasteIn 950ms cubic-bezier(.2,.75,.25,1) both,tapeIn 620ms cubic-bezier(.3,.7,.25,1) both;animation-delay:120ms,200ms}
 .scard.in .rv .thumb img,.scard.in .rv .ytph-none,.scard.in .rv .mc-img,.scard.in .rv .tk-img{animation:develop 1400ms ease-out backwards;animation-delay:calc(var(--i,0) * 110ms + 450ms)}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
@@ -3287,11 +3287,11 @@ function turnStart(fwd){turnEnd();const cs=bookCards(),top=fwd?cs[BK.i]:cs[BK.i-
   for(let k=0;k<3;k++){const a=fr[k],b=fr[k+1],seg=document.createElement('div');seg.className='tseg';
     seg.style.left=(k?(fr[k]-fr[k-1])*W:0)+'px';seg.style.width=((b-a)*W)+'px';
     const face=document.createElement('div');face.className='tface';face.style.left=(-a*W)+'px';face.style.width=W+'px';
-    face.style.clipPath=`inset(-40px ${Math.max(0,(1-b)*W-1.5).toFixed(1)}px -40px ${(a*W).toFixed(1)}px)`;face.appendChild(cloneNoIds(src,'t'+k));
-    face.insertAdjacentHTML('beforeend',`<i class="tshade" style="left:${a*W}px;right:${(1-b)*W}px"></i><i class="tsheen" style="left:${a*W}px;right:${(1-b)*W}px"></i>`);
-    const back=document.createElement('div');back.className='tback'+(k===0?' spine':'');back.style.left='0';back.style.width=((b-a)*W)+'px';back.innerHTML='<i class="tshade"></i>';
+    face.style.clipPath=`inset(-40px ${((1-b)*W).toFixed(1)}px -40px ${Math.max(0,a*W-2).toFixed(1)}px)`;face.appendChild(cloneNoIds(src,'t'+k));
+    face.insertAdjacentHTML('beforeend',`<i class="tshade" style="left:${Math.max(0,a*W-2)}px;right:${(1-b)*W}px"></i>`);
+    const back=document.createElement('div');back.className='tback'+(k===0?' spine':'');back.style.left=(k?-2:0)+'px';back.style.width=((b-a)*W+(k?2:0))+'px';back.innerHTML='<i class="tshade"></i>';
     seg.append(face,back);parent.appendChild(seg);segs.push({seg,face,back,w:b-a});parent=seg;}
-  top.appendChild(tn);top.classList.add('turning','cur');under.classList.add('peer');
+  top.appendChild(tn);top.classList.add('turning','cur');under.classList.add('peer');top.style.zIndex=3;under.style.zIndex=2;
   BK.turn={top,under,tn,segs,fwd,W,t:fwd?0:1};turnSet(BK.turn.t);return BK.turn;}
 /* 複製のなかの id（SVG の切り抜きなど）を付け替えて、元のページを参照しないように */
 function cloneNoIds(src,suf){const c=src.cloneNode(true),map={};c.querySelectorAll('[id]').forEach(el=>{const n=el.id+'-'+suf;map[el.id]=n;el.id=n;});
@@ -3299,23 +3299,24 @@ function cloneNoIds(src,suf){const c=src.cloneNode(true),map={};c.querySelectorA
     const nv=v.replace(/url\(#([^)]+)\)/g,(m,id)=>map[id]?`url(#${map[id]})`:m).replace(/^#(.+)$/,(m,id)=>map[id]?'#'+map[id]:m);if(nv!==v)el.setAttribute(at.name,nv);}));
   return c;}
 const pageIn=c=>{if(c&&!c.classList.contains('in')){c.classList.add('in');c.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}};
-function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.8)pageIn(T.under);const bend=Math.sin(t*Math.PI),base=t*96,cl=v=>Math.max(0,Math.min(180,v));
-  // 背に近い帯はゆっくり、外の帯ほど先に倒れる → 紙がたわんで見える
-  // 奥へ倒す：0°→92°（真横を過ぎたら下のページの後ろ）。外の帯ほど先に倒れて紙がたわむ
-  const c=[cl(base-26*bend),cl(base),cl(base+24*bend)].map(v=>Math.min(92,v));let prev=0,edge=0;
-  T.segs.forEach((g,k)=>{g.seg.style.transform=`rotateY(${(c[k]-prev).toFixed(2)}deg)`;prev=c[k];
-    const r=c[k]*Math.PI/180,lit=Math.abs(Math.cos(r)),dark=(1-lit)*.55,front=c[k]<90;
-    const nx=c[k+1]!==undefined?c[k+1]*Math.PI/180:r,dark2=(1-Math.abs(Math.cos(nx)))*.55;
+function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.42)pageIn(T.under);
+  // 左へぐるりと一周：0→180°でリングを越えて左へ（紙の裏が見える）、180→360°で束の後ろへ回り込む
+  const base=t*360,u=Math.min(1,t*2),bend=Math.sin(u*Math.PI)*(t<.5?1:0)+Math.sin(Math.max(0,t*2-1)*Math.PI)*.4,cl=v=>Math.max(0,Math.min(360,v));
+  // 外の帯ほど先に回る → 紙がたわむ
+  const c=[cl(base-28*bend),cl(base),cl(base+26*bend)];let prev=0,edge=0;
+  T.segs.forEach((g,k)=>{g.seg.style.transform=`rotateY(${(-(c[k]-prev)).toFixed(2)}deg)`+(k?'':` translateZ(${(Math.sin(u*Math.PI)*12).toFixed(1)}px)`);prev=c[k];
+    const r=c[k]*Math.PI/180,dark=(1-Math.abs(Math.cos(r)))*.42,nx=c[k+1]!==undefined?c[k+1]*Math.PI/180:r,dark2=(1-Math.abs(Math.cos(nx)))*.42;
     [g.face,g.back].forEach(el=>{const sh=el.querySelector('.tshade');if(sh){sh.style.setProperty('--a0',dark.toFixed(3));sh.style.setProperty('--a1',Math.max(dark,dark2).toFixed(3));}});
-    const sn=g.face.querySelector('.tsheen');if(sn)sn.style.setProperty('--sh',(front?bend*(k===1?1:.6):0).toFixed(3));
-    edge+=g.w*Math.cos(r);});
-  const cast=T.under.querySelector('.sc-cast'),un=T.under.querySelector('.sc-under');
-  if(cast){cast.style.setProperty('--cw',Math.max(0,edge).toFixed(3));cast.style.setProperty('--cast',(edge>0?Math.min(1,bend*1.4):0).toFixed(3));}
-  if(un)un.style.setProperty('--under',(edge>0?(1-t)*.9:0).toFixed(3));}
-function turnEnd(){cancelAnimationFrame(BK.anim);BK.anim=0;const T=BK.turn;if(!T)return;T.tn.remove();T.top.classList.remove('turning');
+    if(c[k]<90)edge+=g.w*Math.cos(r);});
+  // 半周を過ぎたら、めくった紙は下のページの後ろ
+  const behind=base>180;T.top.style.zIndex=behind?1:3;T.under.style.zIndex=2;
+  const cast=T.under.querySelector('.sc-cast'),un=T.under.querySelector('.sc-under'),lift=Math.sin(u*Math.PI);
+  if(cast){cast.style.setProperty('--cw',Math.max(0,edge).toFixed(3));cast.style.setProperty('--cast',(base<90?Math.min(1,lift*1.3):0).toFixed(3));}
+  if(un)un.style.setProperty('--under',(base<120?(1-base/120)*.8:0).toFixed(3));}
+function turnEnd(){cancelAnimationFrame(BK.anim);BK.anim=0;const T=BK.turn;if(!T)return;T.tn.remove();T.top.classList.remove('turning');T.top.style.zIndex='';T.under.style.zIndex='';
   [T.under].forEach(u=>{const c=u.querySelector('.sc-cast'),n=u.querySelector('.sc-under');if(c)c.style.setProperty('--cast','0');if(n)n.style.setProperty('--under','0');});BK.turn=null;}
 function turnAnim(to,done){const T=BK.turn;if(!T){done&&done();return;}cancelAnimationFrame(BK.anim);
-  const from=T.t,d=Math.max(380,Math.abs(to-from)*1050),t0=performance.now();
+  const from=T.t,d=Math.max(420,Math.abs(to-from)*1250),t0=performance.now();
   const step=n=>{const k=Math.min(1,(n-t0)/d),e=1-Math.pow(1-k,3);turnSet(from+(to-from)*e);if(k<1)BK.anim=requestAnimationFrame(step);else{BK.anim=0;done&&done();}};
   BK.anim=requestAnimationFrame(step);}
 /* 指（マウス）でめくる：横に動いた時だけ。左へ＝次のページ、右へ＝前のページ */
@@ -3491,9 +3492,9 @@ renderSum=function(){
       <div class="chips rv">${collabs.slice(1).map(([c,n],i)=>`<span class="strip" style="--r:${i%2?2:-2}deg">${esc(c)}　×${n}</span>`).join('')}</div>`:'<p class="s-note">コラボの記録はまだありません</p>'}`),
     card('c-live',`<span class="mtape rv">06 / LIVE</span>
       <p class="rep-lead rv">配信だけじゃない。ステージにも立ちました。</p>
-      ${LIVES.map((l,i)=>`<div class="tk rv" style="--r:${i?1.6:-1.6}deg;--d:${i*420}ms"><i class="tape ${i?'pt':'mk'} tk-tape"></i><div class="tk-main"><div class="tk-img" style="background-image:url(${l.img})"><span class="tk-name">${l.name}<small>${l.sub}</small></span></div>
+      ${LIVES.map((l,i)=>`<div class="tkw rv"><div class="tk" style="--r:${i?1.6:-1.6}deg;--d:${i*420}ms"><i class="tape ${i?'pt':'mk'} tk-tape"></i><div class="tk-main"><div class="tk-img" style="background-image:url(${l.img})"><span class="tk-name">${l.name}<small>${l.sub}</small></span></div>
         <div class="tk-info"><span><small>ARTIST</small>SAIKI ITTETSU</span><span><small>SEAT</small>NAKAMA</span><span><small>No.</small>${String(i+1).padStart(4,'0')}</span><i class="tk-bar"></i></div><span class="tk-stamp">見届けた</span></div>
-        <div class="tk-stub"><span>ADMIT ONE</span><b>${l.name}</b><i class="tk-bar"></i></div></div>`).join('')}`),
+        <div class="tk-stub"><span>ADMIT ONE</span><b>${l.name}</b><i class="tk-bar"></i></div></div></div>`).join('')}`),
     card('c-mem',`<span class="mtape rv">07 / DIARY</span>
       <p class="rep-lead rv">${heatYear(r)}年の配信と、手帳を書いた日</p>
       <div class="heat rv">${heatSVG(r,d)}<div class="heat-l"><span><i style="background:#D9CDEE"></i>配信</span><span><i style="background:#8C76B8"></i>多い日</span><span><i class="dot"></i>手帳を書いた日</span></div></div>
