@@ -1436,7 +1436,7 @@ body{font-family:var(--sans)}
 .sturn{position:relative;height:100%;min-height:inherit}
 .scard.turning>.sturn{visibility:hidden}
 /* the sheet while it turns: three strips of the same page, each folded a little more than the last */
-.turner{position:absolute;inset:0;z-index:8;pointer-events:none;transform-style:preserve-3d;perspective:1500px}
+.turner{position:absolute;inset:0;z-index:8;pointer-events:none;transform-style:preserve-3d;perspective:1100px;perspective-origin:0 50%}
 .tseg{position:absolute;top:0;height:100%;transform-origin:0 50%;transform-style:preserve-3d}
 .tface,.tback{position:absolute;top:0;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .tface>.sturn{visibility:visible;height:100%}
@@ -1447,8 +1447,20 @@ body{font-family:var(--sans)}
 .tsheen{position:absolute;inset:0;pointer-events:none;z-index:9;background:linear-gradient(90deg,rgba(255,255,255,0) 20%,rgba(255,255,255,.45) 55%,rgba(255,255,255,0) 85%);opacity:var(--sh,0);mix-blend-mode:soft-light}
 /* the shadow the turning sheet drops on the page underneath, following its free edge */
 .sc-cast{position:absolute;top:0;bottom:0;left:calc(var(--cw,0) * 100%);width:46%;z-index:6;pointer-events:none;opacity:var(--cast,0);
-  background:linear-gradient(90deg,rgba(40,28,60,.38),rgba(40,28,60,.13) 35%,rgba(40,28,60,0))}
+  background:linear-gradient(90deg,rgba(40,28,60,.28),rgba(40,28,60,.09) 35%,rgba(40,28,60,0))}
 .sc-under{position:absolute;inset:0;z-index:6;pointer-events:none;background:rgba(40,28,60,.12);opacity:var(--under,0)}
+/* ===== round 19: collage motion — each piece is laid down and pressed flat, tapes unroll, photos develop (a little slower) ===== */
+.scard.in .rv{animation:pasteIn 900ms cubic-bezier(.22,1.15,.36,1) both;animation-delay:calc(var(--i,0) * 110ms + 120ms)}
+@keyframes pasteIn{0%{opacity:0;transform:translate(var(--dx,0px),-18px) scale(1.09) rotate(calc(var(--r,0deg) + var(--dr,5deg)))}
+  45%{opacity:1}
+  62%{transform:translate(0,2px) scale(.985) rotate(calc(var(--r,0deg) - var(--dr,5deg) * .2))}
+  100%{opacity:1;transform:rotate(var(--r,0deg))}}
+@keyframes tapeIn{from{clip-path:inset(-4px 100% -4px 0)}to{clip-path:inset(-4px 0 -4px 0)}}
+@keyframes develop{from{filter:brightness(1.8) saturate(0) contrast(.7) blur(1.5px)}}
+.scard.in .sc-tape{animation:tapeIn 560ms cubic-bezier(.3,.7,.25,1) 60ms both}
+.scard.in .spage .tape,.scard.in .mtape.rv{animation:tapeIn 560ms cubic-bezier(.3,.7,.25,1) both;animation-delay:calc(var(--i,0) * 110ms + 520ms)}
+.scard.in .mtape.rv{animation:pasteIn 900ms cubic-bezier(.22,1.15,.36,1) both,tapeIn 620ms cubic-bezier(.3,.7,.25,1) both;animation-delay:120ms,200ms}
+.scard.in .rv .thumb img,.scard.in .rv .ytph-none,.scard.in .rv .mc-img,.scard.in .rv .tk-img{animation:develop 1400ms ease-out backwards;animation-delay:calc(var(--i,0) * 110ms + 450ms)}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -3248,7 +3260,7 @@ function renderSum(){
       ${r.anniv?`<span class="strip rv">記念日　${r.anniv}回</span>`:''}${stars(4)}`),
     card('c-end',`<h2 class="infty rv">21<span>+</span>∞</h2><p class="s-cap rv">これからも、いっしょに。</p><pre class="stamp big rv" aria-hidden="true"> /\\_/\\ \n( ^.^ )\n (")(")~~=[]</pre>${trio('rv')}<p class="foot rv">20XX SAIKI ITTETSU. NAKAMA FOREVER</p>${stars(5)}`)];
   tr.innerHTML=cards.join('');
-  $$('#sumTrack .rv').forEach((el,i)=>el.style.setProperty('--i',i%8));
+  $$('#sumTrack .scard').forEach(c=>c.querySelectorAll('.rv').forEach((el,j)=>{el.style.setProperty('--i',Math.min(j,9));el.style.setProperty('--dx',(j%2?16:-16)+'px');el.style.setProperty('--dr',(j%2?-6:6)+'deg');}));
   $$('#sumTrack .ph').forEach(sp=>{const x=PH[+sp.dataset.ph];if(x)sp.replaceWith(thumbEl(x.e));});
   $$('#sumTrack .ovimg').forEach(im=>{const x=PH[+im.dataset.ph];if(x)resolveSrc(x.e).then(src=>im.setAttribute('href',src));});
   $('#sumDots').innerHTML=cards.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('');
@@ -3275,7 +3287,7 @@ function turnStart(fwd){turnEnd();const cs=bookCards(),top=fwd?cs[BK.i]:cs[BK.i-
   for(let k=0;k<3;k++){const a=fr[k],b=fr[k+1],seg=document.createElement('div');seg.className='tseg';
     seg.style.left=(k?(fr[k]-fr[k-1])*W:0)+'px';seg.style.width=((b-a)*W)+'px';
     const face=document.createElement('div');face.className='tface';face.style.left=(-a*W)+'px';face.style.width=W+'px';
-    face.style.clipPath=`inset(-40px ${((1-b)*W).toFixed(1)}px -40px ${(a*W).toFixed(1)}px)`;face.appendChild(cloneNoIds(src,'t'+k));
+    face.style.clipPath=`inset(-40px ${Math.max(0,(1-b)*W-1.5).toFixed(1)}px -40px ${(a*W).toFixed(1)}px)`;face.appendChild(cloneNoIds(src,'t'+k));
     face.insertAdjacentHTML('beforeend',`<i class="tshade" style="left:${a*W}px;right:${(1-b)*W}px"></i><i class="tsheen" style="left:${a*W}px;right:${(1-b)*W}px"></i>`);
     const back=document.createElement('div');back.className='tback'+(k===0?' spine':'');back.style.left='0';back.style.width=((b-a)*W)+'px';back.innerHTML='<i class="tshade"></i>';
     seg.append(face,back);parent.appendChild(seg);segs.push({seg,face,back,w:b-a});parent=seg;}
@@ -3287,12 +3299,13 @@ function cloneNoIds(src,suf){const c=src.cloneNode(true),map={};c.querySelectorA
     const nv=v.replace(/url\(#([^)]+)\)/g,(m,id)=>map[id]?`url(#${map[id]})`:m).replace(/^#(.+)$/,(m,id)=>map[id]?'#'+map[id]:m);if(nv!==v)el.setAttribute(at.name,nv);}));
   return c;}
 const pageIn=c=>{if(c&&!c.classList.contains('in')){c.classList.add('in');c.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}};
-function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.85)pageIn(T.under);const bend=Math.sin(t*Math.PI),base=t*180,cl=v=>Math.max(0,Math.min(180,v));
+function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.8)pageIn(T.under);const bend=Math.sin(t*Math.PI),base=t*96,cl=v=>Math.max(0,Math.min(180,v));
   // 背に近い帯はゆっくり、外の帯ほど先に倒れる → 紙がたわんで見える
-  const c=[cl(base-34*bend),cl(base),cl(base+30*bend)];let prev=0,edge=0;
-  T.segs.forEach((g,k)=>{g.seg.style.transform=`rotateY(${(-(c[k]-prev)).toFixed(2)}deg)`+(k?'':` translateZ(${(bend*10).toFixed(1)}px)`);prev=c[k];
-    const r=c[k]*Math.PI/180,lit=Math.abs(Math.cos(r)),dark=(1-lit)*.42,front=c[k]<90;
-    const nx=c[k+1]!==undefined?c[k+1]*Math.PI/180:r,dark2=(1-Math.abs(Math.cos(nx)))*.42;
+  // 奥へ倒す：0°→92°（真横を過ぎたら下のページの後ろ）。外の帯ほど先に倒れて紙がたわむ
+  const c=[cl(base-26*bend),cl(base),cl(base+24*bend)].map(v=>Math.min(92,v));let prev=0,edge=0;
+  T.segs.forEach((g,k)=>{g.seg.style.transform=`rotateY(${(c[k]-prev).toFixed(2)}deg)`;prev=c[k];
+    const r=c[k]*Math.PI/180,lit=Math.abs(Math.cos(r)),dark=(1-lit)*.55,front=c[k]<90;
+    const nx=c[k+1]!==undefined?c[k+1]*Math.PI/180:r,dark2=(1-Math.abs(Math.cos(nx)))*.55;
     [g.face,g.back].forEach(el=>{const sh=el.querySelector('.tshade');if(sh){sh.style.setProperty('--a0',dark.toFixed(3));sh.style.setProperty('--a1',Math.max(dark,dark2).toFixed(3));}});
     const sn=g.face.querySelector('.tsheen');if(sn)sn.style.setProperty('--sh',(front?bend*(k===1?1:.6):0).toFixed(3));
     edge+=g.w*Math.cos(r);});
@@ -3302,7 +3315,7 @@ function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.85)pageIn(T
 function turnEnd(){cancelAnimationFrame(BK.anim);BK.anim=0;const T=BK.turn;if(!T)return;T.tn.remove();T.top.classList.remove('turning');
   [T.under].forEach(u=>{const c=u.querySelector('.sc-cast'),n=u.querySelector('.sc-under');if(c)c.style.setProperty('--cast','0');if(n)n.style.setProperty('--under','0');});BK.turn=null;}
 function turnAnim(to,done){const T=BK.turn;if(!T){done&&done();return;}cancelAnimationFrame(BK.anim);
-  const from=T.t,d=Math.max(240,Math.abs(to-from)*720),t0=performance.now();
+  const from=T.t,d=Math.max(380,Math.abs(to-from)*1050),t0=performance.now();
   const step=n=>{const k=Math.min(1,(n-t0)/d),e=1-Math.pow(1-k,3);turnSet(from+(to-from)*e);if(k<1)BK.anim=requestAnimationFrame(step);else{BK.anim=0;done&&done();}};
   BK.anim=requestAnimationFrame(step);}
 /* 指（マウス）でめくる：横に動いた時だけ。左へ＝次のページ、右へ＝前のページ */
