@@ -1461,6 +1461,53 @@ body{font-family:var(--sans)}
 .scard.in .spage .tape,.scard.in .mtape.rv{animation:tapeIn 560ms cubic-bezier(.3,.7,.25,1) both;animation-delay:calc(var(--i,0) * 110ms + 520ms)}
 .scard.in .mtape.rv{animation:pasteIn 950ms cubic-bezier(.2,.75,.25,1) both,tapeIn 620ms cubic-bezier(.3,.7,.25,1) both;animation-delay:120ms,200ms}
 .scard.in .rv .thumb img,.scard.in .rv .ytph-none,.scard.in .rv .mc-img,.scard.in .rv .tk-img{animation:develop 1400ms ease-out backwards;animation-delay:calc(var(--i,0) * 110ms + 450ms)}
+/* ===== round 20: page turn details, ticket shadow, motion per component ===== */
+.turner.behind .sc-tape{visibility:hidden}
+.tk,.tkw .tk{filter:none}
+.tk-sh{position:absolute;left:3px;right:66px;top:2px;bottom:0;z-index:-1;border-radius:2px;pointer-events:none;
+  box-shadow:0 .5px 0 #BDB7AE,.8px 1.7px 0 #C8C2B8,4px 8px 12px -1px rgba(40,28,60,.3)}
+.tk-stub{box-shadow:none}
+/* the moment each piece starts (same as its pasteIn), plus a little */
+.scard.in .rv{--t0:calc(var(--i,0) * 110ms + 120ms)}
+/* 01: the ASCII meter is typed out */
+.scard.in .asc{animation:pasteIn 950ms cubic-bezier(.2,.75,.25,1) both,typeOn 900ms steps(22) both;animation-delay:var(--t0),calc(var(--t0) + 250ms)}
+@keyframes typeOn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+/* 02: the length bars are drawn in one after another, the longest glows last */
+.scard.in .rbars i{transform-origin:0 50%;animation:barIn 760ms cubic-bezier(.25,.8,.25,1) backwards}
+.scard.in .rbars div:nth-child(1) i{animation-delay:calc(var(--t0) + 300ms)}.scard.in .rbars div:nth-child(2) i{animation-delay:calc(var(--t0) + 390ms)}
+.scard.in .rbars div:nth-child(3) i{animation-delay:calc(var(--t0) + 480ms)}.scard.in .rbars div:nth-child(4) i{animation-delay:calc(var(--t0) + 570ms)}
+.scard.in .rbars div:nth-child(5) i{animation-delay:calc(var(--t0) + 660ms)}.scard.in .rbars div:nth-child(6) i{animation-delay:calc(var(--t0) + 750ms)}
+.scard.in .rbars b{animation:fadeIn 500ms ease backwards;animation-delay:calc(var(--t0) + 900ms)}
+@keyframes barIn{from{transform:scaleX(0)}}
+@keyframes fadeIn{from{opacity:0}}
+.scard.in .clipnote .clip{animation:clipIn 600ms cubic-bezier(.3,1.4,.4,1) backwards;animation-delay:calc(var(--t0) + 350ms)}
+@keyframes clipIn{from{transform:translateY(-14px) rotate(-12deg);opacity:0}}
+/* 03: the hand of the peak hour: the dot is stamped on and rings once */
+.dial .pkd,.dial .pkr{transform-box:fill-box;transform-origin:center}
+.scard.in .dial .pkd{animation:dotIn 500ms cubic-bezier(.3,1.6,.4,1) backwards;animation-delay:1100ms}
+.scard.in .dial .pkr{animation:ring 1100ms ease-out 1250ms both}
+@keyframes dotIn{from{transform:scale(0)}}
+@keyframes ring{from{transform:scale(1);opacity:.9}to{transform:scale(4.5);opacity:0}}
+.scard.in .dial-c b{animation:fadeIn 600ms ease backwards;animation-delay:900ms}
+/* 04: the No.1 seal is pressed on, the ranking rows are slid in and their bars fill */
+.scard.in .gno{animation:sealIn 520ms cubic-bezier(.3,1.3,.4,1) backwards;animation-delay:calc(var(--t0) + 700ms)}
+@keyframes sealIn{from{transform:scale(1.9) rotate(-25deg);opacity:0}60%{opacity:1}}
+.scard.in .glist li{animation:rowIn 560ms cubic-bezier(.2,.75,.25,1) backwards}
+.scard.in .glist li:nth-child(1){animation-delay:calc(var(--t0) + 120ms)}.scard.in .glist li:nth-child(2){animation-delay:calc(var(--t0) + 220ms)}
+.scard.in .glist li:nth-child(3){animation-delay:calc(var(--t0) + 320ms)}.scard.in .glist li:nth-child(4){animation-delay:calc(var(--t0) + 420ms)}
+@keyframes rowIn{from{opacity:0;transform:translateX(-14px)}}
+.scard.in .glist .gbar::after{transform-origin:0 50%;animation:barIn 800ms cubic-bezier(.25,.8,.25,1) backwards;animation-delay:calc(var(--t0) + 600ms)}
+/* 05: the partner's name is written out; the others are dealt like name slips */
+.c-collab.in .rep-big{animation:pasteIn 950ms cubic-bezier(.2,.75,.25,1) both,writeOn 1000ms cubic-bezier(.45,.1,.4,1) both;animation-delay:var(--t0),calc(var(--t0) + 150ms)}
+@keyframes writeOn{from{clip-path:inset(-10px 100% -10px 0)}to{clip-path:inset(-10px -10px -10px 0)}}
+.c-collab.in .chips .strip{animation:dealIn 620ms cubic-bezier(.2,.8,.25,1) backwards}
+.c-collab.in .chips .strip:nth-child(1){animation-delay:calc(var(--t0) + 200ms)}.c-collab.in .chips .strip:nth-child(2){animation-delay:calc(var(--t0) + 300ms)}
+.c-collab.in .chips .strip:nth-child(3){animation-delay:calc(var(--t0) + 400ms)}.c-collab.in .chips .strip:nth-child(4){animation-delay:calc(var(--t0) + 500ms)}
+.c-collab.in .chips .strip:nth-child(5){animation-delay:calc(var(--t0) + 600ms)}.c-collab.in .chips .strip:nth-child(n+6){animation-delay:calc(var(--t0) + 700ms)}
+@keyframes dealIn{from{opacity:0;transform:translate(-40px,-26px) rotate(-14deg)}}
+/* 07: the year on graph paper is filled in from January to December */
+.scard.in .heat svg{animation:typeOn 1500ms cubic-bezier(.4,.1,.3,1) backwards;animation-delay:calc(var(--t0) + 250ms)}
+.rm .scard .rv,.rm .scard .rv *{animation:none!important;clip-path:none!important}
 /* ===== reduced motion ===== */
 .rm *,.rm *::before,.rm *::after{transition-duration:1ms!important;animation-duration:1ms!important;transition-delay:0ms!important;animation-delay:0ms!important}
 
@@ -3274,12 +3321,13 @@ let sumIO=null;
    裏は無地の紙。下のページには、めくれる紙の端に合わせて影が落ちる。スクロールは使わない（iPhone で揺れない） */
 const BK={i:0,anim:0,turn:null};
 const bookCards=()=>[...$('#sumTrack').children].filter(c=>c.classList.contains('scard'));
+const TV=200/360,TE=300/360;   // 指で動かすのは 0→200°（見えている間）、そのあと 300°（束の後ろ）まで自動で
 function bookShow(){const cs=bookCards();cs.forEach((c,j)=>{c.classList.toggle('cur',j===BK.i);c.classList.remove('peer','turning');});
   $$('#sumDots i').forEach((d,j)=>d.classList.toggle('on',j===BK.i));const c=cs[BK.i];
-  if(c&&!c.classList.contains('in')){c.classList.add('in');c.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}}
+  pageIn(c);}
 function bookGo(i,now){const cs=bookCards();if(!cs.length)return;i=Math.max(0,Math.min(cs.length-1,i));
   if(now||RM()||i===BK.i||Math.abs(i-BK.i)>1){turnEnd();BK.i=i;bookShow();return;}
-  const fwd=i>BK.i;turnStart(fwd);turnAnim(fwd?1:0,()=>{BK.i=i;turnEnd();bookShow();});}
+  const fwd=i>BK.i;turnStart(fwd);turnAnim(fwd?TE:0,()=>{BK.i=i;turnEnd();bookShow();});}
 /* fwd: the current sheet turns away (0→1). back: the previous sheet comes back over (1→0) */
 function turnStart(fwd){turnEnd();const cs=bookCards(),top=fwd?cs[BK.i]:cs[BK.i-1],under=fwd?cs[BK.i+1]:cs[BK.i];if(!top||!under)return null;
   const src=top.querySelector(':scope>.sturn'),W=src.offsetWidth,fr=[0,.4,.7,1];
@@ -3292,14 +3340,14 @@ function turnStart(fwd){turnEnd();const cs=bookCards(),top=fwd?cs[BK.i]:cs[BK.i-
     const back=document.createElement('div');back.className='tback'+(k===0?' spine':'');back.style.left=(k?-2:0)+'px';back.style.width=((b-a)*W+(k?2:0))+'px';back.innerHTML='<i class="tshade"></i>';
     seg.append(face,back);parent.appendChild(seg);segs.push({seg,face,back,w:b-a});parent=seg;}
   top.appendChild(tn);top.classList.add('turning','cur');under.classList.add('peer');top.style.zIndex=3;under.style.zIndex=2;
-  BK.turn={top,under,tn,segs,fwd,W,t:fwd?0:1};turnSet(BK.turn.t);return BK.turn;}
+  BK.turn={top,under,tn,segs,fwd,W,t:fwd?0:TV};turnSet(BK.turn.t);return BK.turn;}
 /* 複製のなかの id（SVG の切り抜きなど）を付け替えて、元のページを参照しないように */
 function cloneNoIds(src,suf){const c=src.cloneNode(true),map={};c.querySelectorAll('[id]').forEach(el=>{const n=el.id+'-'+suf;map[el.id]=n;el.id=n;});
   if(Object.keys(map).length)c.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(at=>{const v=at.value;if(!/#/.test(v))return;
     const nv=v.replace(/url\(#([^)]+)\)/g,(m,id)=>map[id]?`url(#${map[id]})`:m).replace(/^#(.+)$/,(m,id)=>map[id]?'#'+map[id]:m);if(nv!==v)el.setAttribute(at.name,nv);}));
   return c;}
-const pageIn=c=>{if(c&&!c.classList.contains('in')){c.classList.add('in');c.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}};
-function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.42)pageIn(T.under);
+const pageIn=c=>{if(c&&!c.classList.contains('in')){c.classList.add('in');c.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));if(c._onIn)c._onIn();}};
+function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.3)pageIn(T.under);
   // 左へぐるりと一周：0→180°でリングを越えて左へ（紙の裏が見える）、180→360°で束の後ろへ回り込む
   const base=t*360,u=Math.min(1,t*2),bend=Math.sin(u*Math.PI)*(t<.5?1:0)+Math.sin(Math.max(0,t*2-1)*Math.PI)*.4,cl=v=>Math.max(0,Math.min(360,v));
   // 外の帯ほど先に回る → 紙がたわむ
@@ -3309,14 +3357,14 @@ function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.42)pageIn(T
     [g.face,g.back].forEach(el=>{const sh=el.querySelector('.tshade');if(sh){sh.style.setProperty('--a0',dark.toFixed(3));sh.style.setProperty('--a1',Math.max(dark,dark2).toFixed(3));}});
     if(c[k]<90)edge+=g.w*Math.cos(r);});
   // 半周を過ぎたら、めくった紙は下のページの後ろ
-  const behind=base>180;T.top.style.zIndex=behind?1:3;T.under.style.zIndex=2;
+  const behind=base>180;T.top.style.zIndex=behind?1:3;T.under.style.zIndex=2;T.tn.classList.toggle('behind',behind);
   const cast=T.under.querySelector('.sc-cast'),un=T.under.querySelector('.sc-under'),lift=Math.sin(u*Math.PI);
   if(cast){cast.style.setProperty('--cw',Math.max(0,edge).toFixed(3));cast.style.setProperty('--cast',(base<90?Math.min(1,lift*1.3):0).toFixed(3));}
-  if(un)un.style.setProperty('--under',(base<120?(1-base/120)*.8:0).toFixed(3));}
+  if(un)un.style.setProperty('--under',(base<120?Math.sin(base/120*Math.PI)*.35:0).toFixed(3));}
 function turnEnd(){cancelAnimationFrame(BK.anim);BK.anim=0;const T=BK.turn;if(!T)return;T.tn.remove();T.top.classList.remove('turning');T.top.style.zIndex='';T.under.style.zIndex='';
   [T.under].forEach(u=>{const c=u.querySelector('.sc-cast'),n=u.querySelector('.sc-under');if(c)c.style.setProperty('--cast','0');if(n)n.style.setProperty('--under','0');});BK.turn=null;}
 function turnAnim(to,done){const T=BK.turn;if(!T){done&&done();return;}cancelAnimationFrame(BK.anim);
-  const from=T.t,d=Math.max(420,Math.abs(to-from)*1250),t0=performance.now();
+  const from=T.t,d=Math.max(480,Math.abs(to-from)*1500),t0=performance.now();
   const step=n=>{const k=Math.min(1,(n-t0)/d),e=1-Math.pow(1-k,3);turnSet(from+(to-from)*e);if(k<1)BK.anim=requestAnimationFrame(step);else{BK.anim=0;done&&done();}};
   BK.anim=requestAnimationFrame(step);}
 /* 指（マウス）でめくる：横に動いた時だけ。左へ＝次のページ、右へ＝前のページ */
@@ -3328,11 +3376,11 @@ function turnAnim(to,done){const T=BK.turn;if(!T){done&&done();return;}cancelAni
       if(RM()){st=null;bookGo(BK.i+(fwd?1:-1),true);return;}
       if(!turnStart(fwd)){st=null;return;}drag=true;try{tr.setPointerCapture(e.pointerId);}catch(_){}}
     const T=BK.turn,n=performance.now();vx=(e.clientX-lastX)/Math.max(1,n-lastT)*.6+vx*.4;lastX=e.clientX;lastT=n;
-    const p=Math.max(0,Math.min(1,-dx/(T.W*.9)));turnSet(T.fwd?p:1-Math.max(0,Math.min(1,dx/(T.W*.9))));});
+    const p=Math.max(0,Math.min(1,(T.fwd?-dx:dx)/(T.W*.85)));turnSet(T.fwd?p*TV:(1-p)*TV);});
   const up=e=>{if(!st||e.pointerId!==st.id)return;st=null;if(!drag)return;drag=false;blockClick=true;setTimeout(()=>blockClick=false,60);
-    const T=BK.turn;if(!T)return;const go=T.fwd?(T.t>.33||vx<-.35)&&vx<.3:(T.t<.67||vx>.35)&&vx>-.3;
-    if(go){const ni=BK.i+(T.fwd?1:-1);turnAnim(T.fwd?1:0,()=>{BK.i=ni;turnEnd();bookShow();});}
-    else turnAnim(T.fwd?0:1,()=>{turnEnd();bookShow();});};
+    const T=BK.turn;if(!T)return;const go=T.fwd?(T.t>.3*TV||vx<-.35)&&vx<.3:(T.t<.7*TV||vx>.35)&&vx>-.3;
+    if(go){const ni=BK.i+(T.fwd?1:-1);turnAnim(T.fwd?TE:0,()=>{BK.i=ni;turnEnd();bookShow();});}
+    else turnAnim(T.fwd?0:TE,()=>{turnEnd();bookShow();});};
   tr.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();},{passive:false});
   tr.addEventListener('pointerup',up);tr.addEventListener('pointercancel',up);
   tr.addEventListener('click',e=>{if(blockClick){e.preventDefault();e.stopPropagation();}},true);
@@ -3492,7 +3540,7 @@ renderSum=function(){
       <div class="chips rv">${collabs.slice(1).map(([c,n],i)=>`<span class="strip" style="--r:${i%2?2:-2}deg">${esc(c)}　×${n}</span>`).join('')}</div>`:'<p class="s-note">コラボの記録はまだありません</p>'}`),
     card('c-live',`<span class="mtape rv">06 / LIVE</span>
       <p class="rep-lead rv">配信だけじゃない。ステージにも立ちました。</p>
-      ${LIVES.map((l,i)=>`<div class="tkw rv"><div class="tk" style="--r:${i?1.6:-1.6}deg;--d:${i*420}ms"><i class="tape ${i?'pt':'mk'} tk-tape"></i><div class="tk-main"><div class="tk-img" style="background-image:url(${l.img})"><span class="tk-name">${l.name}<small>${l.sub}</small></span></div>
+      ${LIVES.map((l,i)=>`<div class="tkw rv"><div class="tk" style="--r:${i?1.6:-1.6}deg;--d:${i*420}ms"><i class="tk-sh"></i><i class="tape ${i?'pt':'mk'} tk-tape"></i><div class="tk-main"><div class="tk-img" style="background-image:url(${l.img})"><span class="tk-name">${l.name}<small>${l.sub}</small></span></div>
         <div class="tk-info"><span><small>ARTIST</small>SAIKI ITTETSU</span><span><small>SEAT</small>NAKAMA</span><span><small>No.</small>${String(i+1).padStart(4,'0')}</span><i class="tk-bar"></i></div><span class="tk-stamp">見届けた</span></div>
         <div class="tk-stub"><span>ADMIT ONE</span><b>${l.name}</b><i class="tk-bar"></i></div></div></div>`).join('')}`),
     card('c-mem',`<span class="mtape rv">07 / DIARY</span>
@@ -3525,7 +3573,8 @@ renderSum=function(){
 };
 /* NAKAMA CARD：kaorou の読み取りカードと同じ動き（すべてばね。翻面 k90/c13、傾き k170/c18、拡大 k260/c22） */
 function ncard(pos){const body=pos.querySelector('.nc-body'),sh=pos.querySelector('.nc-sh'),ct=pos.querySelector('.nc-ct'),calm=RM();
-  const sp=(k,c,x=0)=>({k,c,x,v:0,t:x}),C={rx:sp(170,18),ry:sp(170,18),sc:sp(260,22,1),fl:sp(90,13)},L=Object.values(C);let on=false,last=0;
+  const sp=(k,c,x=0)=>({k,c,x,v:0,t:x}),C={rx:sp(170,18),ry:sp(170,18),sc:sp(260,22,1),fl:sp(90,13,calm?0:-180)},L=Object.values(C);let on=false,last=0;
+  const pg=pos.closest('.scard');if(pg&&!calm)pg._onIn=()=>setTimeout(()=>{if(C.fl.t===-180){C.fl.t=0;kick();}},1500);
   const render=()=>{const hov=(C.sc.x-1)/.05,mid=Math.abs(Math.sin(C.fl.x*Math.PI/180));
     body.style.transform=`scale(${C.sc.x.toFixed(4)}) rotateX(${C.rx.x.toFixed(2)}deg) rotateY(${(C.ry.x+C.fl.x).toFixed(2)}deg)`;
     // 影はカードと一緒に動く：横幅は見えているカードの幅（回転の cos）に合わせて縮み、翻面の途中は持ち上がった分だけ下にずれて薄くなる
@@ -3536,7 +3585,7 @@ function ncard(pos){const body=pos.querySelector('.nc-body'),sh=pos.querySelecto
     L.forEach(s=>{s.v+=(s.k*(s.t-s.x)-s.c*s.v)*dt;s.x+=s.v*dt;if(Math.abs(s.v)>.003||Math.abs(s.t-s.x)>.003)m=true;else{s.x=s.t;s.v=0;}});
     render();if(m)requestAnimationFrame(tick);else on=false;};
   const kick=()=>{if(calm){L.forEach(s=>{s.x=s.t;s.v=0;});render();return;}if(!on){on=true;last=performance.now();requestAnimationFrame(tick);}};
-  body.onclick=()=>{const f=C.fl.t?0:180;C.fl.t=f;body.setAttribute('aria-pressed',!!f);kick();};
+  body.onclick=()=>{const f=C.fl.t===0?180:0;C.fl.t=f;body.setAttribute('aria-pressed',!!f);kick();};
   pos.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=pos.getBoundingClientRect();
     C.ry.t=((e.clientX-r.left)/r.width*2-1)*11;C.rx.t=-((e.clientY-r.top)/r.height*2-1)*11;C.sc.t=1.05;kick();});
   pos.addEventListener('pointerleave',()=>{C.rx.t=C.ry.t=0;C.sc.t=1;kick();});
@@ -3559,7 +3608,7 @@ function dialSVG(hour,peak){const C=130,RF=106,R0=44,L=54,mx=Math.max(1,...hour)
   {const [x,y]=P(12,RF-14);s+=`<circle cx="${x}" cy="${y}" r="3.2" fill="#E8B04E"/>`;for(let k=0;k<8;k++){const a=k/8*Math.PI*2;s+=`<line x1="${(x+Math.cos(a)*5).toFixed(1)}" y1="${(y+Math.sin(a)*5).toFixed(1)}" x2="${(x+Math.cos(a)*7).toFixed(1)}" y2="${(y+Math.sin(a)*7).toFixed(1)}" stroke="#E8B04E" stroke-width="1.1" stroke-linecap="round"/>`;}}
   for(let h=0;h<24;h++){if(!hour[h])continue;const len=Math.max(3,hour[h]/mx*L),[x1,y1]=P(h+.5,R0),[x2,y2]=P(h+.5,R0+len),pk=h===peak;
     s+=`<line class="${pk?'pk':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${pk?'#C2577F':hour[h]/mx>.5?'#8C76B8':'#C3B3E6'}" stroke-width="${pk?8:6.5}" stroke-linecap="round" style="--i:${h}"/>`;}
-  {const [x,y]=P(peak+.5,RF+9);s+=`<circle cx="${x}" cy="${y}" r="3.2" fill="#C2577F"/>`;}
+  {const [x,y]=P(peak+.5,RF+9);s+=`<circle class="pkd" cx="${x}" cy="${y}" r="3.2" fill="#C2577F"/><circle class="pkr" cx="${x}" cy="${y}" r="3.2" fill="none" stroke="#C2577F" stroke-width="1.2"/>`;}
   s+=`<circle cx="${C}" cy="${C}" r="${R0-6}" fill="rgba(255,254,250,.8)" stroke="rgba(59,51,80,.12)"/>`;
   return `<svg viewBox="0 0 260 260" aria-hidden="true">${s}</svg>`;}
 /* a year on graph paper: one square per day, darker on days with more streams; a pink dot on days written in the diary */
