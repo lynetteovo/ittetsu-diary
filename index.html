@@ -1429,7 +1429,7 @@ body{font-family:var(--sans)}
 .s-cap{color:#4A3A72}
 .infty{color:#4A3A72}
 /* ===== round 18: the summary is a stack of sheets; a sheet turns over on the rings, bending as it goes ===== */
-.sum-track{display:grid;overflow:visible;scroll-snap-type:none;padding-top:18px;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.sum-track{display:grid;overflow:visible;scroll-snap-type:none;padding-top:18px;touch-action:none;overscroll-behavior:contain;user-select:none;-webkit-user-select:none}
 .sum-track>.scard{grid-area:1/1}
 .sum-track>.scard:not(.cur):not(.peer){visibility:hidden}
 .sum-track>.scard.cur{z-index:2}.sum-track>.scard.peer{z-index:1}.sum-track>.scard.turning{z-index:3}
@@ -3280,14 +3280,14 @@ function turnStart(fwd){turnEnd();const cs=bookCards(),top=fwd?cs[BK.i]:cs[BK.i-
     const back=document.createElement('div');back.className='tback'+(k===0?' spine':'');back.style.left='0';back.style.width=((b-a)*W)+'px';back.innerHTML='<i class="tshade"></i>';
     seg.append(face,back);parent.appendChild(seg);segs.push({seg,face,back,w:b-a});parent=seg;}
   top.appendChild(tn);top.classList.add('turning','cur');under.classList.add('peer');
-  if(!under.classList.contains('in')){under.classList.add('in');under.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}
   BK.turn={top,under,tn,segs,fwd,W,t:fwd?0:1};turnSet(BK.turn.t);return BK.turn;}
 /* 複製のなかの id（SVG の切り抜きなど）を付け替えて、元のページを参照しないように */
 function cloneNoIds(src,suf){const c=src.cloneNode(true),map={};c.querySelectorAll('[id]').forEach(el=>{const n=el.id+'-'+suf;map[el.id]=n;el.id=n;});
   if(Object.keys(map).length)c.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(at=>{const v=at.value;if(!/#/.test(v))return;
     const nv=v.replace(/url\(#([^)]+)\)/g,(m,id)=>map[id]?`url(#${map[id]})`:m).replace(/^#(.+)$/,(m,id)=>map[id]?'#'+map[id]:m);if(nv!==v)el.setAttribute(at.name,nv);}));
   return c;}
-function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;const bend=Math.sin(t*Math.PI),base=t*180,cl=v=>Math.max(0,Math.min(180,v));
+const pageIn=c=>{if(c&&!c.classList.contains('in')){c.classList.add('in');c.querySelectorAll('.num').forEach(n=>scramble(n,n.dataset.v,{dur:520}));}};
+function turnSet(t){const T=BK.turn;if(!T)return;T.t=t;if(T.fwd&&t>=.85)pageIn(T.under);const bend=Math.sin(t*Math.PI),base=t*180,cl=v=>Math.max(0,Math.min(180,v));
   // 背に近い帯はゆっくり、外の帯ほど先に倒れる → 紙がたわんで見える
   const c=[cl(base-34*bend),cl(base),cl(base+30*bend)];let prev=0,edge=0;
   T.segs.forEach((g,k)=>{g.seg.style.transform=`rotateY(${(-(c[k]-prev)).toFixed(2)}deg)`+(k?'':` translateZ(${(bend*10).toFixed(1)}px)`);prev=c[k];
@@ -3309,7 +3309,7 @@ function turnAnim(to,done){const T=BK.turn;if(!T){done&&done();return;}cancelAni
 (function(){const tr=$('#sumTrack');let st=null,drag=false,lastX=0,lastT=0,vx=0,blockClick=false;
   tr.addEventListener('pointerdown',e=>{if(e.button>0||BK.anim)return;st={x:e.clientX,y:e.clientY,id:e.pointerId};drag=false;lastX=e.clientX;lastT=performance.now();vx=0;});
   tr.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;
-    if(!drag){if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2){if(Math.abs(dy)>14)st=null;return;}
+    if(!drag){if(Math.abs(dx)<6||Math.abs(dx)<Math.abs(dy)*.7){if(Math.abs(dy)>40)st=null;return;}
       const cs=bookCards(),fwd=dx<0;if((fwd&&BK.i>=cs.length-1)||(!fwd&&BK.i<=0)){st=null;return;}
       if(RM()){st=null;bookGo(BK.i+(fwd?1:-1),true);return;}
       if(!turnStart(fwd)){st=null;return;}drag=true;try{tr.setPointerCapture(e.pointerId);}catch(_){}}
@@ -3319,6 +3319,7 @@ function turnAnim(to,done){const T=BK.turn;if(!T){done&&done();return;}cancelAni
     const T=BK.turn;if(!T)return;const go=T.fwd?(T.t>.33||vx<-.35)&&vx<.3:(T.t<.67||vx>.35)&&vx>-.3;
     if(go){const ni=BK.i+(T.fwd?1:-1);turnAnim(T.fwd?1:0,()=>{BK.i=ni;turnEnd();bookShow();});}
     else turnAnim(T.fwd?0:1,()=>{turnEnd();bookShow();});};
+  tr.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();},{passive:false});
   tr.addEventListener('pointerup',up);tr.addEventListener('pointercancel',up);
   tr.addEventListener('click',e=>{if(blockClick){e.preventDefault();e.stopPropagation();}},true);
   tr.tabIndex=0;tr.addEventListener('keydown',e=>{if(e.key==='ArrowRight')bookGo(BK.i+1);if(e.key==='ArrowLeft')bookGo(BK.i-1);});
