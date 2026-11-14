@@ -1153,10 +1153,17 @@ function applyExtras(f){
 let ARCHV=null,archP=null;const ARCH_DAY={};
 function archLoad(){if(archP)return archP;
   archP=fetch('archive.json?t='+Math.floor(Date.now()/36e5),{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{ARCHV=(j&&j.items)||[];
-    ARCHV.forEach(a=>{const t=new Date(a.start);if(isNaN(t))return;const k=dkOf(t);(ARCH_DAY[k]=ARCH_DAY[k]||[]).push(a);});return ARCHV;}).catch(()=>{ARCHV=[];return ARCHV;});
+    ARCHV.forEach(a=>{ARCH_ID[a.id]=a;const t=new Date(a.start);if(isNaN(t))return;const k=dkOf(t);(ARCH_DAY[k]=ARCH_DAY[k]||[]).push(a);});return ARCHV;}).catch(()=>{ARCHV=[];return ARCHV;});
   return archP;}
 function archLatest(){if(!ARCHV||!ARCHV.length)return null;const t=now();const a=ARCHV.find(x=>Date.parse(x.start)<=t);if(!a)return null;const d=new Date(a.start),k=dkOf(d);
   const g=ghostsFor(k).find(x=>x.yt===a.id);if(!g)return null;return {e:g,k,p:{s:Date.parse(a.start),e:Date.parse(a.start)+(a.dur||0)*6e4,st:''}};}
+const GN_SEEN={};
+const GN_ALIAS=[[/^(スト|ストリートファイター|streetfighter|sf)6$/,'ストリートファイター6'],[/^(スト|ストリートファイター|streetfighter|sf)(4|iv|ultrastreetfighteriv|usf4)$/,'Ultra Street Fighter IV'],
+  [/^apex(legends)?$/,'Apex Legends'],[/^(splatoon|スプラトゥーン|スプラ)3$/,'スプラトゥーン3'],[/^(マイクラ|minecraft|マインクラフト)$/,'Minecraft'],[/^(ポケモン)?(シャイニングパール|bdsp|ポケットモンスターシャイニングパール)$/,'ポケットモンスター シャイニングパール']];
+function gameNorm(g){g=String(g||'').replace(/[０-９Ａ-Ｚａ-ｚ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/\s*[#＃]\S+/g,'').replace(/[\s　]+/g,' ').trim();if(!g)return '';
+  const k=g.toLowerCase().replace(/[\s・:：\-‐]/g,'');for(const [re,name] of GN_ALIAS)if(re.test(k))return name;return GN_SEEN[k]||(GN_SEEN[k]=g);}
+const ARCH_ID={};
+function archGame(yt){if(!yt)return '';const f=feedOf(yt);return (f&&f.game)||(ARCH_ID[yt]&&ARCH_ID[yt].game)||'';}
 function ghostsFor(k){const L=ARCH_DAY[k];if(!L||!L.length)return [];const have=new Set(),dead=new Set();
   Object.values(S.events).forEach(l=>(l||[]).forEach(e=>{if(e&&e.yt)have.add(e.yt);}));Object.values(S.dead).forEach(t=>{if(t&&t.yt)dead.add(t.yt);});
   return L.filter(a=>!have.has(a.id)&&!dead.has(a.id)).map(a=>{const t=new Date(a.start);
@@ -1260,7 +1267,7 @@ function gTitles(){const s=new Set();Object.values(S.events).forEach(a=>a.forEac
 
 function monthStats(y,m){const r={tot:0,w:0,c:{},sp:0,games:{}};
   for(let d=1;d<=dim(y,m);d++)sortedDay(dk(y,m,d)).forEach(e=>{const ty=T[e.type]?e.type:'zatsudan';r.c[ty]=(r.c[ty]||0)+1;if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))r.sp+=n;}r.tot++;if(e.watched||!watchable(e))r.w++;
-    if(e.type==='game_series'||e.type==='game_single'){const g=e.gameTitle||e.sk||((e.title||'').match(/【([^】]+)】/)||[,e.title||''])[1];if(g)r.games[g]=(r.games[g]||0)+1;}});
+    if(e.type==='game_series'||e.type==='game_single'){const g=gameNorm(e.gameTitle||archGame(e.yt)||e.sk||((e.title||'').match(/【([^】]+)】/)||[,e.title||''])[1]);if(g)r.games[g]=(r.games[g]||0)+1;}});
   r.left=r.tot-r.w;return r;}
 function allStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>(a||[]).forEach(e=>{if(!e)return;tot++;if(e.watched||!watchable(e))w++;}));return{tot,w};}
 
@@ -1523,7 +1530,7 @@ for(let i=0;i<42;i++){const c=mk('button','cell press');c.n=mk('span','n');c.g=m
 /* a short label for the calendar cell: game name, collab partner, or the title without 【】 */
 function cellLabel1(e){const t=String(e.title||'').trim(),bare=t.replace(/【[^】]*】/g,'').replace(/\s+/g,' ').trim();
   if(e.type==='zatsudan')return e.yt||!t?'雑談':t;
-  if(e.type==='game_single'||e.type==='game_series')return e.gameTitle||e.game||e.sk||bare||t;
+  if(e.type==='game_single'||e.type==='game_series')return e.gameTitle||e.game||archGame(e.yt)||e.sk||bare||t;
   if(e.type==='collab')return e.collab||bare||t;
   return bare||t||(T[e.type]||T.zatsudan).l;}
 function glyphHTML(evs,pop){

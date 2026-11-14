@@ -1209,18 +1209,19 @@ html,body{overflow-x:clip}
 /* ===================== round 12: torn slip, tracing layers, no filter row ===================== */
 .pills,#sumSeg{display:none!important}
 .sum-head{margin-bottom:0}
-/* stream slip: tracing paper torn along the bottom, a white fibrous core under the tear */
-.hero{filter:drop-shadow(1px 4px 3px rgba(40,28,60,.2));padding-bottom:16px}
-.hero::before{inset:0 0 -10px 0;bottom:-10px;clip-path:var(--tear);border-radius:0;
+/* stream slip: tracing paper torn along the right side, a white fibrous core under the tear */
+.hero-wrap{width:calc(100% - 22px)}
+.hero{filter:drop-shadow(2px 3px 3px rgba(40,28,60,.2));padding-right:20px}
+.hero::before{inset:0 -12px 0 0;bottom:0;clip-path:var(--tear);border-radius:0;
   background:var(--tooth) 20px 0/150px,linear-gradient(180deg,rgba(236,234,244,.66),rgba(226,223,238,.6));
   -webkit-backdrop-filter:blur(2.4px) saturate(115%);backdrop-filter:blur(2.4px) saturate(115%);
   box-shadow:inset 0 0 18px rgba(255,255,255,.55),inset 0 1px 0 rgba(255,255,255,.8)}
-.hero::after{display:block!important;content:"";position:absolute;z-index:-2;left:0;right:0;top:0;bottom:-10px;pointer-events:none;
-  background:linear-gradient(180deg,transparent 60%,rgba(255,255,255,.95) 60%);clip-path:var(--core);filter:url(#deckleS)}
+.hero::after{display:block!important;content:"";position:absolute;z-index:-2;left:0;top:0;bottom:0;right:-12px;pointer-events:none;
+  background:linear-gradient(90deg,transparent 70%,rgba(255,255,255,.95) 70%);clip-path:var(--core);filter:url(#deckleS)}
 .hero-wrap{margin-bottom:26px}
 .hero-wrap>.tape{z-index:4}
 /* the printed sheet under the calendar is also a little translucent */
-.gridwrap .backing{background:var(--tooth) 0 0/170px,linear-gradient(rgba(214,150,172,.26) 1px,transparent 1px) 0 0/100% 13px,linear-gradient(90deg,rgba(214,150,172,.26) 1px,transparent 1px) 0 0/13px 100%,rgba(250,249,252,.7);
+.gridwrap .backing{background:var(--tooth) 0 0/170px,linear-gradient(rgba(214,150,172,.26) 1px,transparent 1px) 0 0/100% 13px,linear-gradient(90deg,rgba(214,150,172,.26) 1px,transparent 1px) 0 0/13px 100%,rgba(253,253,254,.9);
   -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
   box-shadow:inset 0 0 22px rgba(255,255,255,.55),inset 0 0 0 .5px rgba(255,255,255,.8),0 .5px 0 rgba(170,160,190,.55),1.5px 2px 0 rgba(255,255,255,.55),1.5px 2.5px 0 rgba(160,150,180,.45),3px 4px 0 rgba(255,255,255,.45),3px 4.5px 0 rgba(150,140,170,.38),3px 9px 6px -3px rgba(40,28,60,.22),16px 24px 26px -16px rgba(40,28,60,.32)}
 .gridwrap .backing::after{background:radial-gradient(circle at 50% 46%,rgba(169,166,190,.9) 0 5px,rgba(143,140,166,.9) 5px 5.8px,rgba(0,0,0,.08) 5.8px 6.6px,transparent 7px) 18px 50%/64px 16px repeat-x,rgba(207,198,230,.82)}
@@ -1971,10 +1972,17 @@ function applyExtras(f){
 let ARCHV=null,archP=null;const ARCH_DAY={};
 function archLoad(){if(archP)return archP;
   archP=fetch('archive.json?t='+Math.floor(Date.now()/36e5),{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{ARCHV=(j&&j.items)||[];
-    ARCHV.forEach(a=>{const t=new Date(a.start);if(isNaN(t))return;const k=dkOf(t);(ARCH_DAY[k]=ARCH_DAY[k]||[]).push(a);});return ARCHV;}).catch(()=>{ARCHV=[];return ARCHV;});
+    ARCHV.forEach(a=>{ARCH_ID[a.id]=a;const t=new Date(a.start);if(isNaN(t))return;const k=dkOf(t);(ARCH_DAY[k]=ARCH_DAY[k]||[]).push(a);});return ARCHV;}).catch(()=>{ARCHV=[];return ARCHV;});
   return archP;}
 function archLatest(){if(!ARCHV||!ARCHV.length)return null;const t=now();const a=ARCHV.find(x=>Date.parse(x.start)<=t);if(!a)return null;const d=new Date(a.start),k=dkOf(d);
   const g=ghostsFor(k).find(x=>x.yt===a.id);if(!g)return null;return {e:g,k,p:{s:Date.parse(a.start),e:Date.parse(a.start)+(a.dur||0)*6e4,st:''}};}
+const GN_SEEN={};
+const GN_ALIAS=[[/^(スト|ストリートファイター|streetfighter|sf)6$/,'ストリートファイター6'],[/^(スト|ストリートファイター|streetfighter|sf)(4|iv|ultrastreetfighteriv|usf4)$/,'Ultra Street Fighter IV'],
+  [/^apex(legends)?$/,'Apex Legends'],[/^(splatoon|スプラトゥーン|スプラ)3$/,'スプラトゥーン3'],[/^(マイクラ|minecraft|マインクラフト)$/,'Minecraft'],[/^(ポケモン)?(シャイニングパール|bdsp|ポケットモンスターシャイニングパール)$/,'ポケットモンスター シャイニングパール']];
+function gameNorm(g){g=String(g||'').replace(/[０-９Ａ-Ｚａ-ｚ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/\s*[#＃]\S+/g,'').replace(/[\s　]+/g,' ').trim();if(!g)return '';
+  const k=g.toLowerCase().replace(/[\s・:：\-‐]/g,'');for(const [re,name] of GN_ALIAS)if(re.test(k))return name;return GN_SEEN[k]||(GN_SEEN[k]=g);}
+const ARCH_ID={};
+function archGame(yt){if(!yt)return '';const f=feedOf(yt);return (f&&f.game)||(ARCH_ID[yt]&&ARCH_ID[yt].game)||'';}
 function ghostsFor(k){const L=ARCH_DAY[k];if(!L||!L.length)return [];const have=new Set(),dead=new Set();
   Object.values(S.events).forEach(l=>(l||[]).forEach(e=>{if(e&&e.yt)have.add(e.yt);}));Object.values(S.dead).forEach(t=>{if(t&&t.yt)dead.add(t.yt);});
   return L.filter(a=>!have.has(a.id)&&!dead.has(a.id)).map(a=>{const t=new Date(a.start);
@@ -2078,7 +2086,7 @@ function gTitles(){const s=new Set();Object.values(S.events).forEach(a=>a.forEac
 
 function monthStats(y,m){const r={tot:0,w:0,c:{},sp:0,games:{}};
   for(let d=1;d<=dim(y,m);d++)sortedDay(dk(y,m,d)).forEach(e=>{const ty=T[e.type]?e.type:'zatsudan';r.c[ty]=(r.c[ty]||0)+1;if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))r.sp+=n;}r.tot++;if(e.watched||!watchable(e))r.w++;
-    if(e.type==='game_series'||e.type==='game_single'){const g=e.gameTitle||e.sk||((e.title||'').match(/【([^】]+)】/)||[,e.title||''])[1];if(g)r.games[g]=(r.games[g]||0)+1;}});
+    if(e.type==='game_series'||e.type==='game_single'){const g=gameNorm(e.gameTitle||archGame(e.yt)||e.sk||((e.title||'').match(/【([^】]+)】/)||[,e.title||''])[1]);if(g)r.games[g]=(r.games[g]||0)+1;}});
   r.left=r.tot-r.w;return r;}
 function allStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>(a||[]).forEach(e=>{if(!e)return;tot++;if(e.watched||!watchable(e))w++;}));return{tot,w};}
 
@@ -2341,7 +2349,7 @@ for(let i=0;i<42;i++){const c=mk('button','cell press');c.n=mk('span','n');c.g=m
 /* a short label for the calendar cell: game name, collab partner, or the title without 【】 */
 function cellLabel1(e){const t=String(e.title||'').trim(),bare=t.replace(/【[^】]*】/g,'').replace(/\s+/g,' ').trim();
   if(e.type==='zatsudan')return e.yt||!t?'雑談':t;
-  if(e.type==='game_single'||e.type==='game_series')return e.gameTitle||e.game||e.sk||bare||t;
+  if(e.type==='game_single'||e.type==='game_series')return e.gameTitle||e.game||archGame(e.yt)||e.sk||bare||t;
   if(e.type==='collab')return e.collab||bare||t;
   return bare||t||(T[e.type]||T.zatsudan).l;}
 function glyphHTML(evs,pop){
@@ -2933,7 +2941,7 @@ function sumStats(range){
     r.str++;if(e.watched)r.w++;r.sdays.add(k);
     const [y,m,d]=k.split('-').map(Number);r.dow[dow(y,m-1,d)]++;r.month[k.slice(0,7)]=(r.month[k.slice(0,7)]||0)+1;
     if(e.time){const h=+e.time.split(':')[0];if(!isNaN(h))r.hour[h]++;}
-    if(e.type==='game_single'||e.type==='game_series'){const g=cellLabel1(e);r.games[g]=(r.games[g]||0)+1;if(e.thumb&&(!r.gameEv[g]||k>r.gameEv[g].k))r.gameEv[g]={e,k};}
+    if(e.type==='game_single'||e.type==='game_series'){const g=gameNorm(cellLabel1(e));r.games[g]=(r.games[g]||0)+1;if(e.thumb&&(!r.gameEv[g]||k>r.gameEv[g].k))r.gameEv[g]={e,k};}
     if(e.collab)String(e.collab).split(/\s*[\/／、,]\s*/).filter(Boolean).forEach(c=>r.collab[c]=(r.collab[c]||0)+1);
     const sp=spanMs(e,k);if(sp.s&&sp.e>sp.s){const d2=sp.e-sp.s;r.ms+=d2;r.nDur++;if(!r.longest||d2>r.longest.d)r.longest={e,k,d:d2};}
     if(e.time){let [hh,mm]=e.time.split(':').map(Number);if(hh<6)hh+=24;const v=hh*60+mm;if(!r.late||v>r.late.v)r.late={e,k,v};}
@@ -3094,12 +3102,12 @@ function repStats(range){
   const inR=k=>range==='all'||+k.slice(0,4)===+range,S={};   // streams by id; range = a year, or 'all'
   const lkey=t=>{const x=new Date(t);return dk(x.getFullYear(),x.getMonth(),x.getDate());};
   (ARCH||[]).forEach(a=>{const j={key:lkey(Date.parse(a.start))};if(!inR(j.key))return;
-    S['yt-'+a.id]={k:j.key,s:Date.parse(a.start),dur:a.dur||0,type:a.type,label:a.game||(a.type==='collab'?a.collab:'')||a.title,game:(a.type==='game_single'||a.type==='game_series')?(a.game||''):'',collab:a.collab||'',title:a.title,watched:false,diary:false};});
+    S['yt-'+a.id]={k:j.key,s:Date.parse(a.start),dur:a.dur||0,type:a.type,label:a.game||(a.type==='collab'?a.collab:'')||a.title,game:(a.type==='game_single'||a.type==='game_series')?gameNorm(a.game||''):'',collab:a.collab||'',title:a.title,watched:false,diary:false};});
   const d={tot:0,notes:0,sp:0,stk:{},rest:0,first:''};
   allItems().forEach(({e,k})=>{if(!inR(k))return;d.tot++;if(e.note)d.notes++;if(e.type==='yasumi')d.rest++;if(!d.first||k<d.first)d.first=k;
     if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))d.sp+=n;}
     if(!watchable(e))return;const id=e.yt?'yt-'+e.yt:'ev-'+e.id,sp=spanMs(e,k),cur=S[id]||{};
-    S[id]={k,s:sp.s||cur.s||0,dur:e.dur||(sp.e>sp.s?Math.round((sp.e-sp.s)/6e4):0)||cur.dur||0,type:e.type,label:cellLabel1(e),game:(e.type==='game_single'||e.type==='game_series')?cellLabel1(e):'',collab:e.collab||cur.collab||'',title:e.title||cur.title||'',watched:!!e.watched,diary:true,e};});
+    S[id]={k,s:sp.s||cur.s||0,dur:e.dur||(sp.e>sp.s?Math.round((sp.e-sp.s)/6e4):0)||cur.dur||0,type:e.type,label:cellLabel1(e),game:(e.type==='game_single'||e.type==='game_series')?gameNorm(cellLabel1(e)):'',collab:e.collab||cur.collab||'',title:e.title||cur.title||'',watched:!!e.watched,diary:true,e};});
   const sm=stkMap();Object.keys(sm).forEach(k=>{if(inR(k))(sm[k]||[]).forEach(s=>d.stk[s]=(d.stk[s]||0)+1);});
   const L=Object.values(S),r={d,n:L.length,w:0,inDiary:0,before:0,min:0,nDur:0,buck:[0,0,0,0,0,0],hour:Array(24).fill(0),nHour:0,games:{},gameEv:{},collab:{},nCollab:0,longest:null,late:null,first:'',last:''};
   L.forEach(x=>{if(x.watched)r.w++;if(x.diary)r.inDiary++;else if(d.first&&x.k<d.first)r.before++;
@@ -3183,17 +3191,17 @@ function rangeTicket(r){return `<button type="button" class="ticket rv sum-range
 function bindRange(){const b=$('#sumTrack .sum-range');if(!b)return;b.onclick=()=>{const L=[...sumYears(),'all'],i=L.indexOf(sumRange);sumRange=L[(i+1)%L.length];
   if(!RM())b.animate([{transform:'rotate(-3deg)'},{transform:'rotate(4deg) scale(.96)'},{transform:'rotate(-3deg)'}],{duration:380,easing:SP});setTimeout(renderSum,RM()?0:160);};}
 
-/* ---- the stream slip is torn off along the bottom: an irregular edge with a white fibrous core ---- */
+/* ---- the stream slip is torn off along its right side: an irregular edge with a white fibrous core ---- */
 (function(){
-  const R=SRND2(20261113),pts=[],core=[];
-  const ph=[R()*6,R()*6,R()*6],N=96;
-  for(let i=0;i<=N;i++){const t=i/N,x=(t*100).toFixed(2);
-    // large slow wander + medium waves + fine jitter + a few deeper bites
-    let y=3.2*Math.sin(t*3.1+ph[0])+1.8*Math.sin(t*11+ph[1])+.9*Math.sin(t*29+ph[2])+(R()-.5)*1.6;
-    if(R()<.06)y-=2+R()*2.5;
-    const c=1.4+R()*2.4+(R()<.12?2.5:0);          // how much white core shows below the tracing paper
-    pts.push(`${x}% calc(100% - ${(9+y).toFixed(1)}px)`);core.push(`${x}% calc(100% - ${(9+y-c).toFixed(1)}px)`);}
-  const poly=list=>`polygon(0 0,100% 0,${list.slice().reverse().join(',')})`;
+  const R=SRND2(20261114),pts=[],core=[];
+  const ph=[R()*6,R()*6,R()*6],N=48;
+  for(let i=0;i<=N;i++){const t=i/N,y=(t*100).toFixed(2);
+    // slow wander + medium waves + fine jitter + a few deeper bites
+    let x=3*Math.sin(t*2.6+ph[0])+1.6*Math.sin(t*9+ph[1])+.8*Math.sin(t*23+ph[2])+(R()-.5)*1.5;
+    if(R()<.08)x-=1.8+R()*2.4;
+    const c=1.3+R()*2.2+(R()<.12?2.2:0);          // how much white core shows past the tracing paper
+    pts.push(`calc(100% - ${(10+x).toFixed(1)}px) ${y}%`);core.push(`calc(100% - ${(10+x-c).toFixed(1)}px) ${y}%`);}
+  const poly=list=>`polygon(0 0,${list.join(',')},0 100%)`;
   const h=document.getElementById('hero');if(!h)return;
   h.style.setProperty('--tear',poly(pts));h.style.setProperty('--core',poly(core));
 })();
