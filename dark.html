@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="イッテツ手帳">
+<meta name="apple-mobile-web-app-title" content="サイキ推し手帳">
 <meta name="theme-color" content="#0A090B">
 <meta name="mobile-web-app-capable" content="yes">
 <title>佐伯イッテツ 推し活手帳</title>
@@ -466,7 +466,7 @@ body.booting #updBtn,body.sheet-open #updBtn{opacity:0;pointer-events:none}
 <div id="grain" aria-hidden="true"></div>
 
 <header id="topbar" class="glass">
-  <div class="who"><img id="avatar" alt=""><span>イッテツ手帳</span></div>
+  <div class="who"><img id="avatar" alt=""><span>サイキ推し手帳</span></div>
   <div class="top-actions">
     <button class="cloud press" id="cloudBtn" aria-label="クラウド。タップで同期"><i></i></button>
     <button class="today-btn press" id="todayBtn">今日</button>
@@ -1994,7 +1994,7 @@ async function runBoot(full,ready=Promise.resolve()){
   await readyOrTimeout;
   return exitBoot();
 }
-const FONT_PROBE=[['500 12px "M PLUS 1 Code"','0123'],['500 16px "Zen Kaku Gothic New"','イッテツ手帳配信']];
+const FONT_PROBE=[['500 12px "M PLUS 1 Code"','0123'],['500 16px "Zen Kaku Gothic New"','サイキ推し手帳配信']];
 function fontsReady(ms=2500){const gf=document.querySelector('link[href*="fonts.googleapis.com/css2"]');
   const sheet=new Promise(r=>{if(!gf||gf.media!=='print')r();else{gf.addEventListener('load',r,{once:true});gf.addEventListener('error',r,{once:true});}});
   const all=sheet.then(()=>document.fonts?Promise.all(FONT_PROBE.map(f=>document.fonts.load(f[0],f[1]).catch(()=>{}))):0);
