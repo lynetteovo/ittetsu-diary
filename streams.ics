@@ -469,14 +469,4 @@ SUMMARY:💬 ワルプってる？
 URL:https://www.youtube.com/watch?v=fY7H5DiNXEI
 DESCRIPTION:https://www.youtube.com/watch?v=fY7H5DiNXEI
 END:VEVENT
-BEGIN:VEVENT
-UID:0Rt2o9H1rsA@ittetsu-diary
-DTSTAMP:20260916T121443Z
-DTSTART:20260916T121443Z
-DTEND:20260916T133059Z
-SUMMARY:🎮 【妹に運転を教える】お姉ちゃんだよ
-URL:https://www.youtube.com/watch?v=0Rt2o9H1rsA
-DESCRIPTION:🎮 妹に運転を教える\nhttps://www.youtube.com/watch?v=
- 0Rt2o9H1rsA
-END:VEVENT
 END:VCALENDAR
