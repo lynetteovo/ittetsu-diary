@@ -460,13 +460,4 @@ SUMMARY:💬 マギってる？
 URL:https://www.youtube.com/watch?v=9kVCi0RNEOM
 DESCRIPTION:https://www.youtube.com/watch?v=9kVCi0RNEOM
 END:VEVENT
-BEGIN:VEVENT
-UID:fY7H5DiNXEI@ittetsu-diary
-DTSTAMP:20260917T142937Z
-DTSTART:20260917T142937Z
-DTEND:20260917T162549Z
-SUMMARY:💬 ワルプってる？
-URL:https://www.youtube.com/watch?v=fY7H5DiNXEI
-DESCRIPTION:https://www.youtube.com/watch?v=fY7H5DiNXEI
-END:VEVENT
 END:VCALENDAR
