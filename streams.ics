@@ -442,13 +442,4 @@ SUMMARY:🎮 【生存マイクラ】無性に生き残りたい
 URL:https://www.youtube.com/watch?v=LHemgxUj-ec
 DESCRIPTION:🎮 Minecraft\nhttps://www.youtube.com/watch?v=LHemgxUj-ec
 END:VEVENT
-BEGIN:VEVENT
-UID:46CSCrQiGnM@ittetsu-diary
-DTSTAMP:20260918T105924Z
-DTSTART:20260918T105924Z
-DTEND:20260918T122438Z
-SUMMARY:💬 叛逆ってる？
-URL:https://www.youtube.com/watch?v=46CSCrQiGnM
-DESCRIPTION:https://www.youtube.com/watch?v=46CSCrQiGnM
-END:VEVENT
 END:VCALENDAR
