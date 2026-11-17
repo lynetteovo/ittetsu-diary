@@ -451,13 +451,4 @@ SUMMARY:💬 叛逆ってる？
 URL:https://www.youtube.com/watch?v=46CSCrQiGnM
 DESCRIPTION:https://www.youtube.com/watch?v=46CSCrQiGnM
 END:VEVENT
-BEGIN:VEVENT
-UID:9kVCi0RNEOM@ittetsu-diary
-DTSTAMP:20260917T214447Z
-DTSTART:20260917T214447Z
-DTEND:20260917T225348Z
-SUMMARY:💬 マギってる？
-URL:https://www.youtube.com/watch?v=9kVCi0RNEOM
-DESCRIPTION:https://www.youtube.com/watch?v=9kVCi0RNEOM
-END:VEVENT
 END:VCALENDAR
