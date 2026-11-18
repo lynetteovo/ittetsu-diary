@@ -9,6 +9,16 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
+UID:RN2y60S7P-A@ittetsu-diary
+DTSTAMP:20261118T095940Z
+DTSTART:20261118T095940Z
+DTEND:20261118T115940Z
+SUMMARY:🔴 【星のカービィ 夢の泉の物語】ペポポポポポ
+ ポポ
+URL:https://www.youtube.com/watch?v=RN2y60S7P-A
+DESCRIPTION:https://www.youtube.com/watch?v=RN2y60S7P-A
+END:VEVENT
+BEGIN:VEVENT
 UID:xqY3BI_UZ9o@ittetsu-diary
 DTSTAMP:20261116T115906Z
 DTSTART:20261116T115906Z
@@ -442,14 +452,5 @@ SUMMARY:🎮 【Hell Wait】指とお別れ…？ククク…！なるか
  …！そんなこと…!!
 URL:https://www.youtube.com/watch?v=mqKFosn1DxE
 DESCRIPTION:🎮 Hell Wait\nhttps://www.youtube.com/watch?v=mqKFosn1DxE
-END:VEVENT
-BEGIN:VEVENT
-UID:LHemgxUj-ec@ittetsu-diary
-DTSTAMP:20260919T085930Z
-DTSTART:20260919T085930Z
-DTEND:20260919T124558Z
-SUMMARY:🎮 【生存マイクラ】無性に生き残りたい
-URL:https://www.youtube.com/watch?v=LHemgxUj-ec
-DESCRIPTION:🎮 Minecraft\nhttps://www.youtube.com/watch?v=LHemgxUj-ec
 END:VEVENT
 END:VCALENDAR
