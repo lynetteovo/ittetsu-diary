@@ -1,5 +1,5 @@
-{"updated":"2026-11-18T10:39:50.843Z","subs":{"unit":1000,"count":413000,"floor":413,"milestones":[{"n":413,"at":"2026-11-11T01:37:47.079Z"}]},"items":[
-{"id":"RN2y60S7P-A","start":"2026-11-18T09:59:40Z","end":"","status":"live","title":"【星のカービィ 夢の泉の物語】ペポポポポポポポ","type":"zatsudan","collab":"","sk":"","ch":""},
+{"updated":"2026-11-18T17:09:41.745Z","subs":{"unit":1000,"count":413000,"floor":413,"milestones":[{"n":413,"at":"2026-11-11T01:37:47.079Z"}]},"items":[
+{"id":"RN2y60S7P-A","start":"2026-11-18T09:59:40Z","end":"2026-11-18T13:05:39Z","status":"none","title":"【星のカービィ 夢の泉の物語】ペポポポポポポポ","type":"zatsudan","collab":"","sk":"","ch":""},
 {"id":"xqY3BI_UZ9o","start":"2026-11-16T11:59:06Z","end":"2026-11-16T14:12:49Z","status":"none","title":"【浮気判定シート】バレンタイン四天王で浮気判定シートやったみた","type":"collab","collab":"魁星","sk":"","ch":"魁星","ext":1},
 {"id":"8GWRLkbiaMk","start":"2026-11-15T00:59:17Z","end":"2026-11-15T03:35:29Z","status":"none","title":"ピクリとも動けない男がここにござい","type":"zatsudan","collab":"","sk":"","ch":""},
 {"id":"gi2V9GFC0ww","start":"2026-11-14T12:30:06Z","end":"2026-11-14T12:36:21Z","status":"none","title":"シュガーソングとビターステップ / 宇佐美リト 佐伯イッテツ 周央サンゴ 東堂コハク cover","type":"collab","collab":"宇佐美リト","sk":"","ch":"宇佐美リト","ext":1},
@@ -67,6 +67,5 @@
 {"id":"L6MR8ZvfWnc","start":"2026-08-24T14:46:39Z","end":"2026-08-24T16:37:00Z","status":"none","title":"【REMATCH】ヒーローの皆さんとサッカーで遊ぶ ※佐伯支店","type":"game_single","game":"REMATCH","collab":"","sk":"","ch":""},
 {"id":"pIR43UCVZwM","start":"2026-08-22T13:59:59Z","end":"2026-08-22T16:05:02Z","status":"none","title":"【KINGDOM HEARTS III PART05】キーブレード戦争や光と闇 ※ネタバレ注意","type":"game_series","game":"KINGDOM HEARTS III","collab":"","sk":"KINGDOM HEARTS III","ch":""},
 {"id":"hmIoU4mntak","start":"2026-08-22T11:29:59Z","end":"2026-08-22T13:42:02Z","status":"none","title":"【PARALLEL CASE: 2434】やるしかねぇぜ！！！","type":"game_single","game":"PARALLEL CASE: 2434","collab":"","sk":"","ch":""},
-{"id":"ieula8Pw-_M","start":"2026-08-21T10:44:05Z","end":"2026-08-21T13:00:38Z","status":"none","title":"【学園アイドルマスター】ええ！？俺もアイドルに！？※ネタバレ注意","type":"game_series","game":"学園アイドルマスター","collab":"","sk":"","ch":""},
-{"id":"QvFdGhxR9xg","start":"2026-08-20T13:31:19Z","end":"2026-08-20T16:05:18Z","status":"none","title":"【PEAK】告知を目指し、登るは山々 佐伯イッテツ支店","type":"collab","game":"PEAK","collab":"加賀美先輩 / れお君","sk":"","ch":""}
+{"id":"ieula8Pw-_M","start":"2026-08-21T10:44:05Z","end":"2026-08-21T13:00:38Z","status":"none","title":"【学園アイドルマスター】ええ！？俺もアイドルに！？※ネタバレ注意","type":"game_series","game":"学園アイドルマスター","collab":"","sk":"","ch":""}
 ]}
