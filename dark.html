@@ -1169,6 +1169,65 @@ function ghostsFor(k){const L=ARCH_DAY[k];if(!L||!L.length)return [];const have=
   return L.filter(a=>!have.has(a.id)&&!dead.has(a.id)).map(a=>{const t=new Date(a.start);
     return {id:'yt-'+a.id,yt:a.id,type:a.type||'zatsudan',title:a.title||'',time:hm(t),gameTitle:a.game||'',collab:a.collab||'',thumb:ytThumb(a.id),watched:true,note:'',price:'',sk:'',dur:a.dur||0,_arch:1};});}
 function materialize(e,k){if(!e||!e._arch)return e;const ev={...e,u:Date.now()};delete ev._arch;(S.events[k]=S.events[k]||[]).push(ev);markDirty(k);persistLocal();return ev;}
+/* メモに書いていた「休み」は休みタグと二重になる。消して、雑談・ゲーム・シリーズ・コラボ・イベントの無い日へ休みを揃える（一度だけ。端末間は dead の印で共有） */
+function restMemoText(s){
+  const raw=String(s||'').trim();if(!raw)return false;
+  const t=raw.replace(/[\s　💤😴🛌。．.・~〜!！、,，]+/g,'').replace(/[ｚz]/gi,'').replace(/お休み/g,'休み');
+  if(!t)return true;
+  return t==='休み'||t==='休日'||t==='休'||t==='休みの日'||t==='休みです'||t==='休みだった'||t==='本日休み'||t==='配信休み';
+}
+function shiftDay(key,n){const [y,m,d]=key.split('-').map(Number),dt=new Date(y,m-1,d+n);return dk(dt.getFullYear(),dt.getMonth(),dt.getDate());}
+function streamDaySet(){
+  const have=new Set(),dead=new Set();
+  Object.values(S.events).forEach(l=>(l||[]).forEach(e=>{if(e&&e.yt)have.add(e.yt);}));
+  Object.values(S.dead).forEach(t=>{if(t&&t.yt)dead.add(t.yt);});
+  const linked=typeof manLinks==='function'?manLinks().by:null;
+  const s=new Set();
+  Object.keys(S.events).forEach(k=>{if((S.events[k]||[]).some(e=>e&&STREAM_TYPES.includes(e.type)))s.add(k);});
+  Object.keys(ARCH_DAY).forEach(k=>{
+    if(s.has(k))return;
+    if((ARCH_DAY[k]||[]).some(a=>!have.has(a.id)&&!dead.has(a.id)&&!(linked&&linked.has(a.id))))s.add(k);
+  });
+  return s;
+}
+function reconcileRest(){
+  if(S.dead.restfix)return false;
+  if(!ARCHV||!ARCHV.length)return false;
+  const todayKey=today().key,streams=streamDaySet(),now=Date.now();
+  let first='';
+  const consider=k=>{if(k&&(!first||k<first))first=k;};
+  streams.forEach(consider);
+  Object.keys(S.events).forEach(k=>{(S.events[k]||[]).forEach(e=>{if(e&&(e.type==='yasumi'||e.type==='memo'&&(restMemoText(e.title)||restMemoText(e.note))))consider(k);});});
+  if(!first||first>todayKey)first=todayKey;
+  let changed=false;const future=new Set();
+  Object.keys(S.events).forEach(k=>{(S.events[k]||[]).slice().forEach(e=>{
+    if(!e)return;
+    if(e.type==='memo'&&(restMemoText(e.title)||(!String(e.title||'').trim()&&restMemoText(e.note)))){
+      const note=String(e.note||'').trim();
+      if(!note||restMemoText(note)){killEvent(k,e.id);markDirty(k);changed=true;if(k>todayKey)future.add(k);}
+      else{e.title=note;e.note='';e.u=now;markDirty(k);changed=true;}
+    }else if(e.type!=='yasumi'&&e.note&&restMemoText(e.note)){e.note='';e.u=now;markDirty(k);changed=true;}
+  });});
+  const put=k=>{
+    const id='yasumi-'+k,list=(S.events[k]||[]).filter(e=>e&&e.type==='yasumi');
+    if(list.length){
+      if(list[0].note&&restMemoText(list[0].note)){list[0].note='';list[0].u=now;markDirty(k);changed=true;}
+      list.slice(1).forEach(e=>{killEvent(k,e.id);markDirty(k);changed=true;});
+      return;
+    }
+    delete S.dead[id];
+    (S.events[k]=S.events[k]||[]).push({id,type:'yasumi',title:'休み',time:'',note:'',gameTitle:'',collab:'',watched:true,price:'',thumb:'',u:now});
+    markDirty(k);changed=true;
+  };
+  for(let k=first;k<=todayKey;k=shiftDay(k,1)){
+    if(streams.has(k)){const list=(S.events[k]||[]).filter(e=>e&&e.type==='yasumi');if(list.length){list.forEach(e=>killEvent(k,e.id));markDirty(k);changed=true;}}
+    else put(k);
+  }
+  future.forEach(k=>{if(!streams.has(k))put(k);});
+  S.dead.restfix={u:now,k:todayKey};
+  markDirty(todayKey);
+  return changed||true;
+}
 function applyFeedAll(f){const a=applyFeed(f),b=applyExtras(f);return a||b;}
 function applyFeed(f){
   const items=(f&&f.items)||[];
@@ -1266,10 +1325,10 @@ function gTitles(){const s=new Set();Object.values(S.events).forEach(a=>a.forEac
 /* ===================== ここから画面 ===================== */
 
 function monthStats(y,m){const r={tot:0,w:0,c:{},sp:0,games:{}};
-  for(let d=1;d<=dim(y,m);d++)sortedDay(dk(y,m,d)).forEach(e=>{const ty=T[e.type]?e.type:'zatsudan';r.c[ty]=(r.c[ty]||0)+1;if(e.price&&e.type!=='yasumi'){const n=parseFloat(e.price);if(!isNaN(n))r.sp+=n;}r.tot++;if(e.watched||!watchable(e))r.w++;
+  for(let d=1;d<=dim(y,m);d++)sortedDay(dk(y,m,d)).forEach(e=>{const ty=T[e.type]?e.type:'zatsudan';r.c[ty]=(r.c[ty]||0)+1;if(e.type==='yasumi')return;if(e.price){const n=parseFloat(e.price);if(!isNaN(n))r.sp+=n;}r.tot++;if(e.watched||!watchable(e))r.w++;
     if(e.type==='game_series'||e.type==='game_single'){const g=gameNorm(e.gameTitle||archGame(e.yt)||e.sk||((e.title||'').match(/【([^】]+)】/)||[,e.title||''])[1]);if(g)r.games[g]=(r.games[g]||0)+1;}});
   r.left=r.tot-r.w;return r;}
-function allStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>(a||[]).forEach(e=>{if(!e)return;tot++;if(e.watched||!watchable(e))w++;}));return{tot,w};}
+function allStats(){let tot=0,w=0;Object.values(S.events).forEach(a=>(a||[]).forEach(e=>{if(!e||e.type==='yasumi')return;tot++;if(e.watched||!watchable(e))w++;}));return{tot,w};}
 
 /* ---------- text scramble engine ---------- */
 const SCR='#%&@*+=-:<>/\\|~^';
@@ -1543,7 +1602,7 @@ function paintCell(c,{decode=false,delay=0,glyphPop=false}={}){
   const d=+c.dataset.d;if(!d)return;
   const key=dk(view.y,view.m,d),evs=sortedDay(key);
   if(decode)scramble(c.n,d,{dur:240,delay});else c.n.textContent=d;
-  c.g.innerHTML=glyphHTML(evs,glyphPop);c.classList.toggle('rest',!filter&&evs.length>0&&evs.every(e=>e.type==='yasumi'));
+  c.g.innerHTML=glyphHTML(evs,glyphPop);c.classList.toggle('rest',!filter&&evs.some(e=>e.type==='yasumi')&&!evs.some(e=>STREAM_TYPES.includes(e.type)));
   if(glyphPop)[...c.g.children].forEach((s,i)=>s.style.animationDelay=(i*50+((+c.dataset.i)%7)*14)+'ms');
   const st=S.stickers[key];c.s.textContent=st&&st.length?st[0]:'';
   c.classList.toggle('today',key===today().key);
@@ -2043,9 +2102,11 @@ liquid(tabInd,tabs[0]);liquid(pillInd,pillsEl.querySelector('[aria-checked="true
   runBoot(seen!==todayStr,ready);
   await ready;
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
-  loadFeed();
-  archLoad().then(()=>refresh());
+  const feedP=loadFeed(),archP=archLoad();
   await syncNow();
+  await Promise.all([feedP,archP]);
+  try{if(reconcileRest()){persistLocal();syncNow({pull:false});}}catch(e){console.warn('rest',e);}
+  refresh();
 })();
 })();
 </script>
