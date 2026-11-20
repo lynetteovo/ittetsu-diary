@@ -1,5 +1,5 @@
 // 推し活手帳 service worker：画面はキャッシュから即表示し、裏で新しい版を取りに行く
-const SHELL='shell-v4';
+const SHELL='shell-v5';
 const FONTS='fonts-v1';
 const FILES=['./','./index.html','./manifest.json','./icon.png'];
 
@@ -8,9 +8,13 @@ self.addEventListener('install',e=>{
 });
 
 self.addEventListener('activate',e=>{
-  e.waitUntil(caches.keys()
-    .then(ks=>Promise.all(ks.filter(k=>k!==SHELL&&k!==FONTS).map(k=>caches.delete(k))))
-    .then(()=>self.clients.claim()));
+  e.waitUntil((async()=>{
+    const ks=await caches.keys();
+    await Promise.all(ks.filter(k=>k!==SHELL&&k!==FONTS).map(k=>caches.delete(k)));
+    await self.clients.claim();
+    const cls=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    await Promise.all(cls.map(c=>c.navigate?c.navigate(c.url):null));
+  })());
 });
 
 self.addEventListener('fetch',e=>{

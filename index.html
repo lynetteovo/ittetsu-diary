@@ -2314,7 +2314,7 @@ function streamDaySet(){
   });
   return s;
 }
-function reconcileRest(){
+function reconcileRest(lock){
   if(S.dead.restfix)return false;
   if(!ARCHV||!ARCHV.length)return false;
   const todayKey=today().key,streams=streamDaySet(),now=Date.now();
@@ -2348,9 +2348,8 @@ function reconcileRest(){
     else put(k);
   }
   future.forEach(k=>{if(!streams.has(k))put(k);});
-  S.dead.restfix={u:now,k:todayKey};
-  markDirty(todayKey);
-  return changed||true;
+  if(lock){S.dead.restfix={u:now,k:todayKey};markDirty(todayKey);}
+  return changed;
 }
 function applyFeedAll(f){const a=applyFeed(f),b=applyExtras(f);return a||b;}
 function applyFeed(f){
@@ -2440,7 +2439,7 @@ document.addEventListener('visibilitychange',()=>{
 window.addEventListener('pagehide',writeLocal);
 window.addEventListener('online',()=>syncNow());
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.addEventListener('message',e=>{if(e.data==='updated')showUpdate();});
+  navigator.serviceWorker.addEventListener('message',e=>{if(e.data==='updated')location.reload();});
   try{navigator.serviceWorker.startMessages();}catch(e){}
   window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
@@ -3729,10 +3728,17 @@ liquid(tabInd,tabs[0]);liquid(pillInd,pillsEl.querySelector('[aria-checked="true
   await ready;
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   const feedP=loadFeed(),archP=archLoad();
+  let restChanged=false;
+  try{await archP;if(reconcileRest(false)){restChanged=true;persistLocal();refresh();}}catch(e){console.warn('rest',e);}
   await syncNow();
-  await Promise.all([feedP,archP]);
-  try{if(reconcileRest()){persistLocal();syncNow({pull:false});}}catch(e){console.warn('rest',e);}
-  refresh();
+  try{await feedP;}catch(e){}
+  try{
+    if(!S.dead.restfix&&ARCHV&&ARCHV.length){
+      if(reconcileRest(true))restChanged=true;
+      persistLocal();syncNow({pull:false});refresh();
+    }
+  }catch(e){console.warn('rest',e);}
+  if(restChanged)toast('休みを揃えました');
 })();
 })();
 </script>
