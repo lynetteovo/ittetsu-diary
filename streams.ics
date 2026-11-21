@@ -12,8 +12,8 @@ BEGIN:VEVENT
 UID:iPk_2xGwY2A@ittetsu-diary
 DTSTAMP:20261121T120844Z
 DTSTART:20261121T120844Z
-DTEND:20261121T140844Z
-SUMMARY:🔴 :-(
+DTEND:20261121T145813Z
+SUMMARY:💬 :-(
 URL:https://www.youtube.com/watch?v=iPk_2xGwY2A
 DESCRIPTION:https://www.youtube.com/watch?v=iPk_2xGwY2A
 END:VEVENT
@@ -461,14 +461,5 @@ SUMMARY:🕹️ 【アバタール・チューナー PART06】ただいま
 URL:https://www.youtube.com/watch?v=iT2XRN1Jbno
 DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
  ttps://www.youtube.com/watch?v=iT2XRN1Jbno
-END:VEVENT
-BEGIN:VEVENT
-UID:36fY1RUbZOM@ittetsu-diary
-DTSTAMP:20260922T152929Z
-DTSTART:20260922T152929Z
-DTEND:20260922T174017Z
-SUMMARY:💬 ねむねむ獅子
-URL:https://www.youtube.com/watch?v=36fY1RUbZOM
-DESCRIPTION:https://www.youtube.com/watch?v=36fY1RUbZOM
 END:VEVENT
 END:VCALENDAR
