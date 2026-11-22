@@ -12,8 +12,8 @@ BEGIN:VEVENT
 UID:ZsGRE-I7DPU@ittetsu-diary
 DTSTAMP:20261122T102956Z
 DTSTART:20261122T102956Z
-DTEND:20261122T122956Z
-SUMMARY:🔴 【AIドット絵バトル】帰って来たぜ…この戦場
+DTEND:20261122T140515Z
+SUMMARY:🎮 【AIドット絵バトル】帰って来たぜ…この戦場
  にヨォ
 URL:https://www.youtube.com/watch?v=ZsGRE-I7DPU
 DESCRIPTION:🎮 AIドット絵バトル\nhttps://www.youtube.com/watch?v=Z
@@ -36,6 +36,17 @@ DTEND:20261121T121023Z
 SUMMARY:💬 :-)
 URL:https://www.youtube.com/watch?v=j7H5RplpVo8
 DESCRIPTION:https://www.youtube.com/watch?v=j7H5RplpVo8
+END:VEVENT
+BEGIN:VEVENT
+UID:jcqSmquYk6w@ittetsu-diary
+DTSTAMP:20261120T113043Z
+DTSTART:20261120T113043Z
+DTEND:20261120T114322Z
+SUMMARY:🤝 【キーボードパズル】大混乱！？？キーボー
+ ドパズルでプロフィールを打ったら酷い有様に... / 長
+ 尾 景
+URL:https://www.youtube.com/watch?v=jcqSmquYk6w
+DESCRIPTION:https://www.youtube.com/watch?v=jcqSmquYk6w
 END:VEVENT
 BEGIN:VEVENT
 UID:34k3wLV95lw@ittetsu-diary
