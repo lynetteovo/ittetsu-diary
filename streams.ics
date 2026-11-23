@@ -9,6 +9,16 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
+UID:tBVR_buPVrY@ittetsu-diary
+DTSTAMP:20261123T135844Z
+DTSTART:20261123T135844Z
+DTEND:20261123T162932Z
+SUMMARY:🎮 【Capcom Fighting Collection】ドォン(銅鑼)
+URL:https://www.youtube.com/watch?v=tBVR_buPVrY
+DESCRIPTION:🎮 カプコン ファイティング コレクション\nhtt
+ ps://www.youtube.com/watch?v=tBVR_buPVrY
+END:VEVENT
+BEGIN:VEVENT
 UID:nvAQ1T6JCrA@ittetsu-diary
 DTSTAMP:20261122T225820Z
 DTSTART:20261122T225820Z
@@ -483,16 +493,5 @@ DTEND:20260925T120504Z
 SUMMARY:💬 時代はチルしながら知育
 URL:https://www.youtube.com/watch?v=zaR32Fze6Z0
 DESCRIPTION:https://www.youtube.com/watch?v=zaR32Fze6Z0
-END:VEVENT
-BEGIN:VEVENT
-UID:iT2XRN1Jbno@ittetsu-diary
-DTSTAMP:20260924T102902Z
-DTSTART:20260924T102902Z
-DTEND:20260924T151847Z
-SUMMARY:🕹️ 【アバタール・チューナー PART06】ただいま
- ！！ジャンクヤード！※ネタバレ注意
-URL:https://www.youtube.com/watch?v=iT2XRN1Jbno
-DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
- ttps://www.youtube.com/watch?v=iT2XRN1Jbno
 END:VEVENT
 END:VCALENDAR
