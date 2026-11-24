@@ -1,5 +1,5 @@
-{"updated":"2026-11-24T13:48:42.504Z","subs":{"unit":1000,"count":414000,"floor":414,"milestones":[{"n":413,"at":"2026-11-11T01:37:47.079Z"},{"n":414,"at":"2026-11-20T07:21:58.266Z"}]},"items":[
-{"id":"IHZ5rlAnT_4","start":"2026-11-24T12:00:19Z","end":"","status":"live","title":"【Capcom Fighting Collection】ドォンドゥン(銅鑼)","type":"game_series","game":"カプコン ファイティング コレクション","collab":"","sk":"","ch":""},
+{"updated":"2026-11-24T17:27:45.164Z","subs":{"unit":1000,"count":414000,"floor":414,"milestones":[{"n":413,"at":"2026-11-11T01:37:47.079Z"},{"n":414,"at":"2026-11-20T07:21:58.266Z"}]},"items":[
+{"id":"IHZ5rlAnT_4","start":"2026-11-24T12:00:19Z","end":"2026-11-24T14:23:17Z","status":"none","title":"【Capcom Fighting Collection】ドォンドゥン(銅鑼)","type":"game_series","game":"カプコン ファイティング コレクション","collab":"","sk":"","ch":""},
 {"id":"tBVR_buPVrY","start":"2026-11-23T13:58:44Z","end":"2026-11-23T16:29:32Z","status":"none","title":"【Capcom Fighting Collection】ドォン(銅鑼)","type":"game_series","game":"カプコン ファイティング コレクション","collab":"","sk":"","ch":""},
 {"id":"nvAQ1T6JCrA","start":"2026-11-22T22:58:20Z","end":"2026-11-23T02:34:50Z","status":"none","title":"【Capcom Arcade 2nd Stadium】ヴァンパイアセイヴァーを知ろう!!","type":"game_single","game":"カプコンアーケード 2ndスタジアム","collab":"","sk":"","ch":""},
 {"id":"ZsGRE-I7DPU","start":"2026-11-22T10:29:56Z","end":"2026-11-22T14:05:15Z","status":"none","title":"【AIドット絵バトル】帰って来たぜ…この戦場にヨォ","type":"game_single","game":"AIドット絵バトル","collab":"","sk":"","ch":""},
