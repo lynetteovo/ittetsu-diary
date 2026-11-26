@@ -9,6 +9,15 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
+UID:ibPfmujFKKE@ittetsu-diary
+DTSTAMP:20261126T202932Z
+DTSTART:20261126T202932Z
+DTEND:20261126T222932Z
+SUMMARY:🔴 朝は来るっていうのに俺は
+URL:https://www.youtube.com/watch?v=ibPfmujFKKE
+DESCRIPTION:https://www.youtube.com/watch?v=ibPfmujFKKE
+END:VEVENT
+BEGIN:VEVENT
 UID:IHZ5rlAnT_4@ittetsu-diary
 DTSTAMP:20261124T120019Z
 DTSTART:20261124T120019Z
@@ -472,16 +481,5 @@ SUMMARY:🕹️ 【STREET FIGHTER 6 】アケコン復帰！
 URL:https://www.youtube.com/watch?v=g4N922up14o
 DESCRIPTION:🎮 ストリートファイター6\nhttps://www.youtube.com/w
  atch?v=g4N922up14o
-END:VEVENT
-BEGIN:VEVENT
-UID:bFEUpGSK_jg@ittetsu-diary
-DTSTAMP:20260927T201410Z
-DTSTART:20260927T201410Z
-DTEND:20260927T204059Z
-SUMMARY:🕹️ 【アバタール・チューナー PART07・後編】大
- 人をムキにさせるとこうなる ※ネタバレ注意
-URL:https://www.youtube.com/watch?v=bFEUpGSK_jg
-DESCRIPTION:🎮 DIGITAL DEVIL SAGA ～アバタール・チューナー\nh
- ttps://www.youtube.com/watch?v=bFEUpGSK_jg
 END:VEVENT
 END:VCALENDAR
