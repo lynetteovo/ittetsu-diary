@@ -9,6 +9,23 @@ X-APPLE-CALENDAR-COLOR:#8C4664
 REFRESH-INTERVAL;VALUE=DURATION:PT30M
 X-PUBLISHED-TTL:PT30M
 BEGIN:VEVENT
+UID:mNo_C2zKFkA@ittetsu-diary
+DTSTAMP:20261127T110000Z
+DTSTART:20261127T110000Z
+DTEND:20261127T130000Z
+SUMMARY:🤝 【人生ゲーム for Nintendo Switch】オリエンスはど
+ う生きる？ガチ人生ドキュメンタリー / Oriens
+URL:https://www.youtube.com/watch?v=mNo_C2zKFkA
+DESCRIPTION:🎮 人生ゲーム for Nintendo Switch\nhttps://www.youtube.c
+ om/watch?v=mNo_C2zKFkA
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT10M
+DESCRIPTION:🤝 【人生ゲーム for Nintendo Switch】オリエンス
+ はどう生きる？ガチ人生ドキュメンタリー / Oriens
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
 UID:ibPfmujFKKE@ittetsu-diary
 DTSTAMP:20261126T202932Z
 DTSTART:20261126T202932Z
